@@ -62,16 +62,16 @@ Generate model-level traces:
 
 ```bash
 cd generator
-./run.sh   			# or: ./generate_trace.sh; ./read_trace.sh
+./run.sh   			# or: ./generate_trace.sh && ./read_trace.sh
 ```
 
 
 
-Build the checker and replay the model-level traces (here use the trace directory `1`  as an example):
+Build the checker and replay the model-level traces (here use the trace directory `demo`  as an example):
 
 ```bash
 cd script
-./buildAndReplay.sh 1 		# or: ./build.sh; ./replay.sh
+./buildAndReplay.sh demo 		# or: ./build.sh && ./replay.sh demo
 ```
 
 
