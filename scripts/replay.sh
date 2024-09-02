@@ -9,7 +9,7 @@ WORKING_DIR=$(cd "$SCRIPT_DIR"/.. || exit;pwd)
 cd "$WORKING_DIR"/scripts || exit
 
 echo -e "\n>> Configuring trace directory..."
-TRACE_DIR="../traces/1"
+TRACE_DIR="../traces/demo"
 
 if [ -n "$1" ]; then
   TRACE_DIR="../traces/"$1

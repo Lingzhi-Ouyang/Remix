@@ -1,3 +1,0 @@
-# Use relative path!
-traceDir = ../traces/1
-classpath = checker/zookeeper-wrapper/target/zookeeper-wrapper-3.9.1-SNAPSHOT-jar-with-dependencies.jar
