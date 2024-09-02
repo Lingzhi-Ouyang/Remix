@@ -1,4 +1,4 @@
----------------- MODULE /home/fedora/IdeaProjects/REMIX/traces/demo/trace_5_0 -----------------
+---------------- MODULE ../REMIX/traces/demo/trace_5_0 -----------------
 STATE_1 == 
 /\ forwarding = (s0 :> {} @@ s1 :> {} @@ s2 :> {})
 /\ history = (s0 :> <<>> @@ s1 :> <<>> @@ s2 :> <<>>)
