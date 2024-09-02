@@ -5,4 +5,3 @@ scripts/*/
 output/**
 results/**
 traces/**
-apache-zookeeper-3.9.1/**
