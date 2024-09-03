@@ -65,7 +65,6 @@ cd generator
 ```
 
 
-
 Build the checker and replay the model-level traces (here use the trace directory `demo`  as an example):
 
 ```bash
