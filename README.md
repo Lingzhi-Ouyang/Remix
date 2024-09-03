@@ -51,10 +51,9 @@ root
 
 ### Pre-requisites for use
 
-* Java (version >= 11) 
-* [Apache Maven](http://maven.apache.org/) (version >= 3.5)
-
-
+* Java 11+
+* Python 3+
+* [Apache Maven](http://maven.apache.org/) 3.5+
 
 ## Quick Start
 
