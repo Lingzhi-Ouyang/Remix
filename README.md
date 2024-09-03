@@ -57,6 +57,8 @@ root
 
 ## Quick Start
 
+Use the trace directory `demo`  as an example.
+
 Build the checker:
 
 ```bash
