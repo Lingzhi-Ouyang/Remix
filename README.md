@@ -57,21 +57,24 @@ root
 
 ## Quick Start
 
-Generate model-level traces:
-
-```bash
-cd generator
-./run.sh   			         # or: ./generate_trace.sh && ./read_trace.sh
-```
-
-
-Build the checker and replay the model-level traces (here use the trace directory `demo`  as an example):
+Build the checker:
 
 ```bash
 cd script
-./buildAndReplay.sh demo 		# or: ./build.sh && ./replay.sh demo
+./build.sh 
 ```
 
+Replay the traces:
+
+```bash
+./replay.sh demo 		
+```
+
+Or directly use the following script:
+
+```bash
+./buildAndReplay.sh demo 		
+```
 
 
 ## Contributing
