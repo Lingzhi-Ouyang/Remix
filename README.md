@@ -61,7 +61,7 @@ Generate model-level traces:
 
 ```bash
 cd generator
-./run.sh   			            # or: ./generate_trace.sh && ./read_trace.sh
+./run.sh   			         # or: ./generate_trace.sh && ./read_trace.sh
 ```
 
 
