@@ -1,6 +1,6 @@
 # Remix
 
-This is the research artifact of "Multi-Grained Specifications for Distributed System Model Checking and Verification" presented at EuroSys'25.
+This is the artifact (demo) of "Multi-Grained Specifications for Distributed System Model Checking and Verification" presented at EuroSys'25.
 
 **Remix** is a tooling support for the verification using multi-grained specifications. It interfaces the TLC model checker, and provides conformance checking and deterministic execution of model-level traces.
 
