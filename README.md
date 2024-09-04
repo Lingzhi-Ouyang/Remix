@@ -56,6 +56,8 @@ root
 
 ## Quick Start
 
+### Replay demo traces
+
 Use the trace directory `demo`  as an example.
 
 Build the checker:
@@ -77,6 +79,12 @@ Or directly use the following script:
 ./buildAndReplay.sh demo 		
 ```
 
+### Generate traces and replay
+Generate model-level traces and replay them:
+```bash
+cd scripts
+./checkAndReplay.sh    
+```
 
 ## Contributing
 
