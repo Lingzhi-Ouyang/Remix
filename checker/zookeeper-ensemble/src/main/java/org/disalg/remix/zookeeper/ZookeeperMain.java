@@ -20,7 +20,6 @@ public class ZookeeperMain {
         try {
             replayService.loadConfig(args);
             replayService.initRemote();
-//            replayService.start();
             replayService.startWithExternalModel();
             System.exit(0);
         } catch (final SchedulerConfigurationException e) {
