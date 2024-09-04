@@ -147,7 +147,8 @@ public class ExternalModelStrategy implements SchedulingStrategy{
                 }
             }
             assert count == traces.size();
-        } catch (final IOException e) {
+        } catch (final IOException | IllegalArgumentException e) {
+            LOG.error(e.getMessage());
             LOG.error("Error while loading execution data from {}", dir);
             throw new SchedulerConfigurationException(e);
         }

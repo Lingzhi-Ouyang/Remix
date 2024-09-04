@@ -21,12 +21,11 @@ public class ZookeeperMain {
             replayService.loadConfig(args);
             replayService.initRemote();
             replayService.startWithExternalModel();
-            System.exit(0);
-        } catch (final SchedulerConfigurationException e) {
-            LOG.error("Error while reading configuration.", e);
-        } catch (final IOException e) {
-            LOG.error("IO exception", e);
+        } catch (final SchedulerConfigurationException | IOException e) {
+            e.printStackTrace();
+            LOG.error("System Exit.");
         }
+        System.exit(0);
     }
 
 }

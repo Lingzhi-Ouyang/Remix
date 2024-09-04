@@ -345,7 +345,7 @@ public class ReplayService implements RemoteService {
         LOG.debug("Starting the replay service by external model");
         ExternalModelStatistics externalModelStatistics = new ExternalModelStatistics();
         ExternalModelStrategy externalModelStrategy = new ExternalModelStrategy(this,
-                new Random(1), schedulerConfiguration.getTraceDir(), externalModelStatistics);
+                new Random(1), schedulerConfiguration.getTraceDir(), externalModelStatistics);;
 //        bugReportWriter = new FileWriter(schedulerConfiguration.getWorkingDir() + File.separator
 //                + schedulerConfiguration.getBugReportFile());
         matchReportWriter = new FileWriter(schedulerConfiguration.getWorkingDir() + File.separator
