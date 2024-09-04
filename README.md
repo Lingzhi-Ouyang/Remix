@@ -23,8 +23,8 @@ root
 |---- scripts					(Code-level scripts: building the checker and conducting the trace replay)
 	|---- build.sh			    	(Build the checker)
 	|---- replay.sh				(Replay given traces in the implementation. Output in the "results" directory)
-	|---- buildAndReplay.sh     		(Generate traces using TLC and replay them in the implementation)
-	|---- checkAndReplay.sh	    		(Generate traces using TLC and replay them in the implementation.
+	|---- buildAndReplay.sh     		(build.sh && replay.sh <traces>)
+	|---- checkAndReplay.sh	    		(Generate traces, parse and replay them in the implementation.
 							Pre-requisite: the checker has already been built before)
 	|---- stop.sh				(Directly kill all currently running zookeeper processes)
 			
