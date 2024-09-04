@@ -1,6 +1,6 @@
 package org.apache.zookeeper.server.quorum;
 
-import org.disalg.met.api.TestingDef;
+import org.disalg.remix.api.TestingDef;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

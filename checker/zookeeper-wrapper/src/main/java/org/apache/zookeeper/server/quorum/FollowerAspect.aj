@@ -1,12 +1,10 @@
 package org.apache.zookeeper.server.quorum;
 
-import org.disalg.met.api.MessageType;
-import org.disalg.met.api.SubnodeType;
-import org.disalg.met.api.TestingDef;
+import org.disalg.remix.api.MessageType;
+import org.disalg.remix.api.TestingDef;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.HashMap;
 import java.util.Map;

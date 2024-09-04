@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>org.disalg.met.zk</groupId>
+        <groupId>org.disalg.remix.zk</groupId>
         <artifactId>parent</artifactId>
         <version>${zookeeper.version}-SNAPSHOT</version>
     </parent>
@@ -14,12 +14,12 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.disalg.met.zk</groupId>
+            <groupId>org.disalg.remix.zk</groupId>
             <artifactId>api</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.disalg.met.zk</groupId>
+            <groupId>org.disalg.remix.zk</groupId>
             <artifactId>server</artifactId>
             <version>${project.version}</version>
         </dependency>
@@ -73,7 +73,7 @@
                     </descriptorRefs>
                     <archive>
                         <manifest>
-                            <mainClass>org.disalg.met.zookeeper.ZookeeperMain</mainClass>
+                            <mainClass>org.disalg.remix.zookeeper.ZookeeperMain</mainClass>
                         </manifest>
                     </archive>
 

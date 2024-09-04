@@ -1,6 +1,6 @@
 package org.apache.zookeeper.server;
 
-import org.disalg.met.api.TestingRemoteService;
+import org.disalg.remix.api.TestingRemoteService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

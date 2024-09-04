@@ -1,15 +1,5 @@
 package org.apache.zookeeper.server.quorum;
 
-import org.apache.zookeeper.ZooDefs;
-import org.apache.zookeeper.server.Request;
-import org.disalg.met.api.SubnodeType;
-import org.disalg.met.api.TestingRemoteService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.rmi.RemoteException;
-import java.util.concurrent.LinkedBlockingQueue;
-
 /***
  * For client requests that go to the follower nodes
  */

@@ -1,9 +1,9 @@
 package org.apache.zookeeper.server.quorum;
 
 import org.apache.jute.Record;
-import org.disalg.met.api.MessageType;
-import org.disalg.met.api.SubnodeType;
-import org.disalg.met.api.TestingDef;
+import org.disalg.remix.api.MessageType;
+import org.disalg.remix.api.SubnodeType;
+import org.disalg.remix.api.TestingDef;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

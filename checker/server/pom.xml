@@ -17,7 +17,7 @@
     </build>
 
     <parent>
-        <groupId>org.disalg.met.zk</groupId>
+        <groupId>org.disalg.remix.zk</groupId>
         <artifactId>parent</artifactId>
         <version>${zookeeper.version}-SNAPSHOT</version>
     </parent>
@@ -26,7 +26,7 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.disalg.met.zk</groupId>
+            <groupId>org.disalg.remix.zk</groupId>
             <artifactId>api</artifactId>
             <version>${project.version}</version>
         </dependency>
@@ -80,7 +80,7 @@
 
         <!-- zookeeper-wrapper -->
         <dependency>
-            <groupId>org.disalg.met.zk</groupId>
+            <groupId>org.disalg.remix.zk</groupId>
             <artifactId>zookeeper-wrapper</artifactId>
             <version>${project.version}</version>
         </dependency>

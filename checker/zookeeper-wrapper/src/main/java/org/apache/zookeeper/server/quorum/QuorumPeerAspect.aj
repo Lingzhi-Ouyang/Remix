@@ -1,10 +1,10 @@
 package org.apache.zookeeper.server.quorum;
 
 import org.apache.zookeeper.server.Request;
-import org.disalg.met.api.TestingDef;
-import org.disalg.met.api.TestingRemoteService;
-import org.disalg.met.api.SubnodeType;
-import org.disalg.met.api.state.LeaderElectionState;
+import org.disalg.remix.api.TestingDef;
+import org.disalg.remix.api.TestingRemoteService;
+import org.disalg.remix.api.SubnodeType;
+import org.disalg.remix.api.state.LeaderElectionState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -517,8 +517,8 @@ public privileged aspect QuorumPeerAspect {
                 ", peerEpoch=" + toSend.peerEpoch;
     }
 
-    private org.disalg.met.api.state.Vote constructVote(final Vote vote) {
-        return new org.disalg.met.api.state.Vote(vote.getId(), vote.getZxid(), vote.getElectionEpoch(), vote.getPeerEpoch());
+    private org.disalg.remix.api.state.Vote constructVote(final Vote vote) {
+        return new org.disalg.remix.api.state.Vote(vote.getId(), vote.getZxid(), vote.getElectionEpoch(), vote.getPeerEpoch());
     }
 
     // Node state management
