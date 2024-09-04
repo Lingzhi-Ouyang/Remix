@@ -571,7 +571,7 @@ class TLCWrapper:
 
         TLCWrapper.task_id_number += 1
         task_id = '' if not is_task_id else '_{}'.format(TLCWrapper.task_id_number)
-        model_name = '../output' + os.sep + self.cfg.get('options', 'model name') + datetime.now().strftime("_%Y-%m-%d_%H-%M-%S") + task_id
+        model_name = '../output' + os.sep + 'model_' + self.cfg.get('options', 'model name') + datetime.now().strftime("_%Y-%m-%d_%H-%M-%S") + task_id
         os.chdir(os.path.dirname(os.path.realpath(target)))
         os.makedirs(model_name, exist_ok=True)
         for file in os.listdir('.'):

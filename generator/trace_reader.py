@@ -195,8 +195,24 @@ class TraceReader:
 
 
 def post_processing(states):
-    actions_without_peer = {'NodeCrash', 'NodeStart', 'LeaderProcessRequest',
-                            'LeaderTimeout', 'FollowerTimeout'}
+    ### -> all possible actions
+    # Election: 
+        # FLEReceiveNotmsg(i, j), FLENotmsgTimeout(i), FLEHandleNotmsg(i), FLEWaitNewNotmsg(i)
+    # Discovery:
+        # ConnectAndFollowerSendFOLLOWERINFO(i, j), LeaderProcessFOLLOWERINFO(i, j), FollowerProcessLEADERINFO(i, j), LeaderProcessACKEPOCH(i, j)
+    # Sync: 
+        # LeaderSyncFollower(i, j), FollowerProcessSyncMessage(i, j), FollowerProcessPROPOSALInSync(i, j), FollowerProcessCOMMITInSync(i, j), FollowerProcessNEWLEADER(i, j), LeaderProcessACKLD(i, j), FollowerProcessUPTODATE(i, j), FollowerProcessNEWLEADERAfterCurrentEpochUpdated(i, j)
+    # Broadcast: 
+        # LeaderProcessRequest(i), FollowerProcessPROPOSAL(i, j), LeaderProcessACK(i, j), FollowerProcessCOMMIT(i, j)
+        # FollowerSyncProcessorLogRequest(i, j), FollowerCommitProcessorCommit(i, j)
+    # Failures: 
+        # PartitionStart(i, j), PartitionRecover(i, j), NodeCrash(i), NodeStart(i), 
+        # FilterNonexistentMessage(i)
+
+    actions_without_peer = {'FLENotmsgTimeout', 'FLEHandleNotmsg', 'FLEWaitNewNotmsg',
+                            'LeaderProcessRequest', 
+                            'NodeCrash', 'NodeStart', 'FilterNonexistentMessage'}
+    
     variables_no_record = {'rcvBuffer', 'leaderOracle', 'epochLeader', 'proposalMsgsLog', 'daInv',
                            'aaInv', 'committedLog', 'initialHistory', 'tempMaxEpoch', 'recorder'}
 
@@ -211,7 +227,7 @@ def post_processing(states):
 
     for num, state in enumerate(states):
         if num == 0:
-            server_state = {'server_num': len(state['state'].keys()), 'server_id': list(state['state'].keys())}
+            server_state = {'version': args.version, 'server_num': len(state['state'].keys()), 'server_id': list(state['state'].keys())}
             # action_list.append(server_state)
             state_list.append(server_state)
 
@@ -223,7 +239,7 @@ def post_processing(states):
 
         k = cur_pc[0]
         v = dict()
-        v['processingNodeId'] = cur_pc[1]
+        v['nodeId'] = cur_pc[1]
 
         # distinguish the actions w/o. peerId & extra parameters.  
         if k not in actions_without_peer:
@@ -246,18 +262,19 @@ def post_processing(states):
 
         # Check for invariant violations including DuringActionInvariant and AfterActionInvariant.
         # Rename the output trace with corresponding violated invariants.  
-        for inv, val in state['daInv'].items():
-            if val is False:
-                inv_violate_str = inv_violate_str + '-' + inv
-                print('Violation found: %s ' % inv_violate_str)
-        for inv, val in state['aaInv'].items():
-            if val is False:
-                inv_violate_str = inv_violate_str + '-' + inv
-                print('Violation found: %s ' % inv_violate_str)
+        if 'daInv' in state and 'aaInv' in state:
+            for inv, val in state['daInv'].items():
+                if val is False:
+                    inv_violate_str = inv_violate_str + '-' + inv
+                    print('Violation found: %s ' % inv_violate_str)
+            for inv, val in state['aaInv'].items():
+                if val is False:
+                    inv_violate_str = inv_violate_str + '-' + inv
+                    print('Violation found: %s ' % inv_violate_str)
 
-        if False in state['daInv'].values() or False in state['aaInv'].values():
-            inv_violate = True
-            break
+            if False in state['daInv'].values() or False in state['aaInv'].values():
+                inv_violate = True
+                break
 
     return action_list, state_list, inv_violate, inv_violate_str
 
@@ -278,6 +295,8 @@ if __name__ == '__main__':
                         help="force output to json file if true")
     parser.add_argument('-i', dest='indent', action='store', required=False,
                         type=int, help="json file indent")
+    parser.add_argument('-v', dest='version', action='store', required=True,
+                        type=str, help="spec version")
     args = parser.parse_args()
 
     tr = TraceReader()
@@ -298,26 +317,20 @@ if __name__ == '__main__':
 
     if args.output_file_prefix:
         if violate:
-            print("--> ", args.output_file_prefix)
+            print("--> Generate one test case that violates invariants:", args.output_file_prefix)
             with open(args.output_file_prefix + inv_violate_str + '.json', 'w') as f:
                 json.dump(states, f, indent=args.indent)
                 f.write('\n')
             with open(args.output_file_prefix + inv_violate_str + '.txt', 'w') as f:
-                for action in actions:
-                    f.write(str(action))
+                for counter, action in enumerate(actions):
+                    f.write(str(counter+1) + '\t' + str(action))
                     f.write('\n')
         if args.force and not violate:
-            print("output one trace that does not violate invariants:", args.output_file_prefix)
+            print("--> Generate one test case that does not violate invariants:", args.output_file_prefix)
             with open(args.output_file_prefix + '.json', 'w') as f:
                 json.dump(states, f, indent=args.indent)
                 f.write('\n')
-            with open(args.output_file_prefix + inv_violate_str + '.txt', 'w') as f:
-                for action in actions:
-                    f.write(str(action))
+            with open(args.output_file_prefix + '.txt', 'w') as f:
+                for counter, action in enumerate(actions):
+                    f.write(str(counter+1) + '\t' + str(action))
                     f.write('\n')
-
-
-
-
-
-
