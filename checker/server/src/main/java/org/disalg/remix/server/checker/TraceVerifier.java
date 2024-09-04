@@ -1,6 +1,6 @@
 package org.disalg.remix.server.checker;
 
-import org.disalg.remix.server.TestingService;
+import org.disalg.remix.server.ReplayService;
 import org.disalg.remix.server.statistics.Statistics;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,7 +11,7 @@ public class TraceVerifier implements Verifier{
     private static int unmatchedCount = 0;
     private static int failedCount = 0;
 
-    private final TestingService testingService;
+    private final ReplayService replayService;
     private final Statistics statistics;
     private Integer traceLen;
     private Integer executedStep;
@@ -20,8 +20,8 @@ public class TraceVerifier implements Verifier{
     // all Match  & exits Failure
 
 
-    public TraceVerifier(final TestingService testingService, Statistics statistics) {
-        this.testingService = testingService;
+    public TraceVerifier(final ReplayService replayService, Statistics statistics) {
+        this.replayService = replayService;
         this.statistics = statistics;
         this.traceLen = null;
         this.executedStep = null;
@@ -45,7 +45,7 @@ public class TraceVerifier implements Verifier{
 
     @Override
     public boolean verify() {
-        String passTest = testingService.tracePassed ? "PASS" : "FAILURE";
+        String passTest = replayService.tracePassed ? "PASS" : "FAILURE";
 
         String matchModel = "UNMATCHED";
         if (traceLen == null || executedStep == null) {
@@ -54,13 +54,13 @@ public class TraceVerifier implements Verifier{
             matchModel = "MATCHED";
         }
         if (matchModel.equals("UNMATCHED")) {
-            testingService.traceMatched = false;
+            replayService.traceMatched = false;
         }
         statistics.reportResult("TRACE_EXECUTION:" + passTest + ":" + matchModel);
 
-        if (!testingService.traceMatched) ++unmatchedCount;
-        if (!testingService.tracePassed)  ++failedCount;
+        if (!replayService.traceMatched) ++unmatchedCount;
+        if (!replayService.tracePassed)  ++failedCount;
 
-        return testingService.traceMatched && testingService.tracePassed;
+        return replayService.traceMatched && replayService.tracePassed;
     }
 }

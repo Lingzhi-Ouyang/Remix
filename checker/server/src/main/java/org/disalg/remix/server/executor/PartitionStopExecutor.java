@@ -1,6 +1,6 @@
 package org.disalg.remix.server.executor;
 
-import org.disalg.remix.server.TestingService;
+import org.disalg.remix.server.ReplayService;
 import org.disalg.remix.server.event.PartitionStopEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,13 +10,13 @@ import java.util.List;
 
 public class PartitionStopExecutor extends BaseEventExecutor {
     private static final Logger LOG = LoggerFactory.getLogger(PartitionStopExecutor.class);
-    private final TestingService testingService;
+    private final ReplayService replayService;
 
     //TODO: + partitionBudget
     private int partitionStopBudget;
 
-    public PartitionStopExecutor(final TestingService testingService, final int partitionStopBudget) {
-        this.testingService = testingService;
+    public PartitionStopExecutor(final ReplayService replayService, final int partitionStopBudget) {
+        this.replayService = replayService;
         this.partitionStopBudget = partitionStopBudget;
     }
 
@@ -25,8 +25,8 @@ public class PartitionStopExecutor extends BaseEventExecutor {
         boolean truelyExecuted = false;
         if (enablePartitionStop()) {
             stopPartition(event.getNode1(), event.getNode2());
-            testingService.getControlMonitor().notifyAll();
-            testingService.waitAllNodesSteady();
+            replayService.getControlMonitor().notifyAll();
+            replayService.waitAllNodesSteady();
             partitionStopBudget--;
             truelyExecuted = true;
         }
@@ -47,7 +47,7 @@ public class PartitionStopExecutor extends BaseEventExecutor {
 //        nodeStates.set(node1, NodeState.STARTING);
 //        nodeStates.set(node2, NodeState.STARTING);
 
-        List<List<Boolean>> partitionMap = testingService.getPartitionMap();
+        List<List<Boolean>> partitionMap = replayService.getPartitionMap();
         // 2. EXECUTION
         partitionMap.get(node1).set(node2, false);
         partitionMap.get(node2).set(node1, false);
@@ -56,6 +56,6 @@ public class PartitionStopExecutor extends BaseEventExecutor {
 //        nodeStates.set(node1, NodeState.ONLINE);
 //        nodeStates.set(node2, NodeState.ONLINE);
 
-        testingService.getControlMonitor().notifyAll();
+        replayService.getControlMonitor().notifyAll();
     }
 }

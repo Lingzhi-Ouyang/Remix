@@ -1,7 +1,7 @@
 package org.disalg.remix.server.predicate;
 
 import org.disalg.remix.api.SubnodeState;
-import org.disalg.remix.server.TestingService;
+import org.disalg.remix.server.ReplayService;
 import org.disalg.remix.server.state.Subnode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,12 +9,12 @@ import org.slf4j.LoggerFactory;
 public class FollowerSteadyAfterProcessingUPTODATE implements WaitPredicate{
     private static final Logger LOG = LoggerFactory.getLogger(AllNodesSteadyBeforeRequest.class);
 
-    private final TestingService testingService;
+    private final ReplayService replayService;
 
     private final int followerId;
 
-    public FollowerSteadyAfterProcessingUPTODATE(final TestingService testingService, final int followerId) {
-        this.testingService = testingService;
+    public FollowerSteadyAfterProcessingUPTODATE(final ReplayService replayService, final int followerId) {
+        this.replayService = replayService;
         this.followerId = followerId;
     }
 
@@ -23,7 +23,7 @@ public class FollowerSteadyAfterProcessingUPTODATE implements WaitPredicate{
         boolean syncProcessorExisted = false;
         boolean commitProcessorExisted = false;
 //        boolean followerProcessorExisted = false;
-        for (final Subnode subnode : testingService.getSubnodeSets().get(followerId)) {
+        for (final Subnode subnode : replayService.getSubnodeSets().get(followerId)) {
             switch (subnode.getSubnodeType()) {
                 case SYNC_PROCESSOR:
                     syncProcessorExisted = true;

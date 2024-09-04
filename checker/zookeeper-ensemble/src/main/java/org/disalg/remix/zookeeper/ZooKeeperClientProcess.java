@@ -3,7 +3,7 @@ package org.disalg.remix.zookeeper;
 public class ZooKeeperClientProcess {
 //    private static final Logger LOG = LoggerFactory.getLogger(ZooKeeperClientProcess.class);
 //
-//    private final TestingRemoteService testingService;
+//    private final RemoteService testingService;
 //
 //    private final int clientId;
 //
@@ -106,10 +106,10 @@ public class ZooKeeperClientProcess {
 //        return "null";
 //    }
 //
-//    public TestingRemoteService createRmiConnection() {
+//    public RemoteService createRmiConnection() {
 //        try {
 //            final Registry registry = LocateRegistry.getRegistry(2599);
-//            return (TestingRemoteService) registry.lookup(TestingRemoteService.REMOTE_NAME);
+//            return (RemoteService) registry.lookup(RemoteService.REMOTE_NAME);
 //        } catch (final RemoteException e) {
 //            LOG.error("Couldn't locate the RMI registry.", e);
 //            throw new RuntimeException(e);

@@ -1,24 +1,24 @@
 package org.disalg.remix.server.predicate;
 
-import org.disalg.remix.server.TestingService;
+import org.disalg.remix.server.ReplayService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class FollowerMappingLearnerHandlerSender implements WaitPredicate{
     private static final Logger LOG = LoggerFactory.getLogger(FollowerMappingLearnerHandlerSender.class);
 
-    private final TestingService testingService;
+    private final ReplayService replayService;
 
     private final int nodeId;
 
-    public FollowerMappingLearnerHandlerSender(final TestingService testingService, final int nodeId) {
-        this.testingService = testingService;
+    public FollowerMappingLearnerHandlerSender(final ReplayService replayService, final int nodeId) {
+        this.replayService = replayService;
         this.nodeId = nodeId;
     }
 
     @Override
     public boolean isTrue() {
-        return testingService.getFollowerLearnerHandlerSenderMap(nodeId) != null;
+        return replayService.getFollowerLearnerHandlerSenderMap(nodeId) != null;
     }
 
     @Override

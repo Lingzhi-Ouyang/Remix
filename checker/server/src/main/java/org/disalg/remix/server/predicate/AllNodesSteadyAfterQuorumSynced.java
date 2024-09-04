@@ -4,7 +4,7 @@ import org.disalg.remix.api.SubnodeState;
 import org.disalg.remix.api.NodeState;
 import org.disalg.remix.api.SubnodeType;
 import org.disalg.remix.api.state.LeaderElectionState;
-import org.disalg.remix.server.TestingService;
+import org.disalg.remix.server.ReplayService;
 import org.disalg.remix.server.state.Subnode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,17 +22,17 @@ public class AllNodesSteadyAfterQuorumSynced implements WaitPredicate {
 
     private static final Logger LOG = LoggerFactory.getLogger(AllNodesSteadyAfterQuorumSynced.class);
 
-    private final TestingService testingService;
+    private final ReplayService replayService;
 
     private final Set<Integer> participants;
 
-    public AllNodesSteadyAfterQuorumSynced(final TestingService testingService) {
-        this.testingService = testingService;
+    public AllNodesSteadyAfterQuorumSynced(final ReplayService replayService) {
+        this.replayService = replayService;
         this.participants = null;
     }
 
-    public AllNodesSteadyAfterQuorumSynced(final TestingService testingService, final Set<Integer> participants) {
-        this.testingService = testingService;
+    public AllNodesSteadyAfterQuorumSynced(final ReplayService replayService, final Set<Integer> participants) {
+        this.replayService = replayService;
         this.participants = participants;
     }
 
@@ -40,7 +40,7 @@ public class AllNodesSteadyAfterQuorumSynced implements WaitPredicate {
     public boolean isTrue() {
         if (participants != null) {
             for (int nodeId: participants) {
-                final NodeState nodeState = testingService.getNodeStates().get(nodeId);
+                final NodeState nodeState = replayService.getNodeStates().get(nodeId);
                 switch (nodeState) {
                     case STARTING:
                     case STOPPING:
@@ -52,7 +52,7 @@ public class AllNodesSteadyAfterQuorumSynced implements WaitPredicate {
                     case ONLINE:
                         LOG.debug("-----------Node {} status: {}", nodeId, nodeState);
                 }
-                LeaderElectionState leaderElectionState = testingService.getLeaderElectionStates().get(nodeId);
+                LeaderElectionState leaderElectionState = replayService.getLeaderElectionStates().get(nodeId);
                 if (LeaderElectionState.LEADING.equals(leaderElectionState)) {
                     if (!leaderSteadyAfterQuorumSynced(nodeId)) {
                         return false;
@@ -64,8 +64,8 @@ public class AllNodesSteadyAfterQuorumSynced implements WaitPredicate {
                 }
             }
         } else {
-            for (int nodeId = 0; nodeId < testingService.getSchedulerConfiguration().getNumNodes(); ++nodeId) {
-                final NodeState nodeState = testingService.getNodeStates().get(nodeId);
+            for (int nodeId = 0; nodeId < replayService.getSchedulerConfiguration().getNumNodes(); ++nodeId) {
+                final NodeState nodeState = replayService.getNodeStates().get(nodeId);
                 switch (nodeState) {
                     case STARTING:
                     case STOPPING:
@@ -77,7 +77,7 @@ public class AllNodesSteadyAfterQuorumSynced implements WaitPredicate {
                     case ONLINE:
                         LOG.debug("-----------Node {} status: {}", nodeId, nodeState);
                 }
-                LeaderElectionState leaderElectionState = testingService.getLeaderElectionStates().get(nodeId);
+                LeaderElectionState leaderElectionState = replayService.getLeaderElectionStates().get(nodeId);
                 if (LeaderElectionState.LEADING.equals(leaderElectionState)) {
                     if (!leaderSteadyAfterQuorumSynced(nodeId)) {
                         return false;
@@ -103,7 +103,7 @@ public class AllNodesSteadyAfterQuorumSynced implements WaitPredicate {
         boolean commitProcessorExisted = false;
         // Note: learnerHandlerSender is created by learnerHandler so here we do not make a flag for learnerHandler
         boolean learnerHandlerSenderExisted = false;
-        for (final Subnode subnode : testingService.getSubnodeSets().get(nodeId)) {
+        for (final Subnode subnode : replayService.getSubnodeSets().get(nodeId)) {
             if (SubnodeType.COMMIT_PROCESSOR.equals(subnode.getSubnodeType())) {
                 syncProcessorExisted = true;
                 if (!SubnodeState.SENDING.equals(subnode.getState())) {
@@ -144,7 +144,7 @@ public class AllNodesSteadyAfterQuorumSynced implements WaitPredicate {
         boolean syncProcessorExisted = false;
         boolean commitProcessorExisted = false;
 //        boolean followerProcessorExisted = false;
-        for (final Subnode subnode : testingService.getSubnodeSets().get(nodeId)) {
+        for (final Subnode subnode : replayService.getSubnodeSets().get(nodeId)) {
             switch (subnode.getSubnodeType()) {
                 case SYNC_PROCESSOR:
                     syncProcessorExisted = true;

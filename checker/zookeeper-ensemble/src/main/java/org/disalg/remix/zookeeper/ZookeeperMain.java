@@ -1,7 +1,7 @@
 package org.disalg.remix.zookeeper;
 
 import org.disalg.remix.api.configuration.SchedulerConfigurationException;
-import org.disalg.remix.server.TestingService;
+import org.disalg.remix.server.ReplayService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
@@ -15,13 +15,13 @@ public class ZookeeperMain {
 
     public static void main(final String[] args) {
         final ApplicationContext applicationContext = new AnnotationConfigApplicationContext(ZookeeperSpringConfig.class);
-        final TestingService testingService = applicationContext.getBean(TestingService.class);
+        final ReplayService replayService = applicationContext.getBean(ReplayService.class);
 
         try {
-            testingService.loadConfig(args);
-            testingService.initRemote();
-//            testingService.start();
-            testingService.startWithExternalModel();
+            replayService.loadConfig(args);
+            replayService.initRemote();
+//            replayService.start();
+            replayService.startWithExternalModel();
             System.exit(0);
         } catch (final SchedulerConfigurationException e) {
             LOG.error("Error while reading configuration.", e);

@@ -4,7 +4,7 @@ import org.disalg.remix.api.Phase;
 import org.disalg.remix.api.SubnodeState;
 import org.disalg.remix.api.NodeState;
 import org.disalg.remix.api.state.LeaderElectionState;
-import org.disalg.remix.server.TestingService;
+import org.disalg.remix.server.ReplayService;
 import org.disalg.remix.server.state.Subnode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,25 +19,25 @@ import java.util.Set;
 public class AllNodesSteadyBeforeRequest implements WaitPredicate{
     private static final Logger LOG = LoggerFactory.getLogger(AllNodesSteadyBeforeRequest.class);
 
-    private final TestingService testingService;
+    private final ReplayService replayService;
 
-    public AllNodesSteadyBeforeRequest(final TestingService testingService) {
-        this.testingService = testingService;
+    public AllNodesSteadyBeforeRequest(final ReplayService replayService) {
+        this.replayService = replayService;
     }
 
     @Override
     public boolean isTrue() {
         LOG.debug("Try to release all alive nodes' intercepted broadcast event first before the node get into LOOKING...");
         Set<Integer> nodes = new HashSet<>();
-        for (int nodeId = 0; nodeId < testingService.getSchedulerConfiguration().getNumNodes(); ++nodeId) {
-            if (testingService.getNodeStates().get(nodeId).equals(NodeState.ONLINE) &&
-                    testingService.getNodePhases().get(nodeId).equals(Phase.BROADCAST)) {
+        for (int nodeId = 0; nodeId < replayService.getSchedulerConfiguration().getNumNodes(); ++nodeId) {
+            if (replayService.getNodeStates().get(nodeId).equals(NodeState.ONLINE) &&
+                    replayService.getNodePhases().get(nodeId).equals(Phase.BROADCAST)) {
                 nodes.add(nodeId);
             }
         }
-        testingService.releaseBroadcastEvent(nodes, false);
-        for (int nodeId = 0; nodeId < testingService.getSchedulerConfiguration().getNumNodes(); ++nodeId) {
-            final NodeState nodeState = testingService.getNodeStates().get(nodeId);
+        replayService.releaseBroadcastEvent(nodes, false);
+        for (int nodeId = 0; nodeId < replayService.getSchedulerConfiguration().getNumNodes(); ++nodeId) {
+            final NodeState nodeState = replayService.getNodeStates().get(nodeId);
             switch (nodeState) {
                 case STARTING:
                 case STOPPING:
@@ -49,7 +49,7 @@ public class AllNodesSteadyBeforeRequest implements WaitPredicate{
                 case ONLINE:
                     LOG.debug("-----------Node {} status: {}", nodeId, nodeState);
             }
-            LeaderElectionState leaderElectionState = testingService.getLeaderElectionStates().get(nodeId);
+            LeaderElectionState leaderElectionState = replayService.getLeaderElectionStates().get(nodeId);
             // TODO: LOOKING ???
             if (LeaderElectionState.LEADING.equals(leaderElectionState)) {
                 if (!leaderSteadyBeforeRequest(nodeId)) {
@@ -75,7 +75,7 @@ public class AllNodesSteadyBeforeRequest implements WaitPredicate{
 //        // Note: learnerHandlerSender is created by learnerHandler so here we do not make a flag for learnerHandler
 //        // Note: we assume that learner handlers for all online followers will appear successfully if one of them exists
 //        boolean learnerHandlerSenderExisted = false;
-//        for (final Subnode subnode : testingService.getSubnodeSets().get(nodeId)) {
+//        for (final Subnode subnode : replayService.getSubnodeSets().get(nodeId)) {
 //            if (SubnodeType.SYNC_PROCESSOR.equals(subnode.getSubnodeType())) {
 //                syncProcessorExisted = true;
 //            } else if (SubnodeType.COMMIT_PROCESSOR.equals(subnode.getSubnodeType())) {
@@ -91,7 +91,7 @@ public class AllNodesSteadyBeforeRequest implements WaitPredicate{
         boolean syncProcessorExisted = false;
         boolean commitProcessorExisted = false;
         boolean learnerHandlerSenderExisted = false;
-        for (final Subnode subnode : testingService.getSubnodeSets().get(nodeId)) {
+        for (final Subnode subnode : replayService.getSubnodeSets().get(nodeId)) {
             switch (subnode.getSubnodeType()) {
                 case SYNC_PROCESSOR:
                     syncProcessorExisted = true;
@@ -120,7 +120,7 @@ public class AllNodesSteadyBeforeRequest implements WaitPredicate{
 //        boolean syncProcessorExisted = false;
 //        boolean commitProcessorExisted = false;
 //        boolean followerProcessorExisted = false;
-//        for (final Subnode subnode : testingService.getSubnodeSets().get(nodeId)) {
+//        for (final Subnode subnode : replayService.getSubnodeSets().get(nodeId)) {
 //            if (SubnodeType.SYNC_PROCESSOR.equals(subnode.getSubnodeType())) {
 //                syncProcessorExisted = true;
 //            } else if (SubnodeType.COMMIT_PROCESSOR.equals(subnode.getSubnodeType())) {
@@ -137,7 +137,7 @@ public class AllNodesSteadyBeforeRequest implements WaitPredicate{
         boolean syncProcessorExisted = false;
         boolean commitProcessorExisted = false;
 //        boolean followerProcessorExisted = false;
-        for (final Subnode subnode : testingService.getSubnodeSets().get(nodeId)) {
+        for (final Subnode subnode : replayService.getSubnodeSets().get(nodeId)) {
             switch (subnode.getSubnodeType()) {
                 case SYNC_PROCESSOR:
                     syncProcessorExisted = true;

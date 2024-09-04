@@ -1,6 +1,6 @@
 package org.disalg.remix.server.predicate;
 
-import org.disalg.remix.server.TestingService;
+import org.disalg.remix.server.ReplayService;
 import org.disalg.remix.api.NodeState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,21 +12,21 @@ public class LogRequestReleased implements WaitPredicate {
 
     private static final Logger LOG = LoggerFactory.getLogger(LogRequestReleased.class);
 
-    private final TestingService testingService;
+    private final ReplayService replayService;
 
     private final int msgId;
     private final int syncNodeId;
 
-    public LogRequestReleased(final TestingService testingService, int msgId, int sendingNodeId) {
-        this.testingService = testingService;
+    public LogRequestReleased(final ReplayService replayService, int msgId, int sendingNodeId) {
+        this.replayService = replayService;
         this.msgId = msgId;
         this.syncNodeId = sendingNodeId;
     }
 
     @Override
     public boolean isTrue() {
-        return testingService.getLogRequestInFlight() == msgId
-                || NodeState.STOPPING.equals(testingService.getNodeStates().get(syncNodeId));
+        return replayService.getLogRequestInFlight() == msgId
+                || NodeState.STOPPING.equals(replayService.getNodeStates().get(syncNodeId));
     }
 
     @Override

@@ -1,7 +1,7 @@
 package org.disalg.remix.server.executor;
 
 import org.disalg.remix.api.*;
-import org.disalg.remix.server.TestingService;
+import org.disalg.remix.server.ReplayService;
 import org.disalg.remix.server.event.FollowerToLeaderMessageEvent;
 import org.disalg.remix.server.state.Subnode;
 import org.slf4j.Logger;
@@ -13,10 +13,10 @@ public class FollowerToLeaderMessageExecutor extends BaseEventExecutor {
 
     private static final Logger LOG = LoggerFactory.getLogger(FollowerToLeaderMessageExecutor.class);
 
-    private final TestingService testingService;
+    private final ReplayService replayService;
 
-    public FollowerToLeaderMessageExecutor(final TestingService testingService) {
-        this.testingService = testingService;
+    public FollowerToLeaderMessageExecutor(final ReplayService replayService) {
+        this.replayService = replayService;
     }
 
     @Override
@@ -27,8 +27,8 @@ public class FollowerToLeaderMessageExecutor extends BaseEventExecutor {
         }
         LOG.debug("Releasing message: {}", event.toString());
         releaseFollowerToLeaderMessage(event);
-        testingService.getControlMonitor().notifyAll();
-        testingService.waitAllNodesSteady();
+        replayService.getControlMonitor().notifyAll();
+        replayService.waitAllNodesSteady();
         event.setExecuted();
         LOG.debug("Follower message event executed: {}\n\n\n", event.toString());
         return true;
@@ -39,8 +39,8 @@ public class FollowerToLeaderMessageExecutor extends BaseEventExecutor {
      * set sendingSubnode and receivingSubnode to PROCESSING
      */
     public void releaseFollowerToLeaderMessage(final FollowerToLeaderMessageEvent event) {
-        testingService.setMessageInFlight(event.getId());
-        final Subnode sendingSubnode = testingService.getSubnodes().get(event.getSendingSubnodeId());
+        replayService.setMessageInFlight(event.getId());
+        final Subnode sendingSubnode = replayService.getSubnodes().get(event.getSendingSubnodeId());
 
         // set the sending subnode to be PROCESSING
         sendingSubnode.setState(SubnodeState.PROCESSING);
@@ -52,8 +52,8 @@ public class FollowerToLeaderMessageExecutor extends BaseEventExecutor {
         // if in partition, then just drop it
         final int followerId = sendingSubnode.getNodeId();
         final int leaderId = event.getReceivingNodeId();
-        LOG.debug("partition map: {}, follower: {}, leader: {}", testingService.getPartitionMap(), followerId, leaderId);
-        if (testingService.getPartitionMap().get(followerId).get(leaderId) ||
+        LOG.debug("partition map: {}, follower: {}, leader: {}", replayService.getPartitionMap(), followerId, leaderId);
+        if (replayService.getPartitionMap().get(followerId).get(leaderId) ||
                 event.getFlag() == TestingDef.RetCode.NODE_PAIR_IN_PARTITION) {
             return;
         }
@@ -61,21 +61,21 @@ public class FollowerToLeaderMessageExecutor extends BaseEventExecutor {
         // not in partition, so the message can be received
         // set the receiving subnode to be PROCESSING
         final int lastReadType = event.getType();
-        final NodeState nodeState = testingService.getNodeStates().get(leaderId);
-//        Set<Subnode> subnodes = testingService.getSubnodeSets().get(leaderId);
-        final Phase followerPhase = testingService.getNodePhases().get(followerId);
+        final NodeState nodeState = replayService.getNodeStates().get(leaderId);
+//        Set<Subnode> subnodes = replayService.getSubnodeSets().get(leaderId);
+        final Phase followerPhase = replayService.getNodePhases().get(followerId);
 
         if (NodeState.ONLINE.equals(nodeState)) {
             switch (lastReadType) {
                 case MessageType.LEADERINFO:   // releasing my ACKEPOCH
-                    testingService.getNodePhases().set(leaderId, Phase.SYNC);
-                    testingService.getNodePhases().set(followerId, Phase.SYNC);
+                    replayService.getNodePhases().set(leaderId, Phase.SYNC);
+                    replayService.getNodePhases().set(followerId, Phase.SYNC);
 
                     LOG.info("follower replies ACKEPOCH : {}", event);
-                    long leaderAcceptedEpoch = testingService.getAcceptedEpoch(leaderId);
+                    long leaderAcceptedEpoch = replayService.getAcceptedEpoch(leaderId);
                     // Post-condition: wait for leader update currentEpoch file
-                    testingService.getControlMonitor().notifyAll();
-                    testingService.waitCurrentEpochUpdated(leaderId, leaderAcceptedEpoch);
+                    replayService.getControlMonitor().notifyAll();
+                    replayService.waitCurrentEpochUpdated(leaderId, leaderAcceptedEpoch);
                     break;
                 case MessageType.NEWLEADER:     // releasing my ACK-LD.
                     // ---------------DEPRECATED---------------
@@ -85,23 +85,23 @@ public class FollowerToLeaderMessageExecutor extends BaseEventExecutor {
                     // Post-condition:
                     // let leader's corresponding learnerHandler process this ACK,
                     // then again be intercepted at ReadRecord
-                    testingService.getControlMonitor().notifyAll();
-                    testingService.waitSubnodeInSendingState(testingService.getFollowerLearnerHandlerMap(followerId));
+                    replayService.getControlMonitor().notifyAll();
+                    replayService.waitSubnodeInSendingState(replayService.getFollowerLearnerHandlerMap(followerId));
 
                     // Post-condition: LeaderSendUPTODATE by leader's corresponding learnerHandlerSender
-                    testingService.getControlMonitor().notifyAll();
-                    testingService.waitSubnodeInSendingState(testingService.getFollowerLearnerHandlerSenderMap(followerId));
+                    replayService.getControlMonitor().notifyAll();
+                    replayService.waitSubnodeInSendingState(replayService.getFollowerLearnerHandlerSenderMap(followerId));
                     break;
                 case MessageType.UPTODATE:      // releasing my ACK
                     // Post-condition: wait for follower's syncProcessorExisted && commitProcessorExisted
-                    testingService.getControlMonitor().notifyAll();
-                    testingService.waitFollowerSteadyAfterProcessingUPTODATE(followerId);
+                    replayService.getControlMonitor().notifyAll();
+                    replayService.waitFollowerSteadyAfterProcessingUPTODATE(followerId);
 
                     // Post-condition:
                     // let leader's corresponding learnerHandler process this ACK,
                     // then again be intercepted at ReadRecord
-                    testingService.getControlMonitor().notifyAll();
-                    testingService.waitSubnodeInSendingState(testingService.getFollowerLearnerHandlerMap(followerId));
+                    replayService.getControlMonitor().notifyAll();
+                    replayService.waitSubnodeInSendingState(replayService.getFollowerLearnerHandlerMap(followerId));
                     break;
                 case MessageType.PROPOSAL:      // releasing my ACK
                     if (followerPhase.equals(Phase.BROADCAST)) {
@@ -110,12 +110,12 @@ public class FollowerToLeaderMessageExecutor extends BaseEventExecutor {
                         // Post-condition:
                         // let leader's corresponding learnerHandler process this ACK,
                         // then again be intercepted at ReadRecord
-                        testingService.getControlMonitor().notifyAll();
-                        testingService.waitSubnodeInSendingState(testingService.getFollowerLearnerHandlerMap(followerId));
+                        replayService.getControlMonitor().notifyAll();
+                        replayService.waitSubnodeInSendingState(replayService.getFollowerLearnerHandlerMap(followerId));
 
                         // Post-condition: let leader's corresponding learnerHandlerSender be sending COMMIT
-                        testingService.getControlMonitor().notifyAll();
-                        testingService.waitSubnodeInSendingState(testingService.getFollowerLearnerHandlerSenderMap(followerId));
+                        replayService.getControlMonitor().notifyAll();
+                        replayService.waitSubnodeInSendingState(replayService.getFollowerLearnerHandlerSenderMap(followerId));
                     }
                     break;
                 case MessageType.PROPOSAL_IN_SYNC:
@@ -125,8 +125,8 @@ public class FollowerToLeaderMessageExecutor extends BaseEventExecutor {
                         // Post-condition:
                         // let leader's corresponding learnerHandler process this ACK,
                         // then again be intercepted at ReadRecord
-                        testingService.getControlMonitor().notifyAll();
-                        testingService.waitSubnodeInSendingState(testingService.getFollowerLearnerHandlerMap(followerId));
+                        replayService.getControlMonitor().notifyAll();
+                        replayService.waitSubnodeInSendingState(replayService.getFollowerLearnerHandlerMap(followerId));
                     }
                     break;
                 case MessageType.COMMIT:
@@ -140,9 +140,9 @@ public class FollowerToLeaderMessageExecutor extends BaseEventExecutor {
     }
 
     public boolean quorumSynced(final long zxid) {
-        if (testingService.getZxidSyncedMap().containsKey(zxid)){
-            final int count = testingService.getZxidSyncedMap().get(zxid);
-            final int nodeNum = testingService.getSchedulerConfiguration().getNumNodes();
+        if (replayService.getZxidSyncedMap().containsKey(zxid)){
+            final int count = replayService.getZxidSyncedMap().get(zxid);
+            final int nodeNum = replayService.getSchedulerConfiguration().getNumNodes();
             return count > nodeNum / 2;
         }
         return false;

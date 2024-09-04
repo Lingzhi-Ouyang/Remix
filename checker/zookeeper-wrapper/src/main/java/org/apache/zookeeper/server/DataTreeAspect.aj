@@ -1,6 +1,6 @@
 package org.apache.zookeeper.server;
 
-import org.disalg.remix.api.TestingRemoteService;
+import org.disalg.remix.api.RemoteService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -12,7 +12,7 @@ import java.rmi.registry.Registry;
 public aspect DataTreeAspect {
     private static final Logger LOG = LoggerFactory.getLogger(DataTreeAspect.class);
 
-    private final TestingRemoteService testingService;
+    private final RemoteService remoteService;
 
     private long myLastProcessedZxid;
 
@@ -21,19 +21,19 @@ public aspect DataTreeAspect {
     public DataTreeAspect() {
         try {
             final Registry registry = LocateRegistry.getRegistry(2599);
-            testingService = (TestingRemoteService) registry.lookup(TestingRemoteService.REMOTE_NAME);
-            LOG.debug("Found the remote testing service.");
+            remoteService = (RemoteService) registry.lookup(RemoteService.REMOTE_NAME);
+            LOG.debug("Found the remote replay service.");
         } catch (final RemoteException e) {
             LOG.error("Couldn't locate the RMI registry.", e);
             throw new RuntimeException(e);
         } catch (final NotBoundException e) {
-            LOG.error("Couldn't bind the testing service.", e);
+            LOG.error("Couldn't bind the replay service.", e);
             throw new RuntimeException(e);
         }
     }
 
-    public TestingRemoteService getTestingService() {
-        return testingService;
+    public RemoteService getRemoteService() {
+        return remoteService;
     }
 
     public int getMyId() {
@@ -57,7 +57,7 @@ public aspect DataTreeAspect {
         myLastProcessedZxid = zxid;
         try {
             LOG.debug("-------nodeId: {}, Set myLastProcessedZxid = 0x{}", myId, Long.toHexString(myLastProcessedZxid));
-            testingService.updateLastProcessedZxid(myId, myLastProcessedZxid);
+            remoteService.updateLastProcessedZxid(myId, myLastProcessedZxid);
         } catch (final RemoteException e) {
             LOG.error("Encountered a remote exception", e);
             throw new RuntimeException(e);

@@ -1,7 +1,7 @@
 package org.disalg.remix.server.executor;
 
 import org.disalg.remix.api.state.LeaderElectionState;
-import org.disalg.remix.server.TestingService;
+import org.disalg.remix.server.ReplayService;
 import org.disalg.remix.server.event.PartitionStartEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,13 +12,13 @@ import java.util.List;
 
 public class PartitionStartExecutor extends BaseEventExecutor {
     private static final Logger LOG = LoggerFactory.getLogger(PartitionStopExecutor.class);
-    private final TestingService testingService;
+    private final ReplayService replayService;
 
     //TODO: + partitionBudget configuration
     private int partitionBudget;
 
-    public PartitionStartExecutor(final TestingService testingService, final int partitionBudget) {
-        this.testingService = testingService;
+    public PartitionStartExecutor(final ReplayService replayService, final int partitionBudget) {
+        this.replayService = replayService;
         this.partitionBudget = partitionBudget;
     }
 
@@ -27,8 +27,8 @@ public class PartitionStartExecutor extends BaseEventExecutor {
         boolean truelyExecuted = false;
         if (enablePartition()) {
             startPartition(event.getNode1(), event.getNode2());
-            testingService.getControlMonitor().notifyAll();
-            testingService.waitAllNodesSteady();
+            replayService.getControlMonitor().notifyAll();
+            replayService.waitAllNodesSteady();
             partitionBudget--;
             truelyExecuted = true;
         }
@@ -50,7 +50,7 @@ public class PartitionStartExecutor extends BaseEventExecutor {
         // 1. PRE_EXECUTION: set unstable state
 
         // 2. EXECUTION
-        List<List<Boolean>> partitionMap = testingService.getPartitionMap();
+        List<List<Boolean>> partitionMap = replayService.getPartitionMap();
         LOG.debug("start partition: {} & {}", node1, node2);
         LOG.debug("before partition: {}, {}, {}", partitionMap.get(0), partitionMap.get(1), partitionMap.get(2));
         partitionMap.get(node1).set(node2, true);
@@ -61,13 +61,13 @@ public class PartitionStartExecutor extends BaseEventExecutor {
         // 3. POST_EXECUTION: wait for the state to be stable (set ONLINE)
 
         // if leader & follower, wait for leader / follower into LOOKING
-        List<LeaderElectionState> leaderElectionStates = testingService.getLeaderElectionStates();
+        List<LeaderElectionState> leaderElectionStates = replayService.getLeaderElectionStates();
         LeaderElectionState role1 = leaderElectionStates.get(node1);
         LeaderElectionState role2 = leaderElectionStates.get(node2);
         LOG.debug("Node {} & {} partition start.\n\n\n ", node1, node2);
 
 //        // release all nodes' event related to the partitioned nodes
-//        testingService.getControlMonitor().notifyAll();
+//        replayService.getControlMonitor().notifyAll();
 
         // leader & follower: need to set related nodes back to LOOKING state and release broadcast events
         boolean leaderExist = LeaderElectionState.LEADING.equals(role1) || LeaderElectionState.LEADING.equals(role2);
@@ -78,22 +78,22 @@ public class PartitionStartExecutor extends BaseEventExecutor {
             LOG.debug("Leader {} & Follower {} get partition.", leader, follower);
 
             // if quorum breaks, wait for the leader into LOOKING
-            int nodeNum = testingService.getSchedulerConfiguration().getNumNodes();
-            testingService.getParticipants().remove(follower);
-            int participantCount = testingService.getParticipants().size();
+            int nodeNum = replayService.getSchedulerConfiguration().getNumNodes();
+            replayService.getParticipants().remove(follower);
+            int participantCount = replayService.getParticipants().size();
             if (participantCount <= (nodeNum / 2)) {
-                testingService.getParticipants().clear();
+                replayService.getParticipants().clear();
                 // leader & follower need to change node state to LOOKING
                 LOG.debug("Leader's quorum peers count {} less than half the node num {}!  " +
                         "Wait for leader {} to be LOOKING", participantCount, nodeNum, leader);
                 // Predicate AliveNodesInLookingState will releaseBroadcastEvent
                 LOG.debug("Try to set flag NODE_PAIR_IN_PARTITION to relative events before the node get into LOOKING...");
-                testingService.recordPartitionedEvent(new HashSet<Integer>() {{
+                replayService.recordPartitionedEvent(new HashSet<Integer>() {{
                     add(node1);
                     add(node2);
                 }}, true);
-                testingService.getControlMonitor().notifyAll();
-                testingService.waitAliveNodesInLookingState(new HashSet<Integer>() {{
+                replayService.getControlMonitor().notifyAll();
+                replayService.waitAliveNodesInLookingState(new HashSet<Integer>() {{
                     add(leader);
                     add(follower);
                 }});
@@ -102,19 +102,19 @@ public class PartitionStartExecutor extends BaseEventExecutor {
                 // follower: need to change node state
                 LOG.debug("wait for follower {} back into LOOKING.", follower);
                 LOG.debug("Try to set flag NODE_PAIR_IN_PARTITION to relative events before the node get into LOOKING...");
-                testingService.recordPartitionedEvent(new HashSet<Integer>() {{
+                replayService.recordPartitionedEvent(new HashSet<Integer>() {{
                     add(node1);
                     add(node2);
                 }}, false);
-                testingService.getControlMonitor().notifyAll();
-                testingService.waitAliveNodesInLookingState(new HashSet<Integer>() {{
+                replayService.getControlMonitor().notifyAll();
+                replayService.waitAliveNodesInLookingState(new HashSet<Integer>() {{
                     add(follower);
                 }});
             }
         } else {
             // leader & candidate / follower & candidate: no need to change node state
             LOG.debug("Try to set flag NODE_PAIR_IN_PARTITION to relative events before the node get into LOOKING...");
-            testingService.recordPartitionedEvent(new HashSet<Integer>() {{
+            replayService.recordPartitionedEvent(new HashSet<Integer>() {{
                 add(node1);
                 add(node2);
             }}, false);

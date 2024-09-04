@@ -34,9 +34,9 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
-public class TestingService implements TestingRemoteService {
+public class ReplayService implements RemoteService {
 
-    private static final Logger LOG = LoggerFactory.getLogger(TestingService.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ReplayService.class);
 
     @Autowired
     private SchedulerConfiguration schedulerConfiguration;
@@ -342,7 +342,7 @@ public class TestingService implements TestingRemoteService {
      * @throws IOException
      */
     public void start() throws SchedulerConfigurationException, IOException {
-        LOG.debug("Starting the testing service");
+        LOG.debug("Starting the replay service");
         long startTime = System.currentTimeMillis();
 
         for (int executionId = 1; executionId <= schedulerConfiguration.getNumExecutions(); ++executionId) {
@@ -415,7 +415,7 @@ public class TestingService implements TestingRemoteService {
      * @throws IOException
      */
     public void startWithExternalModel() throws SchedulerConfigurationException, IOException {
-        LOG.debug("Starting the testing service by external model");
+        LOG.debug("Starting the replay service by external model");
         ExternalModelStatistics externalModelStatistics = new ExternalModelStatistics();
         ExternalModelStrategy externalModelStrategy = new ExternalModelStrategy(this,
                 new Random(1), schedulerConfiguration.getTraceDir(), externalModelStatistics);
@@ -815,7 +815,7 @@ public class TestingService implements TestingRemoteService {
 
 
     public void startWithExternalModel2() throws SchedulerConfigurationException, IOException {
-        LOG.debug("Starting the testing service by external model");
+        LOG.debug("Starting the replay service by external model");
         ExternalModelStatistics externalModelStatistics = new ExternalModelStatistics();
         ExternalModelStrategy externalModelStrategy = new ExternalModelStrategy(this,
                 new Random(1), schedulerConfiguration.getTraceDir(), externalModelStatistics);
@@ -1058,7 +1058,7 @@ public class TestingService implements TestingRemoteService {
      * @throws IOException
      */
     public void startWithEventSequence() throws SchedulerConfigurationException, IOException {
-        LOG.debug("Starting the testing service by external model");
+        LOG.debug("Starting the replay service by external model");
         ExternalModelStatistics externalModelStatistics = new ExternalModelStatistics();
         EventSequenceStrategy eventSequenceStrategy = new EventSequenceStrategy(this, new Random(1), schedulerConfiguration.getTraceDir(), externalModelStatistics);
 
@@ -1334,13 +1334,13 @@ public class TestingService implements TestingRemoteService {
 
     public void initRemote() {
         try {
-            final TestingRemoteService testingRemoteService = (TestingRemoteService) UnicastRemoteObject.exportObject(this, 0);
+            final RemoteService remoteService = (RemoteService) UnicastRemoteObject.exportObject(this, 0);
             final Registry registry = LocateRegistry.createRegistry(2599);
 //            final Registry registry = LocateRegistry.getRegistry(2599);
             System.out.println("\n\n\n\n\n");
-            LOG.debug("{}, {}", TestingRemoteService.REMOTE_NAME, testingRemoteService);
-            registry.rebind(TestingRemoteService.REMOTE_NAME, testingRemoteService);
-            LOG.debug("Bound the remote testing service. ");
+            LOG.debug("{}, {}", RemoteService.REMOTE_NAME, remoteService);
+            registry.rebind(RemoteService.REMOTE_NAME, remoteService);
+            LOG.debug("Bound the remote replay service. ");
         } catch (final RemoteException e) {
             LOG.error("Encountered a remote exception while initializing the scheduler.", e);
             throw new RuntimeException(e);
@@ -1445,7 +1445,7 @@ public class TestingService implements TestingRemoteService {
     }
 
     /***
-     * Configure all testing metadata before each execution
+     * Configure all replay metadata before each execution
      */
     private void configureNextExecution() {
 
@@ -1579,7 +1579,7 @@ public class TestingService implements TestingRemoteService {
     }
 
     /***
-     * Configure all testing metadata after election
+     * Configure all replay metadata after election
      */
     private void configureAfterElection(String serverList) {
         // Initialize zkClients

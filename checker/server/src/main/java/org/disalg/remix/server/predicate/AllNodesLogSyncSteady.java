@@ -1,7 +1,7 @@
 package org.disalg.remix.server.predicate;
 
 import org.disalg.remix.api.SubnodeState;
-import org.disalg.remix.server.TestingService;
+import org.disalg.remix.server.ReplayService;
 import org.disalg.remix.api.NodeState;
 import org.disalg.remix.api.SubnodeType;
 import org.disalg.remix.server.state.Subnode;
@@ -17,16 +17,16 @@ public class AllNodesLogSyncSteady implements WaitPredicate {
 
     private static final Logger LOG = LoggerFactory.getLogger(AllNodesLogSyncSteady.class);
 
-    private final TestingService testingService;
+    private final ReplayService replayService;
 
-    public AllNodesLogSyncSteady(final TestingService testingService) {
-        this.testingService = testingService;
+    public AllNodesLogSyncSteady(final ReplayService replayService) {
+        this.replayService = replayService;
     }
 
     @Override
     public boolean isTrue() {
-        for (int nodeId = 0; nodeId < testingService.getSchedulerConfiguration().getNumNodes(); ++nodeId) {
-            final NodeState nodeState = testingService.getNodeStates().get(nodeId);
+        for (int nodeId = 0; nodeId < replayService.getSchedulerConfiguration().getNumNodes(); ++nodeId) {
+            final NodeState nodeState = replayService.getNodeStates().get(nodeId);
             if (NodeState.STARTING.equals(nodeState) || NodeState.STOPPING.equals(nodeState)) {
                 LOG.debug("------Not steady-----Node {} status: {}",
                         nodeId, nodeState);
@@ -36,7 +36,7 @@ public class AllNodesLogSyncSteady implements WaitPredicate {
                 LOG.debug("-----------Node {} status: {}",
                         nodeId, nodeState);
             }
-            for (final Subnode subnode : testingService.getSubnodeSets().get(nodeId)) {
+            for (final Subnode subnode : replayService.getSubnodeSets().get(nodeId)) {
                 if (SubnodeType.SYNC_PROCESSOR.equals(subnode.getSubnodeType()) &&
                         !SubnodeState.SENDING.equals(subnode.getState())) {
                     LOG.debug("------Not steady for sync thread-----" +

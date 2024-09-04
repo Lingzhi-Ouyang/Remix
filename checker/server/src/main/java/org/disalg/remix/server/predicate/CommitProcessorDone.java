@@ -1,7 +1,7 @@
 package org.disalg.remix.server.predicate;
 
 import org.disalg.remix.api.NodeState;
-import org.disalg.remix.server.TestingService;
+import org.disalg.remix.server.ReplayService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -9,14 +9,14 @@ public class CommitProcessorDone implements WaitPredicate{
 
     private static final Logger LOG = LoggerFactory.getLogger(CommitProcessorDone.class);
 
-    private final TestingService testingService;
+    private final ReplayService replayService;
 
     private final int msgId;
     private final int nodeId;
     private final long lastZxid;
 
-    public CommitProcessorDone(final TestingService testingService,final int msgId, final int nodeId, final long lastZxid) {
-        this.testingService = testingService;
+    public CommitProcessorDone(final ReplayService replayService, final int msgId, final int nodeId, final long lastZxid) {
+        this.replayService = replayService;
         this.msgId = msgId;
         this.nodeId = nodeId;
         this.lastZxid = lastZxid;
@@ -24,8 +24,8 @@ public class CommitProcessorDone implements WaitPredicate{
 
     @Override
     public boolean isTrue() {
-        return testingService.getLastProcessedZxid(nodeId) > lastZxid
-                || NodeState.STOPPING.equals(testingService.getNodeStates().get(nodeId));
+        return replayService.getLastProcessedZxid(nodeId) > lastZxid
+                || NodeState.STOPPING.equals(replayService.getNodeStates().get(nodeId));
     }
 
     @Override

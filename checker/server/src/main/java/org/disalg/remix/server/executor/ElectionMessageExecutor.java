@@ -3,7 +3,7 @@ package org.disalg.remix.server.executor;
 import org.disalg.remix.api.SubnodeState;
 import org.disalg.remix.api.SubnodeType;
 import org.disalg.remix.api.TestingDef;
-import org.disalg.remix.server.TestingService;
+import org.disalg.remix.server.ReplayService;
 import org.disalg.remix.server.event.ElectionMessageEvent;
 import org.disalg.remix.server.state.Subnode;
 import org.slf4j.Logger;
@@ -15,10 +15,10 @@ public class ElectionMessageExecutor extends BaseEventExecutor {
 
     private static final Logger LOG = LoggerFactory.getLogger(ElectionMessageExecutor.class);
 
-    private final TestingService testingService;
+    private final ReplayService replayService;
 
-    public ElectionMessageExecutor(final TestingService testingService) {
-        this.testingService = testingService;
+    public ElectionMessageExecutor(final ReplayService replayService) {
+        this.replayService = replayService;
     }
 
     @Override
@@ -29,8 +29,8 @@ public class ElectionMessageExecutor extends BaseEventExecutor {
         }
         LOG.debug("Releasing message: {}", event.toString());
         releaseMessage(event);
-        testingService.getControlMonitor().notifyAll();
-        testingService.waitAllNodesSteady();
+        replayService.getControlMonitor().notifyAll();
+        replayService.waitAllNodesSteady();
         event.setExecuted();
         LOG.debug("Message executed: {}\n\n\n", event.toString());
         return true;
@@ -43,8 +43,8 @@ public class ElectionMessageExecutor extends BaseEventExecutor {
      * @param event
      */
     public void releaseMessage(final ElectionMessageEvent event) {
-        testingService.setMessageInFlight(event.getId());
-        final Subnode sendingSubnode = testingService.getSubnodes().get(event.getSendingSubnodeId());
+        replayService.setMessageInFlight(event.getId());
+        final Subnode sendingSubnode = replayService.getSubnodes().get(event.getSendingSubnodeId());
 
         // set the sending subnode to be PROCESSING
         sendingSubnode.setState(SubnodeState.PROCESSING);
@@ -56,14 +56,14 @@ public class ElectionMessageExecutor extends BaseEventExecutor {
         // if in partition, then just drop it
         final int sendingNodeId = sendingSubnode.getNodeId();
         final int receivingNodeId = event.getReceivingNodeId();
-        if (testingService.getPartitionMap().get(sendingNodeId).get(receivingNodeId)
+        if (replayService.getPartitionMap().get(sendingNodeId).get(receivingNodeId)
                 || event.getFlag() == TestingDef.RetCode.NODE_PAIR_IN_PARTITION) {
             return;
         }
 
         // not in partition, so the message can be received
         // set the receiving subnode to be PROCESSING
-        for (final Subnode subnode : testingService.getSubnodeSets().get(event.getReceivingNodeId())) {
+        for (final Subnode subnode : replayService.getSubnodeSets().get(event.getReceivingNodeId())) {
             // ATTENTION: this is only for election
             if (subnode.getSubnodeType() == SubnodeType.WORKER_RECEIVER
                     && SubnodeState.RECEIVING.equals(subnode.getState())) {

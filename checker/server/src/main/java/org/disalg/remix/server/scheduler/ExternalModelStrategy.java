@@ -4,7 +4,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import org.disalg.remix.api.*;
 import org.disalg.remix.api.configuration.SchedulerConfigurationException;
-import org.disalg.remix.server.TestingService;
+import org.disalg.remix.server.ReplayService;
 import org.disalg.remix.server.event.Event;
 import org.disalg.remix.server.event.FollowerToLeaderMessageEvent;
 import org.disalg.remix.server.event.LeaderToFollowerMessageEvent;
@@ -22,7 +22,7 @@ import java.util.*;
 public class ExternalModelStrategy implements SchedulingStrategy{
     private static final Logger LOG = LoggerFactory.getLogger(ExternalModelStrategy.class);
 
-    private final TestingService testingService;
+    private final ReplayService replayService;
 
     private final Random random;
 
@@ -38,8 +38,8 @@ public class ExternalModelStrategy implements SchedulingStrategy{
 
     private final ExternalModelStatistics statistics;
 
-    public ExternalModelStrategy(TestingService testingService, Random random, File dir, final ExternalModelStatistics statistics) throws SchedulerConfigurationException {
-        this.testingService = testingService;
+    public ExternalModelStrategy(ReplayService replayService, Random random, File dir, final ExternalModelStatistics statistics) throws SchedulerConfigurationException {
+        this.replayService = replayService;
         this.random = random;
         this.dir = dir;
         this.files = new File(String.valueOf(dir)).listFiles();
@@ -283,7 +283,7 @@ public class ExternalModelStrategy implements SchedulingStrategy{
                 final LeaderToFollowerMessageEvent event = (LeaderToFollowerMessageEvent) e;
                 final int receivingNodeId = event.getReceivingNodeId();
                 final int sendingSubnodeId = event.getSendingSubnodeId();
-                final Subnode sendingSubnode = testingService.getSubnodes().get(sendingSubnodeId);
+                final Subnode sendingSubnode = replayService.getSubnodes().get(sendingSubnodeId);
                 final int sendingNodeId = sendingSubnode.getNodeId();
                 if (sendingNodeId != leaderId || receivingNodeId != followerId) continue;
                 final int type = event.getType();
@@ -308,7 +308,7 @@ public class ExternalModelStrategy implements SchedulingStrategy{
                         if (!checkZxidConformance(modelZxid, event.getZxid())) continue;
                         break;
                     case MessageType.PROPOSAL:
-                        if (testingService.getNodePhases().get(followerId).equals(Phase.SYNC)) {
+                        if (replayService.getNodePhases().get(followerId).equals(Phase.SYNC)) {
                             if (!action.equals(ModelAction.FollowerProcessPROPOSALInSync)) continue;
                         } else {
                             if (!action.equals(ModelAction.LeaderToFollowerProposal)) continue;
@@ -316,7 +316,7 @@ public class ExternalModelStrategy implements SchedulingStrategy{
                         if (!checkZxidConformance(modelZxid, event.getZxid())) continue;
                         break;
                     case MessageType.COMMIT:
-                        if (testingService.getNodePhases().get(followerId).equals(Phase.SYNC)) {
+                        if (replayService.getNodePhases().get(followerId).equals(Phase.SYNC)) {
                             if (!action.equals(ModelAction.FollowerProcessCOMMITInSync)) continue;
                         } else {
                             if (!action.equals(ModelAction.LeaderToFollowerCOMMIT)) continue;
@@ -352,7 +352,7 @@ public class ExternalModelStrategy implements SchedulingStrategy{
                 final FollowerToLeaderMessageEvent event = (FollowerToLeaderMessageEvent) e;
                 final int receivingNodeId = event.getReceivingNodeId();
                 final int sendingSubnodeId = event.getSendingSubnodeId();
-                final Subnode sendingSubnode = testingService.getSubnodes().get(sendingSubnodeId);
+                final Subnode sendingSubnode = replayService.getSubnodes().get(sendingSubnodeId);
                 final int sendingNodeId = sendingSubnode.getNodeId();
                 if (sendingNodeId != followerId || receivingNodeId != leaderId) continue;
                 final int lastReadType = event.getType(); // Note: this describes leader's previous message type that this ACK replies to
@@ -400,7 +400,7 @@ public class ExternalModelStrategy implements SchedulingStrategy{
                         LOG.debug("LeaderSyncFollower: {}, {}", subnodeType, type);
                         if (!subnodeType.equals(SubnodeType.LEARNER_HANDLER)
                                 || type != TestingDef.MessageType.ACKEPOCH) continue;
-                        final int followerNodeId = testingService.getFollowerSocketAddressBook().indexOf(event.getPayload());
+                        final int followerNodeId = replayService.getFollowerSocketAddressBook().indexOf(event.getPayload());
                         if (sendingNodeId != followerNodeId) continue;
                         break;
                     case FollowerLogRequestWhenProcessingNEWLEADER:
@@ -414,11 +414,11 @@ public class ExternalModelStrategy implements SchedulingStrategy{
                         // since leaderLog always come first, here record the zxid mapping from model to code
                         // store model zxid for conformance checking later
                         if (modelZxid > 0) {
-                            testingService.getModelToCodeZxidMap().put(modelZxid, eventZxid);
+                            replayService.getModelToCodeZxidMap().put(modelZxid, eventZxid);
                             LOG.debug("LeaderLog, check getModelToCodeZxidMap: " +
                                             "modelZxid: {}-->CodeZxid: {}, eventZxid: {}",
                                     Long.toHexString(modelZxid),
-                                    Long.toHexString(testingService.getModelToCodeZxidMap().get(modelZxid)),
+                                    Long.toHexString(replayService.getModelToCodeZxidMap().get(modelZxid)),
                                     Long.toHexString(event.getZxid()));
                         } else {
                             LOG.debug("modelZxid {} < 0: no need to store model zxid for conformance checking",
@@ -450,12 +450,12 @@ public class ExternalModelStrategy implements SchedulingStrategy{
     private boolean checkZxidConformance(final long modelZxid, final long eventZxid) {
         // check the equality between zxid mapping from model to code
         // cases for conformance checking
-        if (modelZxid > 0 && testingService.getModelToCodeZxidMap().containsKey(modelZxid)) {
+        if (modelZxid > 0 && replayService.getModelToCodeZxidMap().containsKey(modelZxid)) {
             LOG.debug("-->> check getModelToCodeZxidMap: modelZxid: {} --> CodeZxid: {}. eventZxid: {}",
                     Long.toHexString(modelZxid),
-                    Long.toHexString(testingService.getModelToCodeZxidMap().get(modelZxid)),
+                    Long.toHexString(replayService.getModelToCodeZxidMap().get(modelZxid)),
                     Long.toHexString(eventZxid));
-            return eventZxid == testingService.getModelToCodeZxidMap().get(modelZxid);
+            return eventZxid == replayService.getModelToCodeZxidMap().get(modelZxid);
         } else {
             LOG.debug("-->> modelZxid {} < 0 or no record: no need for conformance checking", Long.toHexString(modelZxid));
             return true;

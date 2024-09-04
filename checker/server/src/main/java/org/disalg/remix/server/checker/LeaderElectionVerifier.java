@@ -1,6 +1,6 @@
 package org.disalg.remix.server.checker;
 
-import org.disalg.remix.server.TestingService;
+import org.disalg.remix.server.ReplayService;
 import org.disalg.remix.server.statistics.Statistics;
 import org.disalg.remix.api.NodeState;
 import org.disalg.remix.api.state.LeaderElectionState;
@@ -14,20 +14,20 @@ public class LeaderElectionVerifier implements Verifier {
 
     private static final Logger LOG = LoggerFactory.getLogger(LeaderElectionVerifier.class);
 
-    private final TestingService testingService;
+    private final ReplayService replayService;
     private final Statistics statistics;
     private Integer modelResult;
     private Set<Integer> participants;
 
-    public LeaderElectionVerifier(final TestingService testingService, Statistics statistics) {
-        this.testingService = testingService;
+    public LeaderElectionVerifier(final ReplayService replayService, Statistics statistics) {
+        this.replayService = replayService;
         this.statistics = statistics;
         this.modelResult = null;
         this.participants = null;
     }
 
-    public LeaderElectionVerifier(final TestingService testingService, Statistics statistics, final Set<Integer> participants) {
-        this.testingService = testingService;
+    public LeaderElectionVerifier(final ReplayService replayService, Statistics statistics, final Set<Integer> participants) {
+        this.replayService = replayService;
         this.statistics = statistics;
         this.modelResult = null;
         this.participants = participants;
@@ -51,18 +51,18 @@ public class LeaderElectionVerifier implements Verifier {
         int leader = -1;
         boolean consensus = true;
         String matchModel = "UNMATCHED";
-        for (int nodeId = 0; nodeId < testingService.getSchedulerConfiguration().getNumNodes(); ++nodeId) {
+        for (int nodeId = 0; nodeId < replayService.getSchedulerConfiguration().getNumNodes(); ++nodeId) {
             if (!participants.contains(nodeId)){
                 continue;
             }
             LOG.debug("--------------->Node Id: {}, NodeState: {}, " +
                             "leader: {},  isLeading: {}, " +
                             "isObservingOrFollowing:{}, {}, " +
-                            "vote: {}",nodeId, testingService.getNodeStates().get(nodeId), leader,
+                            "vote: {}",nodeId, replayService.getNodeStates().get(nodeId), leader,
                     isLeading(nodeId), isObservingOrFollowing(nodeId),
-                    isObservingOrFollowing(nodeId, leader), testingService.getVotes().get(nodeId)
+                    isObservingOrFollowing(nodeId, leader), replayService.getVotes().get(nodeId)
             );
-            if (NodeState.OFFLINE.equals(testingService.getNodeStates().get(nodeId))) {
+            if (NodeState.OFFLINE.equals(replayService.getNodeStates().get(nodeId))) {
                 continue;
             }
 
@@ -78,7 +78,7 @@ public class LeaderElectionVerifier implements Verifier {
                 leader = nodeId;
             }
             else if (leader == -1 && isObservingOrFollowing(nodeId)) {
-                final Vote vote = testingService.getVotes().get(nodeId);
+                final Vote vote = replayService.getVotes().get(nodeId);
                 if (vote == null) {
                     consensus = false;
                     break;
@@ -97,7 +97,7 @@ public class LeaderElectionVerifier implements Verifier {
             matchModel = "MATCHED";
         }
         if (matchModel.equals("UNMATCHED")) {
-            testingService.traceMatched = false;
+            replayService.traceMatched = false;
         }
         if (leader != -1 && consensus) {
             statistics.reportResult("ELECTION:SUCCESS:" + matchModel);
@@ -105,31 +105,31 @@ public class LeaderElectionVerifier implements Verifier {
         }
         else {
             statistics.reportResult("ELECTION:FAILURE:" + matchModel);
-            testingService.tracePassed = false;
+            replayService.tracePassed = false;
             return false;
         }
     }
 
     private boolean isLeading(final int nodeId) {
-        final LeaderElectionState state = testingService.getLeaderElectionStates().get(nodeId);
-        final Vote vote = testingService.getVotes().get(nodeId);
+        final LeaderElectionState state = replayService.getLeaderElectionStates().get(nodeId);
+        final Vote vote = replayService.getVotes().get(nodeId);
         // Node's state is LEADING and it has itself as the leader in the final vote
         return LeaderElectionState.LEADING.equals(state)
                 && vote != null && nodeId == (int) vote.getLeader();
     }
 
     private boolean isObservingOrFollowing(final int nodeId, final int leader) {
-        final Vote vote = testingService.getVotes().get(nodeId);
+        final Vote vote = replayService.getVotes().get(nodeId);
         // Node's state is FOLLOWING or OBSERVING and it has leader as the leader in the final vote
         return isObservingOrFollowing(nodeId) && vote != null && leader == (int) vote.getLeader();
     }
 
     private boolean isObservingOrFollowing(final int nodeId) {
-        final LeaderElectionState state = testingService.getLeaderElectionStates().get(nodeId);
+        final LeaderElectionState state = replayService.getLeaderElectionStates().get(nodeId);
         return (LeaderElectionState.FOLLOWING.equals(state) || LeaderElectionState.OBSERVING.equals(state));
     }
 
     private boolean isLooking(final int nodeId) {
-        return LeaderElectionState.LOOKING.equals(testingService.getLeaderElectionStates().get(nodeId));
+        return LeaderElectionState.LOOKING.equals(replayService.getLeaderElectionStates().get(nodeId));
     }
 }

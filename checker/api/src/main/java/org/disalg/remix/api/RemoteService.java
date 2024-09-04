@@ -7,9 +7,9 @@ import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.Set;
 
-public interface TestingRemoteService extends Remote {
+public interface RemoteService extends Remote {
 
-    String REMOTE_NAME = "TestingRemoteService";
+    String REMOTE_NAME = "RemoteService";
 
     /**
      * Registers a subnode of a node. This is usually a thread within the node that sends and receives messages.

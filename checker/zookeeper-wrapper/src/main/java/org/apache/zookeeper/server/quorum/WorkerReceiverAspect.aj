@@ -67,7 +67,7 @@ public aspect WorkerReceiverAspect {
             // before offerMessage: increase sendingSubnodeNum
             quorumPeerAspect.setSubnodeSending();
             final String payload = quorumPeerAspect.constructPayload(toSend);
-            lastSentMessageId = quorumPeerAspect.getTestingService().offerElectionMessage(workerReceiverSubnodeId,
+            lastSentMessageId = quorumPeerAspect.getRemoteService().offerElectionMessage(workerReceiverSubnodeId,
                     (int) toSend.sid, toSend.electionEpoch, (int) toSend.leader, predecessorIds, payload);
             LOG.debug("lastSentMessageId = {}", lastSentMessageId);
             // after offerMessage: decrease sendingSubnodeNum and shutdown this node if sendingSubnodeNum == 0
@@ -77,7 +77,7 @@ public aspect WorkerReceiverAspect {
                 // just drop the message
                 LOG.debug("partition occurs! just drop the message.");
 
-                quorumPeerAspect.getTestingService().setReceivingState(workerReceiverSubnodeId);
+                quorumPeerAspect.getRemoteService().setReceivingState(workerReceiverSubnodeId);
                 // confirm the return value
                 return false;
             }
@@ -98,7 +98,7 @@ public aspect WorkerReceiverAspect {
 
     before(final Object object): forwardNotification(object) {
         try {
-            quorumPeerAspect.getTestingService().setProcessingState(quorumPeerAspect.getQuorumPeerSubnodeId());
+            quorumPeerAspect.getRemoteService().setProcessingState(quorumPeerAspect.getQuorumPeerSubnodeId());
         } catch (final RemoteException e) {
             LOG.debug("Encountered a remote exception", e);
             throw new RuntimeException(e);
@@ -116,7 +116,7 @@ public aspect WorkerReceiverAspect {
             // Going to block here. Better notify the scheduler
             LOG.debug("My QCM.recvQueue is empty, go to RECEIVING state");
             try {
-                quorumPeerAspect.getTestingService().setReceivingState(workerReceiverSubnodeId);
+                quorumPeerAspect.getRemoteService().setReceivingState(workerReceiverSubnodeId);
             } catch (final RemoteException e) {
                 LOG.debug("Encountered a remote exception", e);
                 throw new RuntimeException(e);

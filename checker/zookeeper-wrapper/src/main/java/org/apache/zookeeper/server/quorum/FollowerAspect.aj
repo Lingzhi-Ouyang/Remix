@@ -43,9 +43,6 @@ public aspect FollowerAspect {
 
     }
 
-
-
-
     /***
      * For follower's writePacket In BROADCAST (partition will work on the process)
      * TO be confirmed: for now we only focus on SYNC_THREAD
@@ -84,36 +81,28 @@ public aspect FollowerAspect {
 
         }
         LOG.debug("Follower is about to reply a message type={} to leader's previous message (type={})", type, previousType);
-//        if (type == null) {
-//            LOG.debug("Follower is about to send a null message, may be a flush.");
-//            proceed(packet, flush);
-//            return;
-//        }
         // if lastReadType == -1, this means to send ACK that should be processed during SYNC.
         try {
             quorumPeerAspect.setSubnodeSending();
             LOG.debug(" before followerWritePacketId, lastReadType: {}", previousType);
-            final int followerWritePacketId = quorumPeerAspect.getTestingService().offerFollowerToLeaderMessage(syncSubnodeId, zxid, payload, previousType);
+            final int followerWritePacketId = quorumPeerAspect.getRemoteService().offerFollowerToLeaderMessage(syncSubnodeId, zxid, payload, previousType);
             LOG.debug("followerWritePacketId = {}", followerWritePacketId);
             // after offerMessage: decrease sendingSubnodeNum and shutdown this node if sendingSubnodeNum == 0
             quorumPeerAspect.postSend(syncSubnodeId, followerWritePacketId);
 
             // Trick: set RECEIVING state here
-            quorumPeerAspect.getTestingService().setReceivingState(syncSubnodeId);
+            quorumPeerAspect.getRemoteService().setReceivingState(syncSubnodeId);
 
             // to check if the partition happens
             if (followerWritePacketId == TestingDef.RetCode.NODE_PAIR_IN_PARTITION){
                 // just drop the message
                 LOG.debug("partition occurs! just drop the message.");
-//                throw new InterruptedException();
-//                return;
             }
 
             proceed(packet, flush);
             return;
         } catch (RemoteException | InterruptedException e) {
             LOG.debug("Encountered a remote exception", e);
-//            throw new RuntimeException(e);
         }
     }
 
@@ -144,29 +133,23 @@ public aspect FollowerAspect {
         final Integer type =  packet == null ? null : packet.getType();
         final Long zxid = packet == null ? null : packet.getZxid();
         LOG.debug("Follower is about to reply a message type={} to leader's previous message (type=PING)", type);
-//        if (type == null) {
-//            LOG.debug("Follower is about to send a null message, may be a flush.");
-//            proceed(packet, flush);
-//            return;
-//        }
         try {
             quorumPeerAspect.setSubnodeSending();
             LOG.debug(" before followerWritePacketId in writePacketInPING");
-            final int followerWritePacketId = quorumPeerAspect.getTestingService()
+            final int followerWritePacketId = quorumPeerAspect.getRemoteService()
                     .offerFollowerToLeaderMessage(quorumPeerSubnodeId, zxid, payload, MessageType.PING);
             LOG.debug("in writePacketInPING, followerWritePacketId = {}", followerWritePacketId);
             // after offerMessage: decrease sendingSubnodeNum and shutdown this node if sendingSubnodeNum == 0
             quorumPeerAspect.postSend(quorumPeerSubnodeId, followerWritePacketId);
 
             // Trick: set RECEIVING state here
-            quorumPeerAspect.getTestingService().setReceivingState(quorumPeerSubnodeId);
+            quorumPeerAspect.getRemoteService().setReceivingState(quorumPeerSubnodeId);
 
             // to check if the partition happens
             if (followerWritePacketId == TestingDef.RetCode.NODE_PAIR_IN_PARTITION){
                 // just drop the message
                 LOG.debug("partition occurs! just drop the message.");
                 throw new InterruptedException();
-//                return;
             }
 
             proceed(packet, flush);

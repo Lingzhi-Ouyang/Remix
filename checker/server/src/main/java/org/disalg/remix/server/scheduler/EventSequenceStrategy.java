@@ -1,11 +1,11 @@
 package org.disalg.remix.server.scheduler;
 
+import org.disalg.remix.server.ReplayService;
 import org.disalg.remix.server.event.LeaderToFollowerMessageEvent;
 import org.disalg.remix.server.event.LocalEvent;
 import org.disalg.remix.api.MessageType;
 import org.disalg.remix.api.SubnodeType;
 import org.disalg.remix.api.configuration.SchedulerConfigurationException;
-import org.disalg.remix.server.TestingService;
 import org.disalg.remix.server.event.Event;
 import org.disalg.remix.server.state.Subnode;
 import org.disalg.remix.server.statistics.ExternalModelStatistics;
@@ -20,7 +20,7 @@ public class EventSequenceStrategy implements SchedulingStrategy{
 
     private static final Logger LOG = LoggerFactory.getLogger(EventSequenceStrategy.class);
 
-    private final TestingService testingService;
+    private final ReplayService replayService;
 
     private final Random random;
 
@@ -36,8 +36,8 @@ public class EventSequenceStrategy implements SchedulingStrategy{
 
     private final ExternalModelStatistics statistics;
 
-    public EventSequenceStrategy(TestingService testingService, Random random, File dir, final ExternalModelStatistics statistics) throws SchedulerConfigurationException {
-        this.testingService = testingService;
+    public EventSequenceStrategy(ReplayService replayService, Random random, File dir, final ExternalModelStatistics statistics) throws SchedulerConfigurationException {
+        this.replayService = replayService;
         this.random = random;
         this.dir = dir;
         this.files = new File(String.valueOf(dir)).listFiles();
@@ -267,7 +267,7 @@ public class EventSequenceStrategy implements SchedulingStrategy{
                 final int s2 = Integer.parseInt(lineArr[2]);
                 final int receivingNodeId = event.getReceivingNodeId();
                 final int sendingSubnodeId = event.getSendingSubnodeId();
-                final Subnode sendingSubnode = testingService.getSubnodes().get(sendingSubnodeId);
+                final Subnode sendingSubnode = replayService.getSubnodes().get(sendingSubnodeId);
                 final int sendingNodeId = sendingSubnode.getNodeId();
                 if (sendingNodeId != s1 || receivingNodeId != s2) continue;
 

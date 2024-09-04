@@ -1,30 +1,30 @@
 package org.disalg.remix.server.predicate;
 
 import org.disalg.remix.api.NodeState;
-import org.disalg.remix.server.TestingService;
+import org.disalg.remix.server.ReplayService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class CurrentEpochFileUpdated implements WaitPredicate{
     private static final Logger LOG = LoggerFactory.getLogger(CurrentEpochFileUpdated.class);
 
-    private final TestingService testingService;
+    private final ReplayService replayService;
 
     private final int nodeId;
     private final long acceptedEpoch;
 
-    public CurrentEpochFileUpdated(final TestingService testingService,
+    public CurrentEpochFileUpdated(final ReplayService replayService,
                                    final int nodeId,
                                    final long acceptedEpoch) {
-        this.testingService = testingService;
+        this.replayService = replayService;
         this.nodeId = nodeId;
         this.acceptedEpoch = acceptedEpoch;
     }
 
     @Override
     public boolean isTrue() {
-        return testingService.getCurrentEpoch(nodeId) == acceptedEpoch
-                || NodeState.STOPPING.equals(testingService.getNodeStates().get(nodeId));
+        return replayService.getCurrentEpoch(nodeId) == acceptedEpoch
+                || NodeState.STOPPING.equals(replayService.getNodeStates().get(nodeId));
     }
 
     @Override

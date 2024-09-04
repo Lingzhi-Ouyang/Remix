@@ -1,6 +1,6 @@
 package org.disalg.remix.zookeeper;
 
-import org.disalg.remix.server.TestingService;
+import org.disalg.remix.server.ReplayService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -33,8 +33,8 @@ public class ZookeeperSpringConfig {
     }
 
     @Bean
-    public TestingService testingService() {
-        return new TestingService();
+    public ReplayService replayService() {
+        return new ReplayService();
     }
 
 }

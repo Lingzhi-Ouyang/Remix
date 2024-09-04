@@ -1,6 +1,6 @@
 package org.disalg.remix.server.executor;
 
-import org.disalg.remix.server.TestingService;
+import org.disalg.remix.server.ReplayService;
 import org.disalg.remix.server.event.NodeCrashEvent;
 import org.disalg.remix.server.event.NodeStartEvent;
 
@@ -8,12 +8,12 @@ import java.io.IOException;
 
 public class NodeCrashExecutor extends BaseEventExecutor {
 
-    private final TestingService testingService;
+    private final ReplayService replayService;
 
     private int crashBudget;
 
-    public NodeCrashExecutor(final TestingService testingService, final int crashBudget) {
-        this.testingService = testingService;
+    public NodeCrashExecutor(final ReplayService replayService, final int crashBudget) {
+        this.replayService = replayService;
         this.crashBudget = crashBudget;
     }
 
@@ -25,14 +25,14 @@ public class NodeCrashExecutor extends BaseEventExecutor {
             if (!event.hasLabel()) {
                 decrementCrashes();
             }
-            if (testingService.getNodeStartExecutor().hasReboots()) {
-                final NodeStartEvent nodeStartEvent = new NodeStartEvent(testingService.generateEventId(), nodeId, testingService.getNodeStartExecutor());
+            if (replayService.getNodeStartExecutor().hasReboots()) {
+                final NodeStartEvent nodeStartEvent = new NodeStartEvent(replayService.generateEventId(), nodeId, replayService.getNodeStartExecutor());
                 nodeStartEvent.addDirectPredecessor(event);
-                testingService.addEvent(nodeStartEvent);
+                replayService.addEvent(nodeStartEvent);
             }
-            testingService.stopNode(nodeId);
-            testingService.getControlMonitor().notifyAll();
-            testingService.waitAllNodesSteady();
+            replayService.stopNode(nodeId);
+            replayService.getControlMonitor().notifyAll();
+            replayService.waitAllNodesSteady();
             truelyExecuted = true;
         }
         event.setExecuted();

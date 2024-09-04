@@ -2,7 +2,7 @@ package org.disalg.remix.server.predicate;
 
 import org.disalg.remix.api.ModelAction;
 import org.disalg.remix.api.configuration.SchedulerConfigurationException;
-import org.disalg.remix.server.TestingService;
+import org.disalg.remix.server.ReplayService;
 import org.disalg.remix.server.event.Event;
 import org.disalg.remix.server.event.LocalEvent;
 import org.disalg.remix.server.scheduler.ExternalModelStrategy;
@@ -12,7 +12,7 @@ import org.slf4j.LoggerFactory;
 public class TargetInternalEventReady implements WaitPredicate{
     private static final Logger LOG = LoggerFactory.getLogger(TargetInternalEventReady.class);
 
-    private final TestingService testingService;
+    private final ReplayService replayService;
 
     private final ExternalModelStrategy externalModelStrategy;
 
@@ -26,13 +26,13 @@ public class TargetInternalEventReady implements WaitPredicate{
 
     private long modelZxid;
 
-    public TargetInternalEventReady(final TestingService testingService,
+    public TargetInternalEventReady(final ReplayService replayService,
                                     ExternalModelStrategy strategy,
                                     ModelAction action,
                                     Integer processingNodeId,
                                     Integer sendingNodeId,
                                     long modelZxid) {
-        this.testingService = testingService;
+        this.replayService = replayService;
         this.externalModelStrategy = strategy;
         this.modelAction = action;
         this.processingNodeId = processingNodeId;

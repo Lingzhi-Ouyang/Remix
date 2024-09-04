@@ -1,9 +1,9 @@
 package org.apache.zookeeper.server.quorum;
 
 import org.apache.zookeeper.server.Request;
+import org.disalg.remix.api.RemoteService;
 import org.disalg.remix.api.SubnodeType;
 import org.disalg.remix.api.TestingDef;
-import org.disalg.remix.api.TestingRemoteService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,26 +14,13 @@ public privileged aspect CommitProcessorAspect {
 
     private final QuorumPeerAspect quorumPeerAspect = QuorumPeerAspect.aspectOf();
 
-    private TestingRemoteService testingService;
+    private RemoteService remoteService;
 
     private int subnodeId;
 
     // Intercept starting the CommitProcessor thread
 
     pointcut runCommitProcessor(): execution(* CommitProcessor.run());
-
-//    before(): runCommitProcessor() {
-//        LOG.debug("-------before runCommitProcessor. Thread {}: {}------",Thread.currentThread().getId(), Thread.currentThread().getName());
-//        testingService = quorumPeerAspect.createRmiConnection();
-//        subnodeId = quorumPeerAspect.registerSubnode(testingService, SubnodeType.COMMIT_PROCESSOR);
-//        try {
-//            testingService.setReceivingState(subnodeId);
-//        } catch (final RemoteException e) {
-//            LOG.debug("Encountered a remote exception", e);
-//            throw new RuntimeException(e);
-//        }
-//
-//    }
 
     before(): runCommitProcessor() {
         final long threadId = Thread.currentThread().getId();
@@ -43,7 +30,7 @@ public privileged aspect CommitProcessorAspect {
                 Thread.currentThread().getId(), Thread.currentThread().getName(), SubnodeType.COMMIT_PROCESSOR);
         try{
             subnodeId = intercepter.getSubnodeId();
-            testingService = intercepter.getTestingService();
+            remoteService = intercepter.getRemoteService();
         } catch (RuntimeException e) {
             LOG.debug("--------catch exception: {}", e.toString());
             throw new RuntimeException(e);
@@ -51,12 +38,12 @@ public privileged aspect CommitProcessorAspect {
         if (subnodeId < 0) {
             LOG.debug("before runCommitProcessor-------Thread: {}, subnodeId < 0: {}, " +
                     "indicating the node is STOPPING or OFFLINE. " +
-                    "This subnode is not registered at the testing engine." +
+                    "This subnode is not registered at the replay engine." +
                     "------", threadId, subnodeId);
             return;
         }
         try {
-            testingService.setReceivingState(subnodeId);
+            remoteService.setReceivingState(subnodeId);
         } catch (final RemoteException e) {
             LOG.debug("Encountered a remote exception", e);
             throw new RuntimeException(e);
@@ -65,7 +52,7 @@ public privileged aspect CommitProcessorAspect {
 
     after(): runCommitProcessor() {
         LOG.debug("after runCommitProcessor");
-        quorumPeerAspect.deregisterSubnode(testingService, subnodeId, SubnodeType.COMMIT_PROCESSOR);
+        quorumPeerAspect.deregisterSubnode(remoteService, subnodeId, SubnodeType.COMMIT_PROCESSOR);
     }
 
     /***
@@ -74,58 +61,7 @@ public privileged aspect CommitProcessorAspect {
      *   --> FollowerProcessCOMMIT
      */
 
-//    // For version 3.4
-//    pointcut addToProcess(ArrayList queue, Object object):
-//            withincode(* org.apache.zookeeper.server.quorum.CommitProcessor.run())
-//                    && call(* ArrayList.add(java.lang.Object))
-//                    && if (object instanceof Request)
-//                    && target(queue) && args(object);
-
-//    before(ArrayList queue, Object object): addToProcess(queue, object) {
-//        final long threadId = Thread.currentThread().getId();
-//        final String threadName = Thread.currentThread().getName();
-//        LOG.debug("before advice of CommitProcessor.addToProcess()-------Thread: {}, {}------", threadId, threadName);
-//        final Request request = (Request) object;
-//        LOG.debug("--------------Before addToProcess {}: My toProcess has {} element. commitSubnode: {}",
-//                request, queue.size(), subnodeId);
-//        if (subnodeId == TestingDef.RetCode.NODE_CRASH) {
-//            LOG.debug("COMMIT threadId: {}, subnodeId == -1, indicating the node is STOPPING or OFFLINE", threadId);
-//            return;
-//        }
-//        final int type =  request.type;
-////        switch (type) {
-////            case TestingDef.OpCode.notification:
-////            case TestingDef.OpCode.getData:
-////            case TestingDef.OpCode.exists:
-////            case TestingDef.OpCode.check:
-////            case TestingDef.OpCode.getACL:
-////            case TestingDef.OpCode.getChildren:
-////            case TestingDef.OpCode.getChildren2:
-////            case TestingDef.OpCode.ping:
-////            case TestingDef.OpCode.setWatches:
-////                LOG.debug("Won't intercept toProcess request: {} ", request);
-////                return;
-////            default:
-////        }
-//        try {
-//            // before offerMessage: increase sendingSubnodeNum
-//            quorumPeerAspect.setSubnodeSending();
-//            final String payload = quorumPeerAspect.constructRequest(request);
-//            final long zxid = request.zxid;
-//            final int lastCommitRequestId =
-//                    testingService.offerLocalEvent(subnodeId, SubnodeType.COMMIT_PROCESSOR, zxid, payload, type);
-//            LOG.debug("lastCommitRequestId = {}", lastCommitRequestId);
-//            // after offerMessage: decrease sendingSubnodeNum and shutdown this node if sendingSubnodeNum == 0
-//            quorumPeerAspect.postSend(subnodeId, lastCommitRequestId);
-//            // set RECEIVING state
-//            testingService.setReceivingState(subnodeId);
-//        } catch (final RemoteException e) {
-//            LOG.debug("Encountered a remote exception", e);
-//            throw new RuntimeException(e);
-//        }
-//    }
-
-    // For version 3.6 & 3.7 & 3.8: multi-threads
+    // For version 3.6+: multi-threads
     pointcut processWrite(Request request):
             call(* org.apache.zookeeper.server.quorum.CommitProcessor.processWrite(Request))
             && args(request);
@@ -147,7 +83,7 @@ public privileged aspect CommitProcessorAspect {
         }
         if (subnodeId < 0) {
             LOG.debug("CommitProcessor threadId: {}, subnodeId == {}, indicating the node is STOPPING or OFFLINE. " +
-                            "This subnode is not registered at the testing engine.",
+                            "This subnode is not registered at the replay engine.",
                     threadId, subnodeId);
             return;
         }
@@ -164,13 +100,13 @@ public privileged aspect CommitProcessorAspect {
             final String payload = quorumPeerAspect.constructRequest(request);
             final long zxid = request.zxid;
             final int lastCommitRequestId =
-                    testingService.offerLocalEvent(subnodeId, SubnodeType.COMMIT_PROCESSOR, zxid, payload, type);
+                    remoteService.offerLocalEvent(subnodeId, SubnodeType.COMMIT_PROCESSOR, zxid, payload, type);
             intercepter.setLastMsgId(lastCommitRequestId);
             LOG.debug("lastCommitRequestId = {}", lastCommitRequestId);
             // after offerMessage: decrease sendingSubnodeNum and shutdown this node if sendingSubnodeNum == 0
             quorumPeerAspect.postSend(subnodeId, lastCommitRequestId);
             // set RECEIVING state
-            testingService.setReceivingState(subnodeId);
+            remoteService.setReceivingState(subnodeId);
 
             if (lastCommitRequestId == TestingDef.RetCode.BACK_TO_LOOKING) {
                 LOG.debug("Sync threadId: {}, event == -200, indicating the node is going to become looking", threadId);

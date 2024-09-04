@@ -1,7 +1,7 @@
 package org.disalg.remix.server.predicate;
 
 import org.disalg.remix.api.SubnodeState;
-import org.disalg.remix.server.TestingService;
+import org.disalg.remix.server.ReplayService;
 import org.disalg.remix.server.state.Subnode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,15 +12,15 @@ public class LeaderSyncReady implements WaitPredicate {
 
     private static final Logger LOG = LoggerFactory.getLogger(LeaderSyncReady.class);
 
-    private final TestingService testingService;
+    private final ReplayService replayService;
 
     private final int leaderId;
     private final List<Integer> peers;
 
-    public LeaderSyncReady(final TestingService testingService,
+    public LeaderSyncReady(final ReplayService replayService,
                            final int leaderId,
                            final List<Integer> peers) {
-        this.testingService = testingService;
+        this.replayService = replayService;
         this.leaderId = leaderId;
         this.peers = peers;
     }
@@ -28,15 +28,15 @@ public class LeaderSyncReady implements WaitPredicate {
     @Override
     public boolean isTrue() {
 //        // check if the follower's corresponding learner handler thread exists
-//        if (testingService.getLeaderSyncFollowerCountMap().get(leaderId) != 0) {
+//        if (replayService.getLeaderSyncFollowerCountMap().get(leaderId) != 0) {
 //            return false;
 //        }
-        List<Integer> followerLearnerHandlerMap = testingService.getFollowerLearnerHandlerMap();
+        List<Integer> followerLearnerHandlerMap = replayService.getFollowerLearnerHandlerMap();
 
         for (Integer peer: peers) {
             final Integer subnodeId = followerLearnerHandlerMap.get(peer);
             if (subnodeId == null) return false;
-            Subnode subnode = testingService.getSubnodes().get(subnodeId);
+            Subnode subnode = replayService.getSubnodes().get(subnodeId);
             if (!subnode.getState().equals(SubnodeState.SENDING)) {
                 return false;
             }
@@ -48,7 +48,7 @@ public class LeaderSyncReady implements WaitPredicate {
 //        assert peers != null;
 //        for (Integer nodeId: peers) {
 //            // check node state
-//            final NodeState nodeState = testingService.getNodeStates().get(nodeId);
+//            final NodeState nodeState = replayService.getNodeStates().get(nodeId);
 //            if (NodeState.STARTING.equals(nodeState) || NodeState.STOPPING.equals(nodeState)) {
 //                LOG.debug("------follower {} not steady to sync, status: {}\n", nodeId, nodeState);
 //                return false;
@@ -57,7 +57,7 @@ public class LeaderSyncReady implements WaitPredicate {
 //                LOG.debug("-----------follower {} status: {}", nodeId, nodeState);
 //            }
 //            // check subnode state
-//            for (final Subnode subnode : testingService.getSubnodeSets().get(nodeId)) {
+//            for (final Subnode subnode : replayService.getSubnodeSets().get(nodeId)) {
 //                if (subnode.getSubnodeType().equals(SubnodeType.QUORUM_PEER)) {
 //                    if (!SubnodeState.SENDING.equals(subnode.getState())) {
 //                        LOG.debug("------follower not steady to sync -----Node {} subnode {} status: {}, subnode type: {}\n",

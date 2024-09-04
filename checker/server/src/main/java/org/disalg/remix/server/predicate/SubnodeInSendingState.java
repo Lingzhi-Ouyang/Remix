@@ -2,7 +2,7 @@ package org.disalg.remix.server.predicate;
 
 import org.disalg.remix.api.SubnodeState;
 import org.disalg.remix.api.NodeState;
-import org.disalg.remix.server.TestingService;
+import org.disalg.remix.server.ReplayService;
 import org.disalg.remix.server.state.Subnode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,21 +10,21 @@ import org.slf4j.LoggerFactory;
 public class SubnodeInSendingState implements WaitPredicate{
     private static final Logger LOG = LoggerFactory.getLogger(SubnodeInSendingState.class);
 
-    private final TestingService testingService;
+    private final ReplayService replayService;
 
     private final int subnodeId;
 
-    public SubnodeInSendingState(final TestingService testingService,
+    public SubnodeInSendingState(final ReplayService replayService,
                                      final int subnodeId) {
-        this.testingService = testingService;
+        this.replayService = replayService;
         this.subnodeId = subnodeId;
     }
 
     @Override
     public boolean isTrue() {
-        final Subnode subnode = testingService.getSubnodes().get(subnodeId);
+        final Subnode subnode = replayService.getSubnodes().get(subnodeId);
         final int nodeId = subnode.getNodeId();
-        final NodeState nodeState = testingService.getNodeStates().get(nodeId);
+        final NodeState nodeState = replayService.getNodeStates().get(nodeId);
         if (NodeState.ONLINE.equals(nodeState)) {
             return SubnodeState.SENDING.equals(subnode.getState());
         }

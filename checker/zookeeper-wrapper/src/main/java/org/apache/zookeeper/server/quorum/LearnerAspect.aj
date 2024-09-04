@@ -48,20 +48,19 @@ public aspect LearnerAspect {
             lastReadType = Leader.LEADERINFO;
             quorumPeerAspect.setSubnodeSending();
             final long zxid = packet.getZxid();
-            final int followerWritePacketId = quorumPeerAspect.getTestingService().offerFollowerToLeaderMessage(quorumPeerSubnodeId, zxid, payload, lastReadType);
+            final int followerWritePacketId = quorumPeerAspect.getRemoteService().offerFollowerToLeaderMessage(quorumPeerSubnodeId, zxid, payload, lastReadType);
 
             // after offerMessage: decrease sendingSubnodeNum and shutdown this node if sendingSubnodeNum == 0
             quorumPeerAspect.postSend(quorumPeerSubnodeId, followerWritePacketId);
 
             // Trick: set RECEIVING state here
-            quorumPeerAspect.getTestingService().setReceivingState(quorumPeerSubnodeId);
+            quorumPeerAspect.getRemoteService().setReceivingState(quorumPeerSubnodeId);
 
             // to check if the partition happens
             if (followerWritePacketId == TestingDef.RetCode.NODE_PAIR_IN_PARTITION){
                 // just drop the message
                 LOG.debug("partition occurs! just drop the message.");
                 throw new IOException();
-//                return;
             }
 
             proceed(packet, flush);
@@ -100,7 +99,7 @@ public aspect LearnerAspect {
 
         // Set RECEIVING state since there is nowhere else to set
         try {
-            quorumPeerAspect.getTestingService().setReceivingState(quorumPeerSubnodeId);
+            quorumPeerAspect.getRemoteService().setReceivingState(quorumPeerSubnodeId);
         } catch (final RemoteException e) {
             LOG.debug("Encountered a remote exception", e);
             throw new RuntimeException(e);
@@ -168,7 +167,7 @@ public aspect LearnerAspect {
 
             quorumPeerAspect.setSubnodeSending();
             final long zxid = packet.getZxid();
-            final int followerWritePacketId = quorumPeerAspect.getTestingService()
+            final int followerWritePacketId = quorumPeerAspect.getRemoteService()
                     .offerFollowerToLeaderMessage(quorumPeerSubnodeId, zxid, payload, lastReadMessageType);
 
             // after offerMessage: decrease sendingSubnodeNum and shutdown this node if sendingSubnodeNum == 0
@@ -176,11 +175,11 @@ public aspect LearnerAspect {
 
             if (lastReadType == Leader.UPTODATE) {
                 quorumPeerAspect.setSyncFinished(true);
-                quorumPeerAspect.getTestingService().readyForBroadcast(quorumPeerSubnodeId);
+                quorumPeerAspect.getRemoteService().readyForBroadcast(quorumPeerSubnodeId);
             }
 
             // Trick: set RECEIVING state here
-            quorumPeerAspect.getTestingService().setReceivingState(quorumPeerSubnodeId);
+            quorumPeerAspect.getRemoteService().setReceivingState(quorumPeerSubnodeId);
 
             // to check if the partition happens
             if (followerWritePacketId == TestingDef.RetCode.NODE_PAIR_IN_PARTITION){

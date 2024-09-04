@@ -22,7 +22,7 @@ public aspect FollowerZooKeeperServerAspect {
     after(Request r) returning: followerLogRequest(r) {
         LOG.debug("----------followerLogRequest: {}", quorumPeerAspect.constructRequest(r));
         try {
-            quorumPeerAspect.getTestingService().setReceivingState(quorumPeerAspect.getQuorumPeerSubnodeId());
+            quorumPeerAspect.getRemoteService().setReceivingState(quorumPeerAspect.getQuorumPeerSubnodeId());
         } catch (RemoteException e) {
             LOG.debug("Encountered a remote exception", e);
             throw new RuntimeException(e);

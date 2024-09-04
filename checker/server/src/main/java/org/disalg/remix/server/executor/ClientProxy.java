@@ -1,7 +1,7 @@
 package org.disalg.remix.server.executor;
 
 import org.apache.zookeeper.*;
-import org.disalg.remix.server.TestingService;
+import org.disalg.remix.server.ReplayService;
 import org.disalg.remix.server.event.ClientRequestEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,7 +14,7 @@ public class ClientProxy extends Thread{
 
     private static final Logger LOG = LoggerFactory.getLogger(ClientProxy.class);
 
-    private final TestingService testingService;
+    private final ReplayService replayService;
 
     private final int clientId;
 
@@ -34,12 +34,12 @@ public class ClientProxy extends Thread{
     LinkedBlockingQueue<ClientRequestEvent> requestQueue = new LinkedBlockingQueue<>();
     LinkedBlockingQueue<String> responseQueue = new LinkedBlockingQueue<>();
 
-    public ClientProxy(final TestingService testingService){
+    public ClientProxy(final ReplayService replayService){
         this.primeConnection = false;
         this.ready = false;
         this.stop = false;
         this.done = false;
-        this.testingService = testingService;
+        this.replayService = replayService;
         this.requestQueue.clear();
         this.responseQueue.clear();
         this.clientId = count;
@@ -47,12 +47,12 @@ public class ClientProxy extends Thread{
         this.count++;
     }
 
-    public ClientProxy(final TestingService testingService, final int clientId, final String serverList){
+    public ClientProxy(final ReplayService replayService, final int clientId, final String serverList){
         this.primeConnection = false;
         this.ready = false;
         this.stop = false;
 
-        this.testingService = testingService;
+        this.replayService = replayService;
         this.serverList = serverList;
         this.requestQueue.clear();
         this.responseQueue.clear();
@@ -86,8 +86,8 @@ public class ClientProxy extends Thread{
             try {
                 zooKeeperClient = new ZooKeeperClient(this, serverList, true);
                 this.primeConnection = true;
-                synchronized (testingService.getControlMonitor()) {
-                    testingService.getControlMonitor().notifyAll();
+                synchronized (replayService.getControlMonitor()) {
+                    replayService.getControlMonitor().notifyAll();
                 }
                 zooKeeperClient.getCountDownLatch().await();
                 return true;
@@ -114,8 +114,8 @@ public class ClientProxy extends Thread{
         return responseQueue;
     }
 
-    public TestingService getTestingService() {
-        return testingService;
+    public ReplayService getReplayService() {
+        return replayService;
     }
 
     @Override
@@ -151,8 +151,8 @@ public class ClientProxy extends Thread{
 
         LOG.info("Thread {} is going to exit", currentThread().getName());
         done = true;
-        synchronized (testingService.getControlMonitor()) {
-            testingService.getControlMonitor().notifyAll();
+        synchronized (replayService.getControlMonitor()) {
+            replayService.getControlMonitor().notifyAll();
         }
     }
 
@@ -186,15 +186,15 @@ public class ClientProxy extends Thread{
                 break;
 
         }
-        synchronized (testingService.getControlMonitor()) {
+        synchronized (replayService.getControlMonitor()) {
 //            responseQueue.offer(event);
             LOG.debug("-------{} result: {}", event.getType(), event.getResult());
             try {
-                testingService.updateResponseForClientRequest(event);
+                replayService.updateResponseForClientRequest(event);
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            testingService.getControlMonitor().notifyAll();
+            replayService.getControlMonitor().notifyAll();
         }
     }
 }

@@ -48,12 +48,12 @@ public aspect LearnerHandlerAspect {
         if (subnodeId < 0) {
             LOG.debug("before runLearnerHandler-------Thread: {}, subnodeId < 0: {}, " +
                     "indicating the node is STOPPING or OFFLINE. " +
-                    "This subnode is not registered at the testing engine.\" +" +
+                    "This subnode is not registered at the replay engine.\" +" +
                     "------", threadId, subnodeId);
             return;
         }
         try {
-            intercepter.getTestingService().setReceivingState(subnodeId);
+            intercepter.getRemoteService().setReceivingState(subnodeId);
         } catch (final RemoteException e) {
             LOG.debug("Encountered a remote exception", e);
             throw new RuntimeException(e);
@@ -80,13 +80,7 @@ public aspect LearnerHandlerAspect {
 
     // intercept the sender thread created by a learner handler
 
-    // For version 3.4.X
-//    pointcut runLearnerHandlerSender(java.lang.Thread childThread):
-//            withincode(* org.apache.zookeeper.server.quorum.LearnerHandler.run())
-//                && call(* java.lang.Thread.start())
-//                && target(childThread);
-
-    // For version 3.5 & 3.6 & 3.7 & 3.8
+    // For version 3.5+
     pointcut runLearnerHandlerSender(java.lang.Thread childThread):
             withincode(* org.apache.zookeeper.server.quorum.LearnerHandler.startSendingPackets())
                     && call(* java.lang.Thread.start())
@@ -113,7 +107,7 @@ public aspect LearnerHandlerAspect {
         if (subnodeId < 0) {
             LOG.debug("before runLearnerHandlerSender-------Thread: {}, subnodeId < 0: {}, " +
                     "indicating the node is STOPPING or OFFLINE. " +
-                    "This subnode is not registered at the testing engine.\" +" +
+                    "This subnode is not registered at the replay engine.\" +" +
                     "------", threadId, subnodeId);
             return;
         }
@@ -147,7 +141,7 @@ public aspect LearnerHandlerAspect {
         }
         if (subnodeId < 0) {
             LOG.debug("LearnerHandler threadId: {}, subnodeId == {}, indicating the node is STOPPING or OFFLINE. " +
-                            "This subnode is not registered at the testing engine.",
+                            "This subnode is not registered at the replay engine.",
                     threadId, subnodeId);
             return;
         }
@@ -165,7 +159,7 @@ public aspect LearnerHandlerAspect {
             LOG.debug("--------------Checked empty! My queuedPackets has {} element. Set subnode {} to RECEIVING state." +
                     " Will be blocked until some packet enqueues", queue.size(), subnodeId);
             try {
-                intercepter.getTestingService().setReceivingState(subnodeId);
+                intercepter.getRemoteService().setReceivingState(subnodeId);
             } catch (final RemoteException e) {
                 LOG.debug("Encountered a remote exception", e);
                 throw new RuntimeException(e);
@@ -209,7 +203,7 @@ public aspect LearnerHandlerAspect {
         }
         if (subnodeId < 0) {
             LOG.debug("LearnerHandlerSender threadId: {}, subnodeId == {}, indicating the node is STOPPING or OFFLINE. " +
-                            "This subnode is not registered at the testing engine.",
+                            "This subnode is not registered at the replay engine.",
                     threadId, subnodeId);
             return;
         }
@@ -234,7 +228,7 @@ public aspect LearnerHandlerAspect {
 
             final String receivingAddr = threadName.split("-")[1];
             final long zxid = packet.getZxid();
-            final int lastPacketId = intercepter.getTestingService()
+            final int lastPacketId = intercepter.getRemoteService()
                     .offerLeaderToFollowerMessage(subnodeId, receivingAddr, zxid, payload, type);
             intercepter.setLastMsgId(lastPacketId);
             LOG.debug("lastPacketId = {}", lastPacketId);
@@ -247,7 +241,7 @@ public aspect LearnerHandlerAspect {
 
 
             // Trick: set RECEIVING state here
-            intercepter.getTestingService().setReceivingState(subnodeId);
+            intercepter.getRemoteService().setReceivingState(subnodeId);
 
             // to check if the partition happens
             if (lastPacketId == TestingDef.RetCode.NODE_PAIR_IN_PARTITION){
@@ -298,7 +292,7 @@ public aspect LearnerHandlerAspect {
         }
         if (subnodeId < 0) {
             LOG.debug("LearnerHandler threadId: {}, subnodeId == {}, indicating the node is STOPPING or OFFLINE. " +
-                            "This subnode is not registered at the testing engine.",
+                            "This subnode is not registered at the replay engine.",
                     threadId, subnodeId);
             return;
         }
@@ -314,7 +308,7 @@ public aspect LearnerHandlerAspect {
             quorumPeerAspect.setSubnodeSending(intercepter);
 
             final String receivingAddr = threadName.split("-")[1];
-            final int lastPacketId = intercepter.getTestingService().offerLeaderToFollowerMessage(
+            final int lastPacketId = intercepter.getRemoteService().offerLeaderToFollowerMessage(
                     subnodeId, receivingAddr, -1L, null, TestingDef.MessageType.learnerHandlerReadRecord);
             intercepter.setLastMsgId(lastPacketId);
             LOG.debug("learnerHandlerReadRecord lastPacketId = {}", lastPacketId);
@@ -322,7 +316,7 @@ public aspect LearnerHandlerAspect {
             quorumPeerAspect.postSend(intercepter, subnodeId, lastPacketId);
 
             // Trick: set RECEIVING state here
-            intercepter.getTestingService().setReceivingState(subnodeId);
+            intercepter.getRemoteService().setReceivingState(subnodeId);
 
             // to check if the partition happens
             if (lastPacketId == TestingDef.RetCode.NODE_PAIR_IN_PARTITION){
@@ -377,7 +371,7 @@ public aspect LearnerHandlerAspect {
         }
         if (subnodeId < 0) {
             LOG.debug("LearnerHandler threadId: {}, subnodeId == {}, indicating the node is STOPPING or OFFLINE. " +
-                            "This subnode is not registered at the testing engine.",
+                            "This subnode is not registered at the replay engine.",
                     threadId, subnodeId);
             return;
         }
@@ -403,7 +397,7 @@ public aspect LearnerHandlerAspect {
 
             final String receivingAddr = threadName.split("-")[1];
             final long zxid = packet.getZxid();
-            final int lastPacketId = intercepter.getTestingService()
+            final int lastPacketId = intercepter.getRemoteService()
                     .offerLeaderToFollowerMessage(subnodeId, receivingAddr, zxid, payload, type);
             intercepter.setLastMsgId(lastPacketId);
             LOG.debug("learnerHandlerWriteRecord lastPacketId = {}", lastPacketId);
@@ -411,7 +405,7 @@ public aspect LearnerHandlerAspect {
             quorumPeerAspect.postSend(intercepter, subnodeId, lastPacketId);
 
             // Trick: set RECEIVING state here
-            intercepter.getTestingService().setReceivingState(subnodeId);
+            intercepter.getRemoteService().setReceivingState(subnodeId);
 
             // to check if the partition happens
             if (lastPacketId == TestingDef.RetCode.NODE_PAIR_IN_PARTITION){
@@ -457,7 +451,7 @@ public aspect LearnerHandlerAspect {
         }
         if (subnodeId < 0) {
             LOG.debug("LearnerHandler threadId: {}, subnodeId == {}, indicating the node is STOPPING or OFFLINE. " +
-                            "This subnode is not registered at the testing engine.",
+                            "This subnode is not registered at the replay engine.",
                     threadId, subnodeId);
             return;
         }
@@ -474,7 +468,7 @@ public aspect LearnerHandlerAspect {
             final String receivingAddr = threadName.split("-")[1];
 
             // Trick: actually this is a local event. We make it a message event to record the syncing follower
-            final int eventId = intercepter.getTestingService()
+            final int eventId = intercepter.getRemoteService()
                     .offerLocalEvent(subnodeId, SubnodeType.LEARNER_HANDLER, zxid, receivingAddr, MessageType.ACKEPOCH);
             intercepter.setLastMsgId(eventId);
             LOG.debug("learnerHandler about to sync. eventId = {}", eventId);
@@ -482,7 +476,7 @@ public aspect LearnerHandlerAspect {
             quorumPeerAspect.postSend(intercepter, subnodeId, eventId);
 
             // Trick: set RECEIVING state here
-            intercepter.getTestingService().setReceivingState(subnodeId);
+            intercepter.getRemoteService().setReceivingState(subnodeId);
 
             if (eventId == TestingDef.RetCode.BACK_TO_LOOKING) {
                 LOG.debug("LearnerHandler threadId: {}, event == -200, indicating the node is going to become looking", threadId);

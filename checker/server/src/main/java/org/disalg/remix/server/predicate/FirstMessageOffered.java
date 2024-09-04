@@ -1,6 +1,6 @@
 package org.disalg.remix.server.predicate;
 
-import org.disalg.remix.server.TestingService;
+import org.disalg.remix.server.ReplayService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -10,18 +10,18 @@ import org.slf4j.LoggerFactory;
 public class FirstMessageOffered implements WaitPredicate {
     private static final Logger LOG = LoggerFactory.getLogger(FirstMessageOffered.class);
 
-    private final TestingService testingService;
+    private final ReplayService replayService;
 
     private final int nodeId;
 
-    public FirstMessageOffered(final TestingService testingService, int nodeId) {
-        this.testingService = testingService;
+    public FirstMessageOffered(final ReplayService replayService, int nodeId) {
+        this.replayService = replayService;
         this.nodeId = nodeId;
     }
 
     @Override
     public boolean isTrue() {
-        return testingService.getFirstMessage().get(nodeId) != null;
+        return replayService.getFirstMessage().get(nodeId) != null;
     }
 
     @Override

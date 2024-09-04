@@ -3,7 +3,7 @@ package org.disalg.remix.server.predicate;
 import org.disalg.remix.api.SubnodeState;
 import org.disalg.remix.api.NodeState;
 import org.disalg.remix.api.SubnodeType;
-import org.disalg.remix.server.TestingService;
+import org.disalg.remix.server.ReplayService;
 import org.disalg.remix.server.state.Subnode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,21 +14,21 @@ import org.slf4j.LoggerFactory;
 public class FollowerQuorumPeerSending implements WaitPredicate{
     private static final Logger LOG = LoggerFactory.getLogger(FollowerQuorumPeerSending.class);
 
-    private final TestingService testingService;
+    private final ReplayService replayService;
 
     private final int followerId;
 
-    public FollowerQuorumPeerSending(final TestingService testingService,
+    public FollowerQuorumPeerSending(final ReplayService replayService,
                                      final int followerId) {
-        this.testingService = testingService;
+        this.replayService = replayService;
         this.followerId = followerId;
     }
 
     @Override
     public boolean isTrue() {
-        final NodeState nodeState = testingService.getNodeStates().get(followerId);
+        final NodeState nodeState = replayService.getNodeStates().get(followerId);
         if (NodeState.ONLINE.equals(nodeState)) {
-            for (final Subnode subnode : testingService.getSubnodeSets().get(followerId)) {
+            for (final Subnode subnode : replayService.getSubnodeSets().get(followerId)) {
                 if (subnode.getSubnodeType().equals(SubnodeType.QUORUM_PEER)) {
                     return SubnodeState.SENDING.equals(subnode.getState());
                 }

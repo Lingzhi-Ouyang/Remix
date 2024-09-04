@@ -2,7 +2,7 @@ package org.disalg.remix.server.predicate;
 
 import org.disalg.remix.api.NodeState;
 import org.disalg.remix.api.NodeStateForClientRequest;
-import org.disalg.remix.server.TestingService;
+import org.disalg.remix.server.ReplayService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -13,23 +13,23 @@ public class AllNodesSteadyBeforeMutation implements WaitPredicate {
 
     private static final Logger LOG = LoggerFactory.getLogger(AllNodesSteadyBeforeMutation.class);
 
-    private final TestingService testingService;
+    private final ReplayService replayService;
 
-    public AllNodesSteadyBeforeMutation(final TestingService testingService) {
-        this.testingService = testingService;
+    public AllNodesSteadyBeforeMutation(final ReplayService replayService) {
+        this.replayService = replayService;
     }
 
     @Override
     public boolean isTrue() {
-        for (int nodeId = 0; nodeId < testingService.getSchedulerConfiguration().getNumNodes(); ++nodeId) {
-            final NodeState nodeState = testingService.getNodeStates().get(nodeId);
+        for (int nodeId = 0; nodeId < replayService.getSchedulerConfiguration().getNumNodes(); ++nodeId) {
+            final NodeState nodeState = replayService.getNodeStates().get(nodeId);
             if (NodeState.STARTING.equals(nodeState) || NodeState.STOPPING.equals(nodeState) ) {
                 LOG.debug("------not steady-----Node {} status: {}\n",
                         nodeId, nodeState);
                 return false;
             }
             final NodeStateForClientRequest nodeStateForClientRequest
-                    = testingService.getNodeStateForClientRequests(nodeId);
+                    = replayService.getNodeStateForClientRequests(nodeId);
             if ( NodeStateForClientRequest.SET_PROCESSING.equals(nodeStateForClientRequest)){
                 LOG.debug("------not steady-----Node {} nodeStateForClientRequest: {}\n",
                         nodeId, nodeStateForClientRequest);

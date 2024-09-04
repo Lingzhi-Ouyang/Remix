@@ -1,24 +1,24 @@
 package org.disalg.remix.server.predicate;
 
-import org.disalg.remix.server.TestingService;
+import org.disalg.remix.server.ReplayService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class ClientSessionClosed implements WaitPredicate{
     private static final Logger LOG = LoggerFactory.getLogger(ClientSessionClosed.class);
 
-    private final TestingService testingService;
+    private final ReplayService replayService;
 
     private final int clientId;
 
-    public ClientSessionClosed(final TestingService testingService, int clientId) {
-        this.testingService = testingService;
+    public ClientSessionClosed(final ReplayService replayService, int clientId) {
+        this.replayService = replayService;
         this.clientId = clientId;
     }
 
     @Override
     public boolean isTrue() {
-        return testingService.getClientProxy(clientId).isDone();
+        return replayService.getClientProxy(clientId).isDone();
     }
 
     @Override

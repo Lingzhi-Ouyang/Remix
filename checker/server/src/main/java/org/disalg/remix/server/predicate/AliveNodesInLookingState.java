@@ -3,7 +3,7 @@ package org.disalg.remix.server.predicate;
 import org.disalg.remix.api.SubnodeState;
 import org.disalg.remix.api.NodeState;
 import org.disalg.remix.api.state.LeaderElectionState;
-import org.disalg.remix.server.TestingService;
+import org.disalg.remix.server.ReplayService;
 import org.disalg.remix.server.state.Subnode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,20 +15,20 @@ public class AliveNodesInLookingState implements WaitPredicate{
 
     private static final Logger LOG = LoggerFactory.getLogger(AliveNodesInLookingState.class);
 
-    private final TestingService testingService;
+    private final ReplayService replayService;
 
     private final Set<Integer> participants;
 
-    public AliveNodesInLookingState(final TestingService testingService) {
-        this.testingService = testingService;
+    public AliveNodesInLookingState(final ReplayService replayService) {
+        this.replayService = replayService;
         participants = new HashSet<>();
-        for (int nodeId = 0; nodeId < testingService.getSchedulerConfiguration().getNumNodes(); ++nodeId) {
+        for (int nodeId = 0; nodeId < replayService.getSchedulerConfiguration().getNumNodes(); ++nodeId) {
             participants.add(nodeId);
         }
     }
 
-    public AliveNodesInLookingState(final TestingService testingService, final Set<Integer> participants) {
-        this.testingService = testingService;
+    public AliveNodesInLookingState(final ReplayService replayService, final Set<Integer> participants) {
+        this.replayService = replayService;
         this.participants = participants;
     }
 
@@ -41,7 +41,7 @@ public class AliveNodesInLookingState implements WaitPredicate{
             // o.w. the node will be blocked and will not return to LOOKING state
             LOG.debug("Try to release intercepted broadcast event first before the node get into LOOKING...");
             LOG.debug("Looking participants including : {}", participants);
-            testingService.releaseBroadcastEvent(participants, true);
+            replayService.releaseBroadcastEvent(participants, true);
             for (Integer nodeId : participants) {
                 if (checkNodeNotLooking(nodeId)) return false;
             }
@@ -50,8 +50,8 @@ public class AliveNodesInLookingState implements WaitPredicate{
     }
 
     private boolean checkNodeNotLooking(Integer nodeId) {
-        final NodeState nodeState = testingService.getNodeStates().get(nodeId);
-        LeaderElectionState leaderElectionState = testingService.getLeaderElectionStates().get(nodeId);
+        final NodeState nodeState = replayService.getNodeStates().get(nodeId);
+        LeaderElectionState leaderElectionState = replayService.getLeaderElectionStates().get(nodeId);
         switch (nodeState) {
             case STARTING:
             case STOPPING:
@@ -69,7 +69,7 @@ public class AliveNodesInLookingState implements WaitPredicate{
             case OFFLINE:
                 LOG.debug("-----------Node {} status: {}", nodeId, nodeState);
         }
-        for (final Subnode subnode: testingService.getSubnodeSets().get(nodeId)) {
+        for (final Subnode subnode: replayService.getSubnodeSets().get(nodeId)) {
             if (SubnodeState.PROCESSING.equals(subnode.getState())) {
                 LOG.debug("------Not steady-----Node {} subnode {} status: {}, subnode type: {}\n",
                         nodeId, subnode.getId(), subnode.getState(), subnode.getSubnodeType());

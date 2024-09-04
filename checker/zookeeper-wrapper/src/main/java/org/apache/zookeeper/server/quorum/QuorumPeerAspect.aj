@@ -1,8 +1,8 @@
 package org.apache.zookeeper.server.quorum;
 
 import org.apache.zookeeper.server.Request;
+import org.disalg.remix.api.RemoteService;
 import org.disalg.remix.api.TestingDef;
-import org.disalg.remix.api.TestingRemoteService;
 import org.disalg.remix.api.SubnodeType;
 import org.disalg.remix.api.state.LeaderElectionState;
 import org.slf4j.Logger;
@@ -37,7 +37,7 @@ public privileged aspect QuorumPeerAspect {
 
     private static final Logger LOG = LoggerFactory.getLogger(QuorumPeerAspect.class);
 
-    private final TestingRemoteService testingService;
+    private final RemoteService remoteService;
 
     private int myId;
 
@@ -60,7 +60,6 @@ public privileged aspect QuorumPeerAspect {
     // Manage uncertain number of subnodes
     private boolean quorumPeerSubnodeRegistered = false;
     private boolean workerReceiverSubnodeRegistered = false;
-    private boolean workerSenderSubnodeRegistered = false;
 
     // 1. Use variables for specific subnodes
 //    private boolean quorumPeerSending = false;
@@ -87,7 +86,7 @@ public privileged aspect QuorumPeerAspect {
 
         final private SubnodeType subnodeType;
 
-        final private TestingRemoteService testingService;
+        final private RemoteService replayService;
 
         private Integer lastMsgId = null;
 
@@ -99,11 +98,11 @@ public privileged aspect QuorumPeerAspect {
         @Deprecated
         private final AtomicInteger msgsInQueue = new AtomicInteger(0);
 
-        public SubnodeIntercepter(String threadName, int subnodeId, SubnodeType subnodeType, TestingRemoteService testingService){
+        public SubnodeIntercepter(String threadName, int subnodeId, SubnodeType subnodeType, RemoteService replayService){
             this.threadName = threadName;
             this.subnodeId = subnodeId;
             this.subnodeType = subnodeType;
-            this.testingService = testingService;
+            this.replayService = replayService;
         }
 
         public int getSubnodeId() {
@@ -114,8 +113,8 @@ public privileged aspect QuorumPeerAspect {
             return subnodeType;
         }
 
-        public TestingRemoteService getTestingService() {
-            return testingService;
+        public RemoteService getRemoteService() {
+            return replayService;
         }
 
         public AtomicInteger getMsgsInQueue() {
@@ -171,15 +170,15 @@ public privileged aspect QuorumPeerAspect {
         this.syncSubnodeId = syncSubnodeId;
     }
 
-    public TestingRemoteService createRmiConnection() {
+    public RemoteService createRmiConnection() {
         try {
             final Registry registry = LocateRegistry.getRegistry("localhost",2599);
-            return (TestingRemoteService) registry.lookup(TestingRemoteService.REMOTE_NAME);
+            return (RemoteService) registry.lookup(RemoteService.REMOTE_NAME);
         } catch (final RemoteException e) {
             LOG.error("Couldn't locate the RMI registry.", e);
             throw new RuntimeException(e);
         } catch (final NotBoundException e) {
-            LOG.error("Couldn't bind the testing service.", e);
+            LOG.error("Couldn't bind the replay service.", e);
             throw new RuntimeException(e);
         }
     }
@@ -187,13 +186,13 @@ public privileged aspect QuorumPeerAspect {
     public QuorumPeerAspect() {
         try {
             final Registry registry = LocateRegistry.getRegistry("localhost", 2599);
-            testingService = (TestingRemoteService) registry.lookup(TestingRemoteService.REMOTE_NAME);
-            LOG.debug("Found the remote testing service.");
+            remoteService = (RemoteService) registry.lookup(RemoteService.REMOTE_NAME);
+            LOG.debug("Found the remote replay service.");
         } catch (final RemoteException e) {
             LOG.error("Couldn't locate the RMI registry.", e);
             throw new RuntimeException(e);
         } catch (final NotBoundException e) {
-            LOG.error("Couldn't bind the testing service.", e);
+            LOG.error("Couldn't bind the replay service.", e);
             throw new RuntimeException(e);
         }
     }
@@ -206,8 +205,8 @@ public privileged aspect QuorumPeerAspect {
         return quorumPeerSubnodeId;
     }
 
-    public TestingRemoteService getTestingService() {
-        return testingService;
+    public RemoteService getRemoteService() {
+        return remoteService;
     }
 
     // For follower QuorumPeer thread
@@ -245,12 +244,12 @@ public privileged aspect QuorumPeerAspect {
         try {
             LOG.debug("-------Thread: {}------", Thread.currentThread().getName());
             LOG.debug("----------------Registering QuorumPeer subnode");
-            quorumPeerSubnodeId = testingService.registerSubnode(myId, SubnodeType.QUORUM_PEER);
+            quorumPeerSubnodeId = remoteService.registerSubnode(myId, SubnodeType.QUORUM_PEER);
             LOG.debug("Registered QuorumPeer subnode: id = {}", quorumPeerSubnodeId);
             synchronized (nodeOnlineMonitor) {
                 quorumPeerSubnodeRegistered = true;
                 if (workerReceiverSubnodeRegistered) {
-                    testingService.nodeOnline(myId);
+                    remoteService.nodeOnline(myId);
                 }
             }
         } catch (final RemoteException e) {
@@ -262,7 +261,7 @@ public privileged aspect QuorumPeerAspect {
     after(): runQuorumPeer() {
         try {
             LOG.debug("De-registering QuorumPeer subnode");
-            testingService.deregisterSubnode(quorumPeerSubnodeId);
+            remoteService.deregisterSubnode(quorumPeerSubnodeId);
             LOG.debug("-------------------De-registered QuorumPeer subnode\n-------------\n");
         } catch (final RemoteException e) {
             LOG.debug("Encountered a remote exception", e);
@@ -276,7 +275,7 @@ public privileged aspect QuorumPeerAspect {
 
     after() returning (final Vote vote): lookForLeader() {
         try {
-            testingService.updateVote(myId, constructVote(vote));
+            remoteService.updateVote(myId, constructVote(vote));
         } catch (final RemoteException e) {
             LOG.debug("Encountered a remote exception", e);
             throw new RuntimeException(e);
@@ -304,32 +303,17 @@ public privileged aspect QuorumPeerAspect {
 
         try {
             LOG.debug("QuorumPeer subnode {} is offering a message with predecessors {}", quorumPeerSubnodeId, predecessorIds.toString());
-//            synchronized (nodeOnlineMonitor) {
-////                quorumPeerSending = true;
-//                subnodeSendingMap.put(quorumPeerSubnodeId, true);
-//            }
             setSubnodeSending();
             final String payload = constructPayload(toSend);
-            lastSentMessageId = testingService.offerElectionMessage(quorumPeerSubnodeId,
+            lastSentMessageId = remoteService.offerElectionMessage(quorumPeerSubnodeId,
                     (int) toSend.sid, toSend.electionEpoch, (int) toSend.leader, predecessorIds, payload);
             LOG.debug("after offerElectionMessage lastSentMessageId = {}, sendingSubnodeNum: {}", lastSentMessageId, sendingSubnodeNum.get());
             postSend(quorumPeerSubnodeId, lastSentMessageId);
-//            synchronized (nodeOnlineMonitor) {
-//                quorumPeerSending = false;
-//                if (lastSentMessageId == -1) {
-//                    // The last existing subnode is responsible to set the node state as offline
-//                    if (!workerReceiverSending && !syncProcessorSending) {
-//                        testingService.nodeOffline(myId);
-//                    }
-//                    awaitShutdown(quorumPeerSubnodeId);
-//                }
-//            }
 
-//            // TODO: to check if the partition happens with around()
             if (lastSentMessageId == TestingDef.RetCode.NODE_PAIR_IN_PARTITION){
                 // just drop the message
                 LOG.debug("partition occurs! just drop the message.");
-                testingService.setReceivingState(quorumPeerSubnodeId);
+                remoteService.setReceivingState(quorumPeerSubnodeId);
                 // confirm the return value
                 return false;
             }
@@ -342,30 +326,6 @@ public privileged aspect QuorumPeerAspect {
             throw new RuntimeException(e); // new added
         }
     }
-
-//    public void setQuorumPeerSending(final int subnodeId) {
-//        synchronized (nodeOnlineMonitor) {
-////            quorumPeerSending = true;
-////            subnodeSendingMap.put(subnodeId, true);
-//            sendingSubnodeNum.incrementAndGet();
-//        }
-//    }
-
-//    public void quorumPeerPostSend(final int subnodeId, final int msgId) throws RemoteException {
-//        synchronized (nodeOnlineMonitor) {
-////            quorumPeerSending = false;
-////            subnodeSendingMap.put(subnodeId, false);
-//            sendingSubnodeNum.decrementAndGet();
-//            if (lastSentMessageId == -1) {
-//                // The last existing subnode is responsible to set the node state as offline
-////                if (!workerReceiverSending && !syncProcessorSending) {
-//                if (sendingSubnodeNum.get() == 0) {
-//                    testingService.nodeOffline(myId);
-//                }
-//                awaitShutdown(quorumPeerSubnodeId);
-//            }
-//        }
-//    }
 
     public void setSubnodeSending() {
         synchronized (nodeOnlineMonitor) {
@@ -383,7 +343,7 @@ public privileged aspect QuorumPeerAspect {
                 LOG.debug("-----subnodeId: {}, msgId: {}, existingSendingSubnodeNum: {}", subnodeId, msgId, existingSendingSubnodeNum);
                 if (existingSendingSubnodeNum == 0) {
                     LOG.debug("-----going to set nodeOffline by subnodeId: {}, msgId: {}", subnodeId, msgId);
-                    testingService.nodeOffline(myId);
+                    remoteService.nodeOffline(myId);
                 }
                 awaitShutdown(subnodeId);
             }
@@ -416,7 +376,7 @@ public privileged aspect QuorumPeerAspect {
                 LOG.debug("-----subnodeId: {}, msgId: {}, existingSendingSubnodeNum: {}", subnodeId, msgId, existingSendingSubnodeNum);
                 if (existingSendingSubnodeNum == 0) {
                     LOG.debug("-----going to set nodeOffline by subnodeId: {}, msgId: {}", subnodeId, msgId);
-                    testingService.nodeOffline(myId);
+                    remoteService.nodeOffline(myId);
                 }
                 awaitShutdown(subnodeId);
             }
@@ -426,7 +386,7 @@ public privileged aspect QuorumPeerAspect {
     public void awaitShutdown(final int subnodeId) {
         try {
             LOG.debug("awaitShutdown. to deregister subnode {}", subnodeId);
-            testingService.deregisterSubnode(subnodeId);
+            remoteService.deregisterSubnode(subnodeId);
             // Going permanently to the wait queue
             nodeOnlineMonitor.wait();
         } catch (final RemoteException e) {
@@ -450,7 +410,7 @@ public privileged aspect QuorumPeerAspect {
             LOG.debug("My FLE.recvqueue is empty, go to RECEIVING state");
             // Going to block here
             try {
-                testingService.setReceivingState(quorumPeerSubnodeId);
+                remoteService.setReceivingState(quorumPeerSubnodeId);
             } catch (final RemoteException e) {
                 LOG.debug("Encountered a remote exception", e);
                 throw new RuntimeException(e);
@@ -462,7 +422,7 @@ public privileged aspect QuorumPeerAspect {
         this.notification = notification;
         LOG.debug("Received a notification with id = {}", notification.getMessageId());
         try {
-            testingService.setReceivingState(quorumPeerSubnodeId);
+            remoteService.setReceivingState(quorumPeerSubnodeId);
         } catch (final RemoteException e) {
             LOG.debug("Encountered a remote exception", e);
             throw new RuntimeException(e);
@@ -495,11 +455,11 @@ public privileged aspect QuorumPeerAspect {
         }
         try {
             LOG.debug("----------setPeerState2: Node {} state: {}", myId, state);
-            testingService.updateLeaderElectionState(myId, leState);
+            remoteService.updateLeaderElectionState(myId, leState);
             if(leState == LeaderElectionState.LOOKING){
                 syncFinished = false;
                 newLeaderDone = false;
-                testingService.updateVote(myId, null);
+                remoteService.updateVote(myId, null);
             }
         } catch (final RemoteException e) {
             LOG.error("Encountered a remote exception", e);
@@ -530,12 +490,12 @@ public privileged aspect QuorumPeerAspect {
         final int workerReceiverSubnodeId;
         try {
             LOG.debug("Registering WorkerReceiver subnode");
-            workerReceiverSubnodeId = testingService.registerSubnode(myId, SubnodeType.WORKER_RECEIVER);
+            workerReceiverSubnodeId = remoteService.registerSubnode(myId, SubnodeType.WORKER_RECEIVER);
             LOG.debug("Registered WorkerReceiver subnode: id = {}", workerReceiverSubnodeId);
             synchronized (nodeOnlineMonitor) {
                 workerReceiverSubnodeRegistered = true;
                 if (quorumPeerSubnodeRegistered) {
-                    testingService.nodeOnline(myId);
+                    remoteService.nodeOnline(myId);
                 }
             }
             return workerReceiverSubnodeId;
@@ -548,7 +508,7 @@ public privileged aspect QuorumPeerAspect {
     public void deregisterWorkerReceiverSubnode(final int workerReceiverSubnodeId) {
         try {
             LOG.debug("De-registering WorkerReceiver subnode");
-            testingService.deregisterSubnode(workerReceiverSubnodeId);
+            remoteService.deregisterSubnode(workerReceiverSubnodeId);
             LOG.debug("De-registered WorkerReceiver subnode");
         } catch (final RemoteException e) {
             LOG.debug("Encountered a remote exception", e);
@@ -556,70 +516,14 @@ public privileged aspect QuorumPeerAspect {
         }
     }
 
-//    public void setWorkerReceiverSending() {
-//        synchronized (nodeOnlineMonitor) {
-//            workerReceiverSending = true;
-//        }
-//    }
-//
-//    public void workerReceiverPostSend(final int subnodeId, final int msgId) throws RemoteException {
-//        synchronized (nodeOnlineMonitor) {
-//            workerReceiverSending = false;
-//            // msgId == -1 means that the sending node is about to be shutdown
-//            if (msgId == -1) {
-//                // Ensure that other threads are all finished
-//                // The last existing subnode is responsible to set the node state as offline
-//                if (!quorumPeerSending && !syncProcessorSending) {
-//                    testingService.nodeOffline(myId);
-//                }
-//                awaitShutdown(subnodeId);
-//            }
-//        }
-//    }
-
-
-    /***
-     * WorkerSender
-     */
-    public int registerWorkerSenderSubnode() {
-        final int workerSenderSubnodeId;
-        try {
-            LOG.debug("Registering WorkerSender subnode");
-            workerSenderSubnodeId = testingService.registerSubnode(myId, SubnodeType.WORKER_SENDER);
-            LOG.debug("Registered WorkerSender subnode: id = {}", workerSenderSubnodeId);
-//            synchronized (nodeOnlineMonitor) {
-//                workerSenderSubnodeRegistered = true;
-//                if (workerReceiverSubnodeRegistered) {
-//                    testingService.nodeOnline(myId);
-//                }
-//            }
-            return workerSenderSubnodeId;
-        } catch (final RemoteException e) {
-            LOG.debug("Encountered a remote exception", e);
-            throw new RuntimeException(e);
-        }
-    }
-
-    public void deregisterWorkerSenderSubnode(final int workerSenderSubnodeId) {
-        try {
-            LOG.debug("De-registering WorkerSender subnode");
-            testingService.deregisterSubnode(workerSenderSubnodeId);
-            LOG.debug("De-registered WorkerSender subnode");
-        } catch (final RemoteException e) {
-            LOG.debug("Encountered a remote exception", e);
-            throw new RuntimeException(e);
-        }
-    }
-
-
     /***
      * for threads whose subnodeType is unique in a process, e.g. SyncRequestProcessor & CommitProcessor
      */
     @Deprecated
-    public int registerSubnode(final TestingRemoteService testingService, final SubnodeType subnodeType) {
+    public int registerSubnode(final RemoteService replayService, final SubnodeType subnodeType) {
         try {
-            LOG.debug("Found the remote testing service. Registering {} subnode", subnodeType);
-            final int subnodeId = testingService.registerSubnode(myId, subnodeType);
+            LOG.debug("Found the remote replay service. Registering {} subnode", subnodeType);
+            final int subnodeId = replayService.registerSubnode(myId, subnodeType);
             LOG.debug("Finish registering {} subnode: id = {}", subnodeType, subnodeId);
             return subnodeId;
         } catch (final RemoteException e) {
@@ -628,14 +532,14 @@ public privileged aspect QuorumPeerAspect {
         }
     }
 
-    public void deregisterSubnode(final TestingRemoteService testingService, final int subnodeId, final SubnodeType subnodeType) {
+    public void deregisterSubnode(final RemoteService replayService, final int subnodeId, final SubnodeType subnodeType) {
         try {
             LOG.debug("De-registering {} subnode {}", subnodeType, subnodeId);
             if (subnodeId < 0) {
                 LOG.debug("{} subnodeId == {}", subnodeType, subnodeId);
                 return;
             }
-            testingService.deregisterSubnode(subnodeId);
+            replayService.deregisterSubnode(subnodeId);
             LOG.debug("Finish de-registering {} subnode {}", subnodeType, subnodeId);
         } catch (final RemoteException e) {
             LOG.debug("Encountered a remote exception", e);
@@ -659,12 +563,12 @@ public privileged aspect QuorumPeerAspect {
 
     public SubnodeIntercepter registerSubnode(final long threadId, final String threadName, final SubnodeType subnodeType){
         try {
-            TestingRemoteService testingService = createRmiConnection();
-            LOG.debug("Found the remote testing service. Registering {} subnode", subnodeType);
-            final int subnodeId = testingService.registerSubnode(myId, subnodeType);
+            RemoteService replayService = createRmiConnection();
+            LOG.debug("Found the remote replay service. Registering {} subnode", subnodeType);
+            final int subnodeId = replayService.registerSubnode(myId, subnodeType);
             LOG.debug("Finish registering {} subnode: id = {}", subnodeType, subnodeId);
             SubnodeIntercepter intercepter =
-                    new SubnodeIntercepter(threadName, subnodeId, subnodeType, testingService);
+                    new SubnodeIntercepter(threadName, subnodeId, subnodeType, replayService);
             intercepterMap.put(threadId, intercepter);
             return intercepter;
         } catch (final RemoteException e) {
@@ -683,19 +587,8 @@ public privileged aspect QuorumPeerAspect {
                 LOG.debug("{} subnodeId == {}, threadId: {}", subnodeType, subnodeId, threadId);
                 return;
             }
-            testingService.deregisterSubnode(subnodeId);
+            remoteService.deregisterSubnode(subnodeId);
             LOG.debug("Finish de-registering {} subnode {}", subnodeType, subnodeId);
-//            // for LearnerHandlerSender
-//            synchronized (nodeOnlineMonitor) {
-//                if (intercepter.sending) {
-//                    intercepter.sending = false;
-//                    if (sendingSubnodeNum.get() > 0){
-//                        final int existingSendingSubnodeNum = sendingSubnodeNum.decrementAndGet();
-//                        LOG.debug("-----subnode {} Id: {}, decrease sendingSubnodeNum: {}",
-//                                subnodeType, subnodeId, sendingSubnodeNum.get());
-//                    }
-//                }
-//            }
         } catch (final RemoteException e) {
             LOG.debug("Encountered a remote exception", e);
             throw new RuntimeException(e);
@@ -712,44 +605,11 @@ public privileged aspect QuorumPeerAspect {
         try {
             mySock = learner.getSocket();
             LOG.debug("getLocalSocketAddress = {}", mySock.getLocalSocketAddress());
-            testingService.registerFollowerSocketInfo(myId, mySock.getLocalSocketAddress().toString());
+            remoteService.registerFollowerSocketInfo(myId, mySock.getLocalSocketAddress().toString());
         } catch (final RemoteException e) {
             LOG.debug("Encountered a remote exception", e);
             throw new RuntimeException(e);
         }
-    }
-
-    //TODO: unregister socket address
-
-//    pointcut newSock(Socket socket):
-//            set(Socket Learner.sock) && args(socket);
-//
-//    after(final Socket sock): newSock(sock) {
-//        mySock = sock;
-//        LOG.debug("getInetAddress = {}", sock.getInetAddress());
-//        LOG.debug("getLocalAddress = {}", sock.getLocalAddress());
-//        LOG.debug("getLocalSocketAddress = {}, {}", sock.getLocalSocketAddress(), sock.getLocalPort());
-//    }
-
-//    // intercept the initialization of a learner handler for the leader node
-//
-//    pointcut newLearnerHandler(Socket sock, Leader leader):
-//            initialization(LearnerHandler.new(Socket, Leader))
-//            && args(sock, leader);
-//
-//    after(final Socket sock, final Leader leader): newLearnerHandler(sock, leader) {
-//        LOG.debug("getLocalSocketAddress = {}", sock.getRemoteSocketAddress());
-//    }
-
-    // intercept the effects of network partition
-//    pointcut followerProcessPacket
-
-    public void addToQueuedPackets(final long threadId, final Object object) {
-        final AtomicInteger msgsInQueuedPackets = intercepterMap.get(threadId).getMsgsInQueue();
-        msgsInQueuedPackets.incrementAndGet();
-        final String payload = packetToString((QuorumPacket) object);
-        LOG.debug("learnerHandlerSubnodeId: {}----------packet: {}", intercepterMap.get(threadId).getSubnodeId(), payload);
-        LOG.debug("----------addToQueuedPackets(). msgsInQueuedPackets.size: {}", msgsInQueuedPackets.get());
     }
 
     public String packetToString(QuorumPacket p) {
@@ -806,18 +666,15 @@ public privileged aspect QuorumPeerAspect {
     }
 
     // Identify the last processed zxid of this node
-
     pointcut writeLongToFile(String name, long epoch): execution(void QuorumPeer.writeLongToFile(String, long)) && args(name, epoch);
 
     after(final String name, final long epoch) returning: writeLongToFile(name, epoch) {
         try {
             LOG.debug("-------nodeId: {}, after writeLongToFile: set {} = 0x{}", myId, name, Long.toHexString(epoch));
-            lastSentMessageId = testingService.writeLongToFile(myId, name, epoch);
+            lastSentMessageId = remoteService.writeLongToFile(myId, name, epoch);
             if (name.equals("currentEpoch")) {
                 // increase sendingSubnodeNum here for later decreasing
                 setSubnodeSending();
-//                final int lastRequestId = testingService.offerLocalEvent(quorumPeerSubnodeId, SubnodeType.QUORUM_PEER,
-//                        epoch, "setCurrentEpoch", TestingDef.MessageType.NEWLEADER);
                 LOG.debug("lastSentMessageId = {}", lastSentMessageId);
                 // after offerMessage: decrease sendingSubnodeNum and shutdown this node if sendingSubnodeNum == 0
                 postSend(quorumPeerSubnodeId, lastSentMessageId);
@@ -827,35 +684,5 @@ public privileged aspect QuorumPeerAspect {
             throw new RuntimeException(e);
         }
     }
-
-//    /***
-//     * intercept leader calling waitForEpochAck method
-//     */
-//    pointcut waitForEpochAck(long id):
-//            withincode(* Leader.lead()) &&
-//                    call(* Leader.waitForEpochAck(long, *)) && args(id, *);
-//
-//    before(long id): waitForEpochAck(id) {
-//        LOG.debug("before waitForEpochAck, sid: {}", id);
-//
-//        try {
-//
-//            // before offerMessage: increase sendingSubnodeNum
-//            setSubnodeSending();
-//            final int lastPacketId = testingService
-//                    .offerLocalEvent(quorumPeerSubnodeId, SubnodeType.QUORUM_PEER, id, null, -2);
-//            LOG.debug("waitForEpochAck lastPacketId = {}", lastPacketId);
-//            postSend(quorumPeerSubnodeId, lastPacketId);
-//            // Trick: set RECEIVING state here
-//            testingService.setReceivingState(quorumPeerSubnodeId);
-//        } catch (RemoteException e) {
-//            LOG.debug("Encountered a remote exception", e);
-//            throw new RuntimeException(e);
-//        }
-//    }
-
-
-
-
 
 }

@@ -1,6 +1,6 @@
 package org.disalg.remix.server.executor;
 
-import org.disalg.remix.server.TestingService;
+import org.disalg.remix.server.ReplayService;
 import org.disalg.remix.server.event.NodeCrashEvent;
 import org.disalg.remix.server.event.NodeStartEvent;
 import org.slf4j.Logger;
@@ -12,12 +12,12 @@ public class NodeStartExecutor extends BaseEventExecutor {
 
     private static final Logger LOG = LoggerFactory.getLogger(NodeStartExecutor.class);
 
-    private final TestingService testingService;
+    private final ReplayService replayService;
 
     private int rebootBudget;
 
-    public NodeStartExecutor(final TestingService testingService, final int rebootBudget) {
-        this.testingService = testingService;
+    public NodeStartExecutor(final ReplayService replayService, final int rebootBudget) {
+        this.replayService = replayService;
         this.rebootBudget = rebootBudget;
     }
 
@@ -26,15 +26,15 @@ public class NodeStartExecutor extends BaseEventExecutor {
         boolean truelyExecuted = false;
         if (hasReboots()) {
             final int nodeId = event.getNodeId();
-            testingService.setLastNodeStartEvent(nodeId, event);
-            testingService.startNode(nodeId);
-            testingService.getControlMonitor().notifyAll();
-            testingService.waitAllNodesSteady();
+            replayService.setLastNodeStartEvent(nodeId, event);
+            replayService.startNode(nodeId);
+            replayService.getControlMonitor().notifyAll();
+            replayService.waitAllNodesSteady();
             rebootBudget--;
-            if (testingService.getNodeCrashExecutor().hasCrashes()) {
-                final NodeCrashEvent nodeCrashEvent = new NodeCrashEvent(testingService.generateEventId(), nodeId, testingService.getNodeCrashExecutor());
+            if (replayService.getNodeCrashExecutor().hasCrashes()) {
+                final NodeCrashEvent nodeCrashEvent = new NodeCrashEvent(replayService.generateEventId(), nodeId, replayService.getNodeCrashExecutor());
                 nodeCrashEvent.addDirectPredecessor(event);
-                testingService.addEvent(nodeCrashEvent);
+                replayService.addEvent(nodeCrashEvent);
             }
             truelyExecuted = true;
         }

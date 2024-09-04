@@ -1,7 +1,7 @@
 package org.disalg.remix.server.predicate;
 
 import org.disalg.remix.api.NodeState;
-import org.disalg.remix.server.TestingService;
+import org.disalg.remix.server.ReplayService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,39 +14,39 @@ public class AllNodesVoted implements WaitPredicate {
 
     private static final Logger LOG = LoggerFactory.getLogger(AllNodesVoted.class);
 
-    private final TestingService testingService;
+    private final ReplayService replayService;
 
     private final Set<Integer> participants;
 
-    public AllNodesVoted(final TestingService testingService) {
-        this.testingService = testingService;
+    public AllNodesVoted(final ReplayService replayService) {
+        this.replayService = replayService;
         this.participants = null;
     }
 
-    public AllNodesVoted(final TestingService testingService, final Set<Integer> participants) {
-        this.testingService = testingService;
+    public AllNodesVoted(final ReplayService replayService, final Set<Integer> participants) {
+        this.replayService = replayService;
         this.participants = participants;
     }
 
     @Override
     public boolean isTrue() {
-        if (testingService.getSchedulingStrategy().hasNextEvent()) {
+        if (replayService.getSchedulingStrategy().hasNextEvent()) {
             LOG.debug("new event arrives");
             return true;
         }
         if ( participants != null) {
             for (Integer nodeId: participants) {
-                LOG.debug("nodeId: {}, state: {}, votes: {}", nodeId, testingService.getNodeStates().get(nodeId), testingService.getVotes().get(nodeId));
-                if (!NodeState.OFFLINE.equals(testingService.getNodeStates().get(nodeId))
-                        && (!NodeState.ONLINE.equals(testingService.getNodeStates().get(nodeId)) || testingService.getVotes().get(nodeId) == null)) {
+                LOG.debug("nodeId: {}, state: {}, votes: {}", nodeId, replayService.getNodeStates().get(nodeId), replayService.getVotes().get(nodeId));
+                if (!NodeState.OFFLINE.equals(replayService.getNodeStates().get(nodeId))
+                        && (!NodeState.ONLINE.equals(replayService.getNodeStates().get(nodeId)) || replayService.getVotes().get(nodeId) == null)) {
                     return false;
                 }
             }
         } else {
-            for (int nodeId = 0; nodeId < testingService.getSchedulerConfiguration().getNumNodes(); ++nodeId) {
-                LOG.debug("nodeId: {}, state: {}, votes: {}", nodeId, testingService.getNodeStates().get(nodeId), testingService.getVotes().get(nodeId));
-                if (!NodeState.OFFLINE.equals(testingService.getNodeStates().get(nodeId))
-                        && (!NodeState.ONLINE.equals(testingService.getNodeStates().get(nodeId)) || testingService.getVotes().get(nodeId) == null)) {
+            for (int nodeId = 0; nodeId < replayService.getSchedulerConfiguration().getNumNodes(); ++nodeId) {
+                LOG.debug("nodeId: {}, state: {}, votes: {}", nodeId, replayService.getNodeStates().get(nodeId), replayService.getVotes().get(nodeId));
+                if (!NodeState.OFFLINE.equals(replayService.getNodeStates().get(nodeId))
+                        && (!NodeState.ONLINE.equals(replayService.getNodeStates().get(nodeId)) || replayService.getVotes().get(nodeId) == null)) {
                     return false;
                 }
             }

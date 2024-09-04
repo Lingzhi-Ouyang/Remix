@@ -1,6 +1,6 @@
 package org.disalg.remix.server.checker;
 
-import org.disalg.remix.server.TestingService;
+import org.disalg.remix.server.ReplayService;
 import org.disalg.remix.server.statistics.Statistics;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,12 +11,12 @@ public class GetDataVerifier implements Verifier{
 
     private static final Logger LOG = LoggerFactory.getLogger(GetDataVerifier.class);
 
-    private final TestingService testingService;
+    private final ReplayService replayService;
     private final Statistics statistics;
     private String modelResult;
 
-    public GetDataVerifier(final TestingService testingService, Statistics statistics) {
-        this.testingService = testingService;
+    public GetDataVerifier(final ReplayService replayService, Statistics statistics) {
+        this.replayService = replayService;
         this.statistics = statistics;
         this.modelResult = null;
     }
@@ -28,8 +28,8 @@ public class GetDataVerifier implements Verifier{
     @Override
     public boolean verify() {
         String matchModel = "UNMATCHED";
-        List<String> returnedDataList = testingService.getReturnedDataList();
-        LOG.debug("verify getReturnedData: {}, model: {}", testingService.getReturnedDataList(), modelResult);
+        List<String> returnedDataList = replayService.getReturnedDataList();
+        LOG.debug("verify getReturnedData: {}, model: {}", replayService.getReturnedDataList(), modelResult);
         final int len = returnedDataList.size();
         assert len >= 2;
         final String latestOne = returnedDataList.get(len - 1);
@@ -43,7 +43,7 @@ public class GetDataVerifier implements Verifier{
             matchModel = "MATCHED";
         }
         if (matchModel.equals("UNMATCHED")) {
-            testingService.traceMatched = false;
+            replayService.traceMatched = false;
         }
         if (result) {
             statistics.reportResult("MONOTONIC_READ:SUCCESS:" + matchModel);
@@ -51,7 +51,7 @@ public class GetDataVerifier implements Verifier{
         }
         else {
             statistics.reportResult("MONOTONIC_READ:FAILURE:" + matchModel);
-            testingService.tracePassed = false;
+            replayService.tracePassed = false;
             return false;
         }
     }

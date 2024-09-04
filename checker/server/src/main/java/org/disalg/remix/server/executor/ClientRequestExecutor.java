@@ -2,7 +2,7 @@ package org.disalg.remix.server.executor;
 
 import org.disalg.remix.api.SubnodeType;
 import org.disalg.remix.api.state.LeaderElectionState;
-import org.disalg.remix.server.TestingService;
+import org.disalg.remix.server.ReplayService;
 import org.disalg.remix.server.event.ClientRequestEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,18 +12,18 @@ import java.io.IOException;
 public class ClientRequestExecutor extends BaseEventExecutor {
     private static final Logger LOG = LoggerFactory.getLogger(ClientRequestExecutor.class);
 
-    private final TestingService testingService;
+    private final ReplayService replayService;
 
     private int count = 5;
 
     private boolean waitForResponse = false;
 
-    public ClientRequestExecutor(final TestingService testingService) {
-        this.testingService = testingService;
+    public ClientRequestExecutor(final ReplayService replayService) {
+        this.replayService = replayService;
     }
 
-    public ClientRequestExecutor(final TestingService testingService, boolean waitForResponse, final int count) {
-        this.testingService = testingService;
+    public ClientRequestExecutor(final ReplayService replayService, boolean waitForResponse, final int count) {
+        this.replayService = replayService;
         this.waitForResponse = waitForResponse;
         this.count = count;
     }
@@ -36,8 +36,8 @@ public class ClientRequestExecutor extends BaseEventExecutor {
         }
         LOG.debug("Releasing client request event: {}", event.toString());
         releaseClientRequest(event);
-        testingService.getControlMonitor().notifyAll();
-        testingService.waitAllNodesSteady();
+        replayService.getControlMonitor().notifyAll();
+        replayService.waitAllNodesSteady();
         event.setExecuted();
         LOG.debug("Client request executed: {}", event.toString());
         return true;
@@ -55,41 +55,41 @@ public class ClientRequestExecutor extends BaseEventExecutor {
 //                for (int i = 0 ; i < schedulerConfiguration.getNumNodes(); i++) {
 //                    nodeStateForClientRequests.set(i, NodeStateForClientRequest.SET_PROCESSING);
 //                }
-                testingService.getRequestQueue(clientId).offer(event);
+                replayService.getRequestQueue(clientId).offer(event);
                 // Post-condition
                 if (waitForResponse) {
                     // When we want to get the result immediately
                     // This will not generate later events automatically
-                    testingService.getControlMonitor().notifyAll();
-                    testingService.waitResponseForClientRequest(event);
+                    replayService.getControlMonitor().notifyAll();
+                    replayService.waitResponseForClientRequest(event);
                 }
                 // Note: the client request event may lead to deadlock easily
                 //          when scheduled between some RequestProcessorEvents
 //                final ClientRequestEvent clientRequestEvent =
-//                        new ClientRequestEvent(testingService.generateEventId(), clientId,
+//                        new ClientRequestEvent(replayService.generateEventId(), clientId,
 //                                ClientRequestType.GET_DATA, this);
-//                testingService.addEvent(clientRequestEvent);
+//                replayService.addEvent(clientRequestEvent);
                 break;
             case SET_DATA:
             case CREATE:
-//                for (int peer: testingService.getParticipants()) {
-//                    testingService.getNodeStateForClientRequests().set(peer, NodeStateForClientRequest.SET_PROCESSING);
+//                for (int peer: replayService.getParticipants()) {
+//                    replayService.getNodeStateForClientRequests().set(peer, NodeStateForClientRequest.SET_PROCESSING);
 //                }
 
-                testingService.getRequestQueue(clientId).offer(event);
+                replayService.getRequestQueue(clientId).offer(event);
                 // Post-condition
-//                testingService.waitResponseForClientRequest(event);
-//                testingService.waitAllNodesSteadyAfterMutation();
-                for (int node: testingService.getParticipants()) {
-                    LeaderElectionState role = testingService.getLeaderElectionState(node);
+//                replayService.waitResponseForClientRequest(event);
+//                replayService.waitAllNodesSteadyAfterMutation();
+                for (int node: replayService.getParticipants()) {
+                    LeaderElectionState role = replayService.getLeaderElectionState(node);
                     switch (role) {
                         case LEADING:
-                            testingService.getControlMonitor().notifyAll();
-                            testingService.waitSubnodeTypeSending(node, SubnodeType.SYNC_PROCESSOR);
+                            replayService.getControlMonitor().notifyAll();
+                            replayService.waitSubnodeTypeSending(node, SubnodeType.SYNC_PROCESSOR);
                             break;
                         case FOLLOWING:
-                            testingService.getControlMonitor().notifyAll();
-                            testingService.waitSubnodeInSendingState(testingService.getFollowerLearnerHandlerSenderMap(node));
+                            replayService.getControlMonitor().notifyAll();
+                            replayService.waitSubnodeInSendingState(replayService.getFollowerLearnerHandlerSenderMap(node));
                             break;
                         default:
                             break;
