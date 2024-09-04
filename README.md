@@ -61,7 +61,7 @@ Use the trace directory `demo`  as an example.
 Build the checker:
 
 ```bash
-cd script
+cd scripts
 ./build.sh 
 ```
 
