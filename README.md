@@ -83,7 +83,7 @@ Or directly use the following script:
 Generate model-level traces and replay them:
 ```bash
 cd scripts
-./checkAndReplay.sh    
+./checkAndReplay.sh    # Pre-requisites: run ./build.sh first!
 ```
 
 ## Contributing
