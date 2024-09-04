@@ -11,7 +11,6 @@ TRACE_DIR=$2
 
 INI_FILE="${RAW_DIR}/MC.ini"
 SPEC_VERSION=$(grep ^target: $INI_FILE | awk -F '[./]+' 'NR==1{ print $2 }')
-echo $SPEC_VERSION
 
 starttime=`date +'%Y-%m-%d %H:%M:%S'`
 start_seconds=`date +%s`
