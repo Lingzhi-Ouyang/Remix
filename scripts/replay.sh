@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# replay given traces in the implementation.
+# Usage: ./replay.sh <trace_dir>  # trace_dir is under the directory _traces_
+
 ## kill current running zookeeper processes
 ps -ef | grep zookeeper | grep -v grep | awk '{print $2}' | xargs kill -9
 

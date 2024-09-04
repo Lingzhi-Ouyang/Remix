@@ -1,5 +1,10 @@
 #!/bin/bash
 
+# Usage: ./read_traces.sh <raw_data_dir> <trace_output_dir>
+
+SCRIPT_DIR=$(cd $(dirname "$0") || exit;pwd)
+cd "$SCRIPT_DIR" || exit
+
 RAW_DIR=$1
 RAW_FILES=$(ls ${RAW_DIR})
 TRACE_DIR=$2

@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# build the checker for deterministic replay.
+
 SCRIPT_DIR=$(cd $(dirname "$0") || exit;pwd)
 WORKING_DIR=$(cd "$SCRIPT_DIR"/.. || exit;pwd)
 
