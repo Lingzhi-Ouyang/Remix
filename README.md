@@ -40,7 +40,6 @@ root
 	|---- mck trace result dir 		(Results of a batch of traces)
 		|---- *.out			(Log for debugging)
 		|---- matchReport		(Report on whether any discrepancy has been found)
-		|---- bugReport			(Report on whether any violation has been detected by the checker)
 		|---- trace results		(Results for each trace)
 			|---- execution	    	(event sequence that has been walked)
 			|---- statistics    	(Checking results of each step)
