@@ -329,7 +329,7 @@ public class ExternalModelStrategy implements SchedulingStrategy{
                     case MessageType.UPTODATE:
                         if (!action.equals(ModelAction.FollowerProcessUPTODATE)) continue;
                         break;
-                    case TestingDef.MessageType.learnerHandlerReadRecord:
+                    case MetaDef.MessageType.learnerHandlerReadRecord:
                         if (!action.equals(ModelAction.LearnerHandlerReadRecord)) continue;
                         break;
                     default:
@@ -399,14 +399,14 @@ public class ExternalModelStrategy implements SchedulingStrategy{
                     case LeaderSyncFollower:
                         LOG.debug("LeaderSyncFollower: {}, {}", subnodeType, type);
                         if (!subnodeType.equals(SubnodeType.LEARNER_HANDLER)
-                                || type != TestingDef.MessageType.ACKEPOCH) continue;
+                                || type != MetaDef.MessageType.ACKEPOCH) continue;
                         final int followerNodeId = replayService.getFollowerSocketAddressBook().indexOf(event.getPayload());
                         if (sendingNodeId != followerNodeId) continue;
                         break;
                     case FollowerLogRequestWhenProcessingNEWLEADER:
                         LOG.debug("FollowerLogRequestWhenProcessingNEWLEADER: {}, {}", subnodeType, type);
                         if (!subnodeType.equals(SubnodeType.QUORUM_PEER)
-                                || type != TestingDef.MessageType.NEWLEADER) continue;
+                                || type != MetaDef.MessageType.NEWLEADER) continue;
                         break;
                     case LeaderLog:
                         final long eventZxid = event.getZxid();

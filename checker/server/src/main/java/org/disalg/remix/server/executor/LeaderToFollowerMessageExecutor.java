@@ -47,7 +47,7 @@ public class LeaderToFollowerMessageExecutor extends BaseEventExecutor {
         // set the sending subnode to be PROCESSING
         sendingSubnode.setState(SubnodeState.PROCESSING);
 
-        if (event.getFlag() == TestingDef.RetCode.EXIT) {
+        if (event.getFlag() == MetaDef.RetCode.EXIT) {
             return;
         }
 
@@ -56,7 +56,7 @@ public class LeaderToFollowerMessageExecutor extends BaseEventExecutor {
         final int followerId = event.getReceivingNodeId();
         LOG.debug("partition map: {}, leader: {}, follower: {}", replayService.getPartitionMap(), leaderId, followerId);
         if (replayService.getPartitionMap().get(leaderId).get(followerId) ||
-            event.getFlag() == TestingDef.RetCode.NODE_PAIR_IN_PARTITION) {
+            event.getFlag() == MetaDef.RetCode.NODE_PAIR_IN_PARTITION) {
             return;
         }
 
@@ -165,7 +165,7 @@ public class LeaderToFollowerMessageExecutor extends BaseEventExecutor {
                         replayService.waitSubnodeTypeSending(followerId, SubnodeType.COMMIT_PROCESSOR);
                     }
                     break;
-                case TestingDef.MessageType.learnerHandlerReadRecord: // releasing my learnerHandlerReadRecord
+                case MetaDef.MessageType.learnerHandlerReadRecord: // releasing my learnerHandlerReadRecord
 //                    if (Phase.SYNC.equals(replayService.getNodePhases().get(followerId))) {
 //                        // must be going to send UPTODATE
 //                        replayService.getControlMonitor().notifyAll();

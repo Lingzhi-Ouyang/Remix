@@ -1,8 +1,8 @@
 package org.disalg.remix.server.executor;
 
+import org.disalg.remix.api.MetaDef;
 import org.disalg.remix.api.SubnodeState;
 import org.disalg.remix.api.SubnodeType;
-import org.disalg.remix.api.TestingDef;
 import org.disalg.remix.server.ReplayService;
 import org.disalg.remix.server.event.ElectionMessageEvent;
 import org.disalg.remix.server.state.Subnode;
@@ -49,7 +49,7 @@ public class ElectionMessageExecutor extends BaseEventExecutor {
         // set the sending subnode to be PROCESSING
         sendingSubnode.setState(SubnodeState.PROCESSING);
 
-        if (event.getFlag() == TestingDef.RetCode.EXIT) {
+        if (event.getFlag() == MetaDef.RetCode.EXIT) {
             return;
         }
 
@@ -57,7 +57,7 @@ public class ElectionMessageExecutor extends BaseEventExecutor {
         final int sendingNodeId = sendingSubnode.getNodeId();
         final int receivingNodeId = event.getReceivingNodeId();
         if (replayService.getPartitionMap().get(sendingNodeId).get(receivingNodeId)
-                || event.getFlag() == TestingDef.RetCode.NODE_PAIR_IN_PARTITION) {
+                || event.getFlag() == MetaDef.RetCode.NODE_PAIR_IN_PARTITION) {
             return;
         }
 

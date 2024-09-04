@@ -1,6 +1,6 @@
 package org.apache.zookeeper.server.quorum;
 
-import org.disalg.remix.api.TestingDef;
+import org.disalg.remix.api.MetaDef;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -73,7 +73,7 @@ public aspect WorkerReceiverAspect {
             // after offerMessage: decrease sendingSubnodeNum and shutdown this node if sendingSubnodeNum == 0
             quorumPeerAspect.postSend(workerReceiverSubnodeId, lastSentMessageId);
 
-            if (lastSentMessageId == TestingDef.RetCode.NODE_PAIR_IN_PARTITION){
+            if (lastSentMessageId == MetaDef.RetCode.NODE_PAIR_IN_PARTITION){
                 // just drop the message
                 LOG.debug("partition occurs! just drop the message.");
 

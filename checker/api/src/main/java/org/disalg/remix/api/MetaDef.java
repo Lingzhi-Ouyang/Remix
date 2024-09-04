@@ -1,6 +1,6 @@
 package org.disalg.remix.api;
 
-public class TestingDef {
+public class MetaDef {
     public interface RetCode {
         int CLIENT_INITIALIZATION_NOT_DONE = 0;
         int NODE_CRASH = -1;

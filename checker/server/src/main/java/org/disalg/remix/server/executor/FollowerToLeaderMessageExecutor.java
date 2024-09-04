@@ -45,7 +45,7 @@ public class FollowerToLeaderMessageExecutor extends BaseEventExecutor {
         // set the sending subnode to be PROCESSING
         sendingSubnode.setState(SubnodeState.PROCESSING);
 
-        if (event.getFlag() == TestingDef.RetCode.EXIT) {
+        if (event.getFlag() == MetaDef.RetCode.EXIT) {
             return;
         }
 
@@ -54,7 +54,7 @@ public class FollowerToLeaderMessageExecutor extends BaseEventExecutor {
         final int leaderId = event.getReceivingNodeId();
         LOG.debug("partition map: {}, follower: {}, leader: {}", replayService.getPartitionMap(), followerId, leaderId);
         if (replayService.getPartitionMap().get(followerId).get(leaderId) ||
-                event.getFlag() == TestingDef.RetCode.NODE_PAIR_IN_PARTITION) {
+                event.getFlag() == MetaDef.RetCode.NODE_PAIR_IN_PARTITION) {
             return;
         }
 

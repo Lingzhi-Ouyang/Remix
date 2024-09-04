@@ -1,8 +1,8 @@
 package org.apache.zookeeper.server.quorum;
 
 import org.apache.zookeeper.server.Request;
+import org.disalg.remix.api.MetaDef;
 import org.disalg.remix.api.RemoteService;
-import org.disalg.remix.api.TestingDef;
 import org.disalg.remix.api.SubnodeType;
 import org.disalg.remix.api.state.LeaderElectionState;
 import org.slf4j.Logger;
@@ -310,7 +310,7 @@ public privileged aspect QuorumPeerAspect {
             LOG.debug("after offerElectionMessage lastSentMessageId = {}, sendingSubnodeNum: {}", lastSentMessageId, sendingSubnodeNum.get());
             postSend(quorumPeerSubnodeId, lastSentMessageId);
 
-            if (lastSentMessageId == TestingDef.RetCode.NODE_PAIR_IN_PARTITION){
+            if (lastSentMessageId == MetaDef.RetCode.NODE_PAIR_IN_PARTITION){
                 // just drop the message
                 LOG.debug("partition occurs! just drop the message.");
                 remoteService.setReceivingState(quorumPeerSubnodeId);
@@ -338,7 +338,7 @@ public privileged aspect QuorumPeerAspect {
         synchronized (nodeOnlineMonitor) {
             final int existingSendingSubnodeNum = sendingSubnodeNum.decrementAndGet();
             LOG.debug("-----subnodeId: {}, after decrease sendingSubnodeNum: {}", subnodeId, sendingSubnodeNum.get());
-            if (msgId == TestingDef.RetCode.NODE_CRASH) {
+            if (msgId == MetaDef.RetCode.NODE_CRASH) {
                 // The last existing subnode is responsible to set the node state as offline
                 LOG.debug("-----subnodeId: {}, msgId: {}, existingSendingSubnodeNum: {}", subnodeId, msgId, existingSendingSubnodeNum);
                 if (existingSendingSubnodeNum == 0) {
@@ -371,7 +371,7 @@ public privileged aspect QuorumPeerAspect {
             }
             LOG.debug("-----subnode {} Id: {}, after decrease sendingSubnodeNum: {}",
                     intercepter.subnodeType, subnodeId, sendingSubnodeNum.get());
-            if (msgId == TestingDef.RetCode.NODE_CRASH) {
+            if (msgId == MetaDef.RetCode.NODE_CRASH) {
                 // The last existing subnode is responsible to set the node state as offline
                 LOG.debug("-----subnodeId: {}, msgId: {}, existingSendingSubnodeNum: {}", subnodeId, msgId, existingSendingSubnodeNum);
                 if (existingSendingSubnodeNum == 0) {

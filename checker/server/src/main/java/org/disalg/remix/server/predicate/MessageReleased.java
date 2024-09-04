@@ -2,7 +2,7 @@ package org.disalg.remix.server.predicate;
 
 import org.disalg.remix.api.NodeState;
 import org.disalg.remix.api.SubnodeState;
-import org.disalg.remix.api.TestingDef;
+import org.disalg.remix.api.MetaDef;
 import org.disalg.remix.server.ReplayService;
 import org.disalg.remix.server.event.Event;
 import org.slf4j.Logger;
@@ -62,16 +62,16 @@ public class MessageReleased implements WaitPredicate {
 //            if (event instanceof LocalEvent) {
 //////                 LeaderJudgingIsRunning
 ////                return NodeState.STOPPING.equals(replayService.getNodeStates().get(sendingNodeId)) ||
-////                        event.getFlag() == TestingDef.RetCode.NODE_PAIR_IN_PARTITION;
+////                        event.getFlag() == MetaDef.RetCode.NODE_PAIR_IN_PARTITION;
 ////            } else {
 ////                // message event
 //                return replayService.getMessageInFlight() == msgId ||
 //                        NodeState.STOPPING.equals(replayService.getNodeStates().get(sendingNodeId)) ||
-//                        event.getFlag() == TestingDef.RetCode.NODE_PAIR_IN_PARTITION;
+//                        event.getFlag() == MetaDef.RetCode.NODE_PAIR_IN_PARTITION;
 //            }
             return replayService.getMessageInFlight() == msgId ||
                     NodeState.STOPPING.equals(replayService.getNodeStates().get(sendingNodeId)) ||
-                    event.getFlag() == TestingDef.RetCode.NODE_PAIR_IN_PARTITION;
+                    event.getFlag() == MetaDef.RetCode.NODE_PAIR_IN_PARTITION;
         }
         if (sendingSubnodeId != null) {
             // other local event

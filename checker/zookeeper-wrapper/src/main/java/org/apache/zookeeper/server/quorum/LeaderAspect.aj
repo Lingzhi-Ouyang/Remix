@@ -1,7 +1,7 @@
 package org.apache.zookeeper.server.quorum;
 
+import org.disalg.remix.api.MetaDef;
 import org.disalg.remix.api.SubnodeType;
-import org.disalg.remix.api.TestingDef;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,7 +24,7 @@ public privileged aspect LeaderAspect {
             quorumPeerAspect.setSubnodeSending();
             final int judgingRunningPacketId = quorumPeerAspect.getRemoteService()
                     .offerLocalEvent(quorumPeerSubnodeId,
-                            SubnodeType.QUORUM_PEER, -1L, null, TestingDef.MessageType.leaderJudgingIsRunning);
+                            SubnodeType.QUORUM_PEER, -1L, null, MetaDef.MessageType.leaderJudgingIsRunning);
             // after offerMessage: decrease sendingSubnodeNum and shutdown this node if sendingSubnodeNum == 0
             quorumPeerAspect.postSend(quorumPeerSubnodeId, judgingRunningPacketId);
 
@@ -32,10 +32,10 @@ public privileged aspect LeaderAspect {
             quorumPeerAspect.getRemoteService().setReceivingState(quorumPeerSubnodeId);
 
             // to check if the partition happens
-            if (judgingRunningPacketId == TestingDef.RetCode.NODE_PAIR_IN_PARTITION){
+            if (judgingRunningPacketId == MetaDef.RetCode.NODE_PAIR_IN_PARTITION){
                 // just drop the message
                 LOG.debug("partition occurs!");
-                throw new RuntimeException("judgingRunningPacketId == TestingDef.RetCode.NODE_PAIR_IN_PARTITION");
+                throw new RuntimeException("judgingRunningPacketId == MetaDef.RetCode.NODE_PAIR_IN_PARTITION");
             }
             return;
         } catch (RemoteException e ) {

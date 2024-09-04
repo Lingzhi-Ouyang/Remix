@@ -1,7 +1,7 @@
 package org.disalg.remix.server.event;
 
 import org.disalg.remix.api.MessageType;
-import org.disalg.remix.api.TestingDef;
+import org.disalg.remix.api.MetaDef;
 import org.disalg.remix.server.executor.LocalEventExecutor;
 import org.disalg.remix.api.SubnodeType;
 import org.slf4j.Logger;
@@ -94,7 +94,7 @@ public class LocalEvent extends AbstractEvent{
                 case MessageType.COMMIT:
                     action = "FollowerProcessCOMMIT";
                     break;
-                case TestingDef.MessageType.leaderJudgingIsRunning:
+                case MetaDef.MessageType.leaderJudgingIsRunning:
                     action = "LeaderJudgingIsRunning";
                     break;
             }

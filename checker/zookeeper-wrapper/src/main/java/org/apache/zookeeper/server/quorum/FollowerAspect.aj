@@ -1,7 +1,7 @@
 package org.apache.zookeeper.server.quorum;
 
 import org.disalg.remix.api.MessageType;
-import org.disalg.remix.api.TestingDef;
+import org.disalg.remix.api.MetaDef;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -94,7 +94,7 @@ public aspect FollowerAspect {
             quorumPeerAspect.getRemoteService().setReceivingState(syncSubnodeId);
 
             // to check if the partition happens
-            if (followerWritePacketId == TestingDef.RetCode.NODE_PAIR_IN_PARTITION){
+            if (followerWritePacketId == MetaDef.RetCode.NODE_PAIR_IN_PARTITION){
                 // just drop the message
                 LOG.debug("partition occurs! just drop the message.");
             }
@@ -146,7 +146,7 @@ public aspect FollowerAspect {
             quorumPeerAspect.getRemoteService().setReceivingState(quorumPeerSubnodeId);
 
             // to check if the partition happens
-            if (followerWritePacketId == TestingDef.RetCode.NODE_PAIR_IN_PARTITION){
+            if (followerWritePacketId == MetaDef.RetCode.NODE_PAIR_IN_PARTITION){
                 // just drop the message
                 LOG.debug("partition occurs! just drop the message.");
                 throw new InterruptedException();

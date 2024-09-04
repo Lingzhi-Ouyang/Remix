@@ -1,9 +1,9 @@
 package org.apache.zookeeper.server.quorum;
 
 import org.apache.zookeeper.server.Request;
+import org.disalg.remix.api.MetaDef;
 import org.disalg.remix.api.RemoteService;
 import org.disalg.remix.api.SubnodeType;
-import org.disalg.remix.api.TestingDef;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -87,7 +87,7 @@ public privileged aspect CommitProcessorAspect {
                     threadId, subnodeId);
             return;
         }
-        if (lastMsgId != null && lastMsgId.equals(TestingDef.RetCode.BACK_TO_LOOKING)) {
+        if (lastMsgId != null && lastMsgId.equals(MetaDef.RetCode.BACK_TO_LOOKING)) {
             LOG.debug("CommitProcessor threadId: {}, subnodeId: {}, lastMsgId: {}," +
                     " indicating the node is going to become looking", threadId, subnodeId, lastMsgId);
             return;
@@ -108,7 +108,7 @@ public privileged aspect CommitProcessorAspect {
             // set RECEIVING state
             remoteService.setReceivingState(subnodeId);
 
-            if (lastCommitRequestId == TestingDef.RetCode.BACK_TO_LOOKING) {
+            if (lastCommitRequestId == MetaDef.RetCode.BACK_TO_LOOKING) {
                 LOG.debug("Sync threadId: {}, event == -200, indicating the node is going to become looking", threadId);
             }
 

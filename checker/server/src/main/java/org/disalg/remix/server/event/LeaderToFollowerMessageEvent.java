@@ -1,6 +1,6 @@
 package org.disalg.remix.server.event;
 
-import org.disalg.remix.api.TestingDef;
+import org.disalg.remix.api.MetaDef;
 import org.disalg.remix.server.executor.LeaderToFollowerMessageExecutor;
 import org.disalg.remix.api.MessageType;
 
@@ -77,7 +77,7 @@ public class LeaderToFollowerMessageEvent extends AbstractEvent{
             case MessageType.COMMIT:
                 action = "LeaderSendCOMMIT";
                 break;
-            case TestingDef.MessageType.learnerHandlerReadRecord:
+            case MetaDef.MessageType.learnerHandlerReadRecord:
                 action = "LearnerHandlerReadRecord";
                 break;
         }

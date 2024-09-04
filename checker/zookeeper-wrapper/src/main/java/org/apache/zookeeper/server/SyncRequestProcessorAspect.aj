@@ -1,9 +1,9 @@
 package org.apache.zookeeper.server;
 
 import org.apache.zookeeper.server.quorum.QuorumPeerAspect;
+import org.disalg.remix.api.MetaDef;
 import org.disalg.remix.api.RemoteService;
 import org.disalg.remix.api.SubnodeType;
-import org.disalg.remix.api.TestingDef;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -126,7 +126,7 @@ public aspect SyncRequestProcessorAspect {
                 // after offerMessage: decrease sendingSubnodeNum and shutdown this node if sendingSubnodeNum == 0
                 quorumPeerAspect.postSend(intercepter, subnodeId, lastSyncRequestId);
 
-                if (lastSyncRequestId == TestingDef.RetCode.BACK_TO_LOOKING) {
+                if (lastSyncRequestId == MetaDef.RetCode.BACK_TO_LOOKING) {
                     LOG.debug("Sync threadId: {}, event == -200, indicating the node is going to become looking", threadId);
                 }
 

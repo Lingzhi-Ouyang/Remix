@@ -1,6 +1,6 @@
 package org.disalg.remix.server.event;
 
-import org.disalg.remix.api.TestingDef;
+import org.disalg.remix.api.MetaDef;
 import org.disalg.remix.server.executor.BaseEventExecutor;
 
 import java.util.*;
@@ -16,7 +16,7 @@ public abstract class AbstractEvent implements Event {
     public AbstractEvent(final int id, final BaseEventExecutor eventExecutor) {
         this.id = id;
         this.eventExecutor = eventExecutor;
-        this.flag = TestingDef.RetCode.UNDEFINED;
+        this.flag = MetaDef.RetCode.UNDEFINED;
     }
 
     @Override

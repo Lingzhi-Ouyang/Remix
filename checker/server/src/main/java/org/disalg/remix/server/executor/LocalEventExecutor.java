@@ -55,7 +55,7 @@ public class LocalEventExecutor extends BaseEventExecutor{
         // set the corresponding subnode to be PROCESSING
         subnode.setState(SubnodeState.PROCESSING);
 
-        if (event.getFlag() == TestingDef.RetCode.EXIT || event.getFlag() == TestingDef.RetCode.NO_WAIT) {
+        if (event.getFlag() == MetaDef.RetCode.EXIT || event.getFlag() == MetaDef.RetCode.NO_WAIT) {
             return;
         }
 
@@ -93,7 +93,7 @@ public class LocalEventExecutor extends BaseEventExecutor{
                 LeaderElectionState role = replayService.getLeaderElectionState(nodeId);
                 if (role.equals(LeaderElectionState.FOLLOWING)) {
                     int eventType = event.getType();
-                    if (eventType == TestingDef.MessageType.NEWLEADER) {
+                    if (eventType == MetaDef.MessageType.NEWLEADER) {
                         // post-condition:
                         // 1. follower reply ACK-LD: FollowerSendACKtoNEWLEADER by follower's QUORUM_PEER
                         // 2. follower log a proposal: LogRequest by follower's SYNC_PROCESSOR
@@ -128,7 +128,7 @@ public class LocalEventExecutor extends BaseEventExecutor{
 
                 // for log event and ack event
                 if (LeaderElectionState.FOLLOWING.equals(replayService.getLeaderElectionState(nodeId))
-                        && event.getFlag() != TestingDef.RetCode.NO_WAIT) {
+                        && event.getFlag() != MetaDef.RetCode.NO_WAIT) {
                     if (Phase.BROADCAST.equals(replayService.getNodePhases().get(nodeId))) {
                         // During broadcast:
                         // leader will ack self, which is not intercepted

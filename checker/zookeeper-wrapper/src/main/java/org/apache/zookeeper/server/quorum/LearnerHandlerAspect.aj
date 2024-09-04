@@ -2,8 +2,8 @@ package org.apache.zookeeper.server.quorum;
 
 import org.apache.jute.Record;
 import org.disalg.remix.api.MessageType;
+import org.disalg.remix.api.MetaDef;
 import org.disalg.remix.api.SubnodeType;
-import org.disalg.remix.api.TestingDef;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -145,7 +145,7 @@ public aspect LearnerHandlerAspect {
                     threadId, subnodeId);
             return;
         }
-        if (lastMsgId != null && lastMsgId.equals(TestingDef.RetCode.BACK_TO_LOOKING)) {
+        if (lastMsgId != null && lastMsgId.equals(MetaDef.RetCode.BACK_TO_LOOKING)) {
             LOG.debug("LearnerHandler threadId: {}, subnodeId: {}, lastMsgId: {}," +
                     " indicating the node is going to become looking", threadId, subnodeId, lastMsgId);
             return;
@@ -207,7 +207,7 @@ public aspect LearnerHandlerAspect {
                     threadId, subnodeId);
             return;
         }
-        if (lastMsgId != null && lastMsgId.equals(TestingDef.RetCode.BACK_TO_LOOKING)) {
+        if (lastMsgId != null && lastMsgId.equals(MetaDef.RetCode.BACK_TO_LOOKING)) {
             LOG.debug("LearnerHandlerSender threadId: {}, subnodeId: {}, lastMsgId: {}," +
                     " indicating the node is going to become looking", threadId, subnodeId, lastMsgId);
             proceed(r, s);
@@ -244,12 +244,12 @@ public aspect LearnerHandlerAspect {
             intercepter.getRemoteService().setReceivingState(subnodeId);
 
             // to check if the partition happens
-            if (lastPacketId == TestingDef.RetCode.NODE_PAIR_IN_PARTITION){
+            if (lastPacketId == MetaDef.RetCode.NODE_PAIR_IN_PARTITION){
                 // just drop the message
                 LOG.debug("partition occurs! just drop the message.");
                 throw new IOException();
             }
-            if (lastPacketId == TestingDef.RetCode.BACK_TO_LOOKING) {
+            if (lastPacketId == MetaDef.RetCode.BACK_TO_LOOKING) {
                 LOG.debug("LearnerHandlerSender threadId: {}, event == -200, indicating the node is going to become looking", threadId);
             }
 
@@ -296,7 +296,7 @@ public aspect LearnerHandlerAspect {
                     threadId, subnodeId);
             return;
         }
-        if (lastMsgId != null && lastMsgId.equals(TestingDef.RetCode.BACK_TO_LOOKING)) {
+        if (lastMsgId != null && lastMsgId.equals(MetaDef.RetCode.BACK_TO_LOOKING)) {
             LOG.debug("LearnerHandler threadId: {}, subnodeId: {}, lastMsgId: {}," +
                     " indicating the node is going to become looking", threadId, subnodeId, lastMsgId);
             return;
@@ -309,7 +309,7 @@ public aspect LearnerHandlerAspect {
 
             final String receivingAddr = threadName.split("-")[1];
             final int lastPacketId = intercepter.getRemoteService().offerLeaderToFollowerMessage(
-                    subnodeId, receivingAddr, -1L, null, TestingDef.MessageType.learnerHandlerReadRecord);
+                    subnodeId, receivingAddr, -1L, null, MetaDef.MessageType.learnerHandlerReadRecord);
             intercepter.setLastMsgId(lastPacketId);
             LOG.debug("learnerHandlerReadRecord lastPacketId = {}", lastPacketId);
 
@@ -319,13 +319,13 @@ public aspect LearnerHandlerAspect {
             intercepter.getRemoteService().setReceivingState(subnodeId);
 
             // to check if the partition happens
-            if (lastPacketId == TestingDef.RetCode.NODE_PAIR_IN_PARTITION){
+            if (lastPacketId == MetaDef.RetCode.NODE_PAIR_IN_PARTITION){
                 // just drop the message
                 LOG.debug("partition occurs! just drop the message.");
                 throw new SocketTimeoutException();
 //                return;
             }
-            if (lastPacketId == TestingDef.RetCode.BACK_TO_LOOKING) {
+            if (lastPacketId == MetaDef.RetCode.BACK_TO_LOOKING) {
                 LOG.debug("LearnerHandler threadId: {}, event == -200, indicating the node is going to become looking", threadId);
             }
 
@@ -375,7 +375,7 @@ public aspect LearnerHandlerAspect {
                     threadId, subnodeId);
             return;
         }
-        if (lastMsgId != null && lastMsgId.equals(TestingDef.RetCode.BACK_TO_LOOKING)) {
+        if (lastMsgId != null && lastMsgId.equals(MetaDef.RetCode.BACK_TO_LOOKING)) {
             LOG.debug("LearnerHandler threadId: {}, subnodeId: {}, lastMsgId: {}," +
                     " indicating the node is going to become looking", threadId, subnodeId, lastMsgId);
             proceed(r, s);
@@ -408,12 +408,12 @@ public aspect LearnerHandlerAspect {
             intercepter.getRemoteService().setReceivingState(subnodeId);
 
             // to check if the partition happens
-            if (lastPacketId == TestingDef.RetCode.NODE_PAIR_IN_PARTITION){
+            if (lastPacketId == MetaDef.RetCode.NODE_PAIR_IN_PARTITION){
                 // just drop the message
                 LOG.debug("partition occurs! just drop the message.");
                 throw new SocketTimeoutException();
             }
-            if (lastPacketId == TestingDef.RetCode.BACK_TO_LOOKING) {
+            if (lastPacketId == MetaDef.RetCode.BACK_TO_LOOKING) {
                 LOG.debug("LearnerHandler threadId: {}, event == -200, indicating the node is going to become looking", threadId);
             }
 
@@ -455,7 +455,7 @@ public aspect LearnerHandlerAspect {
                     threadId, subnodeId);
             return;
         }
-        if (lastMsgId != null && lastMsgId.equals(TestingDef.RetCode.BACK_TO_LOOKING)) {
+        if (lastMsgId != null && lastMsgId.equals(MetaDef.RetCode.BACK_TO_LOOKING)) {
             LOG.debug("LearnerHandler threadId: {}, subnodeId: {}, lastMsgId: {}," +
                     " indicating the node is going to become looking", threadId, subnodeId, lastMsgId);
             return;
@@ -478,7 +478,7 @@ public aspect LearnerHandlerAspect {
             // Trick: set RECEIVING state here
             intercepter.getRemoteService().setReceivingState(subnodeId);
 
-            if (eventId == TestingDef.RetCode.BACK_TO_LOOKING) {
+            if (eventId == MetaDef.RetCode.BACK_TO_LOOKING) {
                 LOG.debug("LearnerHandler threadId: {}, event == -200, indicating the node is going to become looking", threadId);
             }
 

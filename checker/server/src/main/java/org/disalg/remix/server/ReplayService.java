@@ -781,7 +781,7 @@ public class ReplayService implements RemoteService {
                 synchronized (controlMonitor) {
                     while (schedulingStrategy.hasNextEvent()) {
                         Event event = schedulingStrategy.nextEvent();
-                        event.setFlag(TestingDef.RetCode.EXIT);
+                        event.setFlag(MetaDef.RetCode.EXIT);
                         event.execute();
                     }
                     controlMonitor.notifyAll();
@@ -954,7 +954,7 @@ public class ReplayService implements RemoteService {
                 synchronized (controlMonitor) {
                     while (schedulingStrategy.hasNextEvent()) {
                         Event event = schedulingStrategy.nextEvent();
-                        event.setFlag(TestingDef.RetCode.EXIT);
+                        event.setFlag(MetaDef.RetCode.EXIT);
                         event.execute();
                     }
                     controlMonitor.notifyAll();
@@ -1676,7 +1676,7 @@ public class ReplayService implements RemoteService {
             final int receivingNode = e.getReceivingNodeId();
             if (!allParticipants.contains(receivingNode)) {
                 LOG.debug("the receiving node is not a participants, just drop it.");
-                e.setFlag(TestingDef.RetCode.NODE_PAIR_IN_PARTITION);
+                e.setFlag(MetaDef.RetCode.NODE_PAIR_IN_PARTITION);
             }
 
             long electionEpoch = e.getElectionEpoch();
@@ -1692,7 +1692,7 @@ public class ReplayService implements RemoteService {
                     if (sendingNodeId != receivingNode) {
                         LOG.debug("dropping notifications irrelative to leader {} ,sendingNodeId {}, receivingNode {}.",
                                 leaderId, sendingNodeId, receivingNode);
-                        e.setFlag(TestingDef.RetCode.NODE_PAIR_IN_PARTITION);
+                        e.setFlag(MetaDef.RetCode.NODE_PAIR_IN_PARTITION);
                     }
                 }
             }
@@ -1861,7 +1861,7 @@ public class ReplayService implements RemoteService {
                         final int receivingNode = e.getReceivingNodeId();
                         if (!allParticipants.contains(receivingNode)) {
                             LOG.debug("the receiving node is not a participants, just drop it.");
-                            e.setFlag(TestingDef.RetCode.NODE_PAIR_IN_PARTITION);
+                            e.setFlag(MetaDef.RetCode.NODE_PAIR_IN_PARTITION);
                         }
 
                         long electionEpoch = e.getElectionEpoch();
@@ -1880,7 +1880,7 @@ public class ReplayService implements RemoteService {
                                     if (lookingParticipants.contains(sendingNodeId) && lookingParticipants.contains(receivingNode) ) {
                                         LOG.debug("dropping notifications irrelative to leader {} ,sendingNodeId {}, receivingNode {}.",
                                                 leaderId, sendingNodeId, receivingNode);
-                                        e.setFlag(TestingDef.RetCode.NODE_PAIR_IN_PARTITION);
+                                        e.setFlag(MetaDef.RetCode.NODE_PAIR_IN_PARTITION);
                                     } else {
                                         LOG.debug("receivingNode {} NOT in LOOKING state, " +
                                                 "should let it communicate vote result", receivingNode);
@@ -1889,7 +1889,7 @@ public class ReplayService implements RemoteService {
 //                            if (electionEpoch >= maxElectionEpochInLeader && proposedLeader != leaderId && sendingNodeId != receivingNode) {
 //                                LOG.debug("electionEpoch {} >= maxElectionEpoch {}, proposedLeader {} != leaderId {}, just drop it.",
 //                                        electionEpoch, maxElectionEpochInLeader, proposedLeader, leaderId);
-//                                e.setFlag(TestingDef.RetCode.NODE_PAIR_IN_PARTITION);
+//                                e.setFlag(MetaDef.RetCode.NODE_PAIR_IN_PARTITION);
 //                            }
 
                             }
@@ -3672,7 +3672,7 @@ public class ReplayService implements RemoteService {
 
         if (nodeStates.get(sendingNodeId).equals(NodeState.OFFLINE) ||
                 nodeStates.get(sendingNodeId).equals(NodeState.STOPPING)) {
-            return TestingDef.RetCode.NODE_CRASH;
+            return MetaDef.RetCode.NODE_CRASH;
         }
 
         // We want to determinize the order in which the first messages are added, so we wait until
@@ -3686,7 +3686,7 @@ public class ReplayService implements RemoteService {
 
 //        // Problem: It will make the message that come immediately after the node restarts to be missed
 //        if (partitionMap.get(sendingNodeId).get(receivingNodeId)){
-//            return TestingDef.RetCode.NODE_PAIR_IN_PARTITION;
+//            return MetaDef.RetCode.NODE_PAIR_IN_PARTITION;
 //        }
 
 //        final NodeStartEvent lastNodeStartEvent = lastNodeStartEvents.get(sendingNodeId);
@@ -3713,13 +3713,13 @@ public class ReplayService implements RemoteService {
             controlMonitor.notifyAll();
 
             waitMessageReleased(id, sendingNodeId, sendingSubnodeId, electionMessageEvent);
-            if (electionMessageEvent.getFlag() == TestingDef.RetCode.EXIT) {
+            if (electionMessageEvent.getFlag() == MetaDef.RetCode.EXIT) {
                 LOG.debug(" Test trace is over. Drop the event {}", electionMessageEvent);
                 if (sendingSubnode.getState().equals(SubnodeState.PROCESSING)) {
                     sendingSubnode.setState(SubnodeState.RECEIVING);
                 }
                 controlMonitor.notifyAll();
-                return TestingDef.RetCode.EXIT;
+                return MetaDef.RetCode.EXIT;
             }
 
             try {
@@ -3729,7 +3729,7 @@ public class ReplayService implements RemoteService {
                     LOG.debug("----------node {} is crashed! setting ElectionMessage executed and removed. {}",
                             sendingNodeId, electionMessageEvent);
                     executionWriter.write("event id=" + id + " removed due to sending node STOPPING");
-                    id = TestingDef.RetCode.NODE_CRASH;
+                    id = MetaDef.RetCode.NODE_CRASH;
                     electionMessageEvent.setExecuted();
                     schedulingStrategy.remove(electionMessageEvent);
 
@@ -3739,17 +3739,17 @@ public class ReplayService implements RemoteService {
                     LOG.debug("----------subnode {} of node {} is unregistered! setting ElectionMessage executed and removed. {}",
                             sendingSubnodeId, sendingNodeId, electionMessageEvent);
                     executionWriter.write("event id=" + id + " removed due to unregistered");
-                    id = TestingDef.RetCode.SUBNODE_UNREGISTERED;
+                    id = MetaDef.RetCode.SUBNODE_UNREGISTERED;
                     electionMessageEvent.setExecuted();
                     schedulingStrategy.remove(electionMessageEvent);
                 }
                 // case 3: this event is released when the network partition occurs
                 else if (partitionMap.get(sendingNodeId).get(receivingNodeId) ||
-                        electionMessageEvent.getFlag() == TestingDef.RetCode.NODE_PAIR_IN_PARTITION) {
+                        electionMessageEvent.getFlag() == MetaDef.RetCode.NODE_PAIR_IN_PARTITION) {
                     LOG.debug("----------node {} and {} get partitioned! setting ElectionMessage executed and removed. {}",
                             sendingNodeId, receivingNodeId, electionMessageEvent);
                     executionWriter.write("\nevent id=" + id + " removed due to partition");
-                    id = TestingDef.RetCode.NODE_PAIR_IN_PARTITION;
+                    id = MetaDef.RetCode.NODE_PAIR_IN_PARTITION;
                     electionMessageEvent.setExecuted();
                     schedulingStrategy.remove(electionMessageEvent);
                 }
@@ -3757,7 +3757,7 @@ public class ReplayService implements RemoteService {
                     LOG.debug("----------node {} is about to be looking! setting ElectionMessage executed and removed. {}",
                             sendingNodeId, electionMessageEvent);
                     executionWriter.write("event id=" + id + " removed due to become looking");
-                    id = TestingDef.RetCode.BACK_TO_LOOKING;
+                    id = MetaDef.RetCode.BACK_TO_LOOKING;
                     electionMessageEvent.setExecuted();
                     schedulingStrategy.remove(electionMessageEvent);
                 }
@@ -3790,7 +3790,7 @@ public class ReplayService implements RemoteService {
             //        // not in partition
 //        if (!clientInitializationDone) {
 //            LOG.debug("----client initialization is not done!---");
-//            return TestingDef.RetCode.CLIENT_INITIALIZATION_NOT_DONE;
+//            return MetaDef.RetCode.CLIENT_INITIALIZATION_NOT_DONE;
 //        }
 
             // check who is the leader, or the leader has crashed
@@ -3798,19 +3798,19 @@ public class ReplayService implements RemoteService {
 
             if (receivingNodeId == -1) {
                 LOG.debug("Leader has crashed / un-exist!");
-                return TestingDef.RetCode.NODE_PAIR_IN_PARTITION;
+                return MetaDef.RetCode.NODE_PAIR_IN_PARTITION;
             }
 
 
             if (nodeStates.get(sendingNodeId).equals(NodeState.OFFLINE)
                     || nodeStates.get(sendingNodeId).equals(NodeState.STOPPING)) {
-                return TestingDef.RetCode.NODE_CRASH;
+                return MetaDef.RetCode.NODE_CRASH;
             }
 
             if ( nodeStates.get(sendingNodeId).equals(NodeState.UNREADY)){
                 LOG.debug("Will not intercept follower {} replying leader {}'s type={} message as " +
                         "it is about to be looking...", sendingNodeId, receivingNodeId, lastReceivedType);
-                return TestingDef.RetCode.BACK_TO_LOOKING;
+                return MetaDef.RetCode.BACK_TO_LOOKING;
             }
 
 //        // if partition occurs, just return without sending this message
@@ -3818,7 +3818,7 @@ public class ReplayService implements RemoteService {
             if (partitionMap.get(sendingNodeId).get(receivingNodeId)){
                 LOG.debug("Follower {} is trying to reply leader {}'s type={} message " +
                         "where they are partitioned. Just return", sendingNodeId, receivingNodeId, lastReceivedType);
-                return TestingDef.RetCode.NODE_PAIR_IN_PARTITION;
+                return MetaDef.RetCode.NODE_PAIR_IN_PARTITION;
             }
 
             switch (lastReceivedType) {
@@ -3830,7 +3830,7 @@ public class ReplayService implements RemoteService {
                     break;
                 case MessageType.UPTODATE:
                     LOG.debug("-------follower {} is about to reply ACK to UPTODATE in sync phase!", sendingNodeId);
-//                    return TestingDef.RetCode.NOT_INTERCEPTED;
+//                    return MetaDef.RetCode.NOT_INTERCEPTED;
                     break;
                 case MessageType.PROPOSAL:
                     LOG.debug("-------follower is about to reply ACK to PROPOSAL in BROADCAST phase!");
@@ -3840,7 +3840,7 @@ public class ReplayService implements RemoteService {
                     break;
                 default:
                     LOG.debug("-------follower is sending a message that will not be intercepted!");
-                    return TestingDef.RetCode.NOT_INTERCEPTED;
+                    return MetaDef.RetCode.NOT_INTERCEPTED;
             }
         }
 
@@ -3860,13 +3860,13 @@ public class ReplayService implements RemoteService {
             controlMonitor.notifyAll();
 
             waitMessageReleased(id, sendingNodeId, sendingSubnodeId, messageEvent);
-            if (messageEvent.getFlag() == TestingDef.RetCode.EXIT) {
+            if (messageEvent.getFlag() == MetaDef.RetCode.EXIT) {
                 LOG.debug(" Test trace is over. Drop the event {}", messageEvent);
                 if (sendingSubnode.getState().equals(SubnodeState.PROCESSING)) {
                     sendingSubnode.setState(SubnodeState.RECEIVING);
                 }
                 controlMonitor.notifyAll();
-                return TestingDef.RetCode.EXIT;
+                return MetaDef.RetCode.EXIT;
             }
 
             // normally, this event is released when scheduled except:
@@ -3874,7 +3874,7 @@ public class ReplayService implements RemoteService {
             if (NodeState.STOPPING.equals(nodeStates.get(sendingNodeId))) {
                 LOG.debug("----------node {} is crashed! setting followerMessage executed and removed. {}",
                         sendingNodeId, messageEvent);
-                id = TestingDef.RetCode.NODE_CRASH;
+                id = MetaDef.RetCode.NODE_CRASH;
                 messageEvent.setExecuted();
                 schedulingStrategy.remove(messageEvent);
             }
@@ -3882,24 +3882,24 @@ public class ReplayService implements RemoteService {
             else if (SubnodeState.UNREGISTERED.equals(subnodes.get(sendingSubnodeId).getState())) {
                 LOG.debug("----------subnode {} of node {} is unregistered! setting followerMessage executed and removed. {}",
                         sendingSubnode, sendingNodeId, messageEvent);
-                id = TestingDef.RetCode.SUBNODE_UNREGISTERED;
+                id = MetaDef.RetCode.SUBNODE_UNREGISTERED;
                 messageEvent.setExecuted();
                 schedulingStrategy.remove(messageEvent);
             }
             // case 3: this event is released when the network partition occurs
             else if (partitionMap.get(sendingNodeId).get(receivingNodeId) ||
-                    messageEvent.getFlag() == TestingDef.RetCode.NODE_PAIR_IN_PARTITION) {
+                    messageEvent.getFlag() == MetaDef.RetCode.NODE_PAIR_IN_PARTITION) {
                 LOG.debug("----------node {} and {} get partitioned! setting messageEvent executed and removed. {}",
                         sendingNodeId, receivingNodeId, messageEvent);
                 sendingSubnode.setState(SubnodeState.RECEIVING);
-                id = TestingDef.RetCode.NODE_PAIR_IN_PARTITION;
+                id = MetaDef.RetCode.NODE_PAIR_IN_PARTITION;
                 messageEvent.setExecuted();
                 schedulingStrategy.remove(messageEvent);
             }
             else if (NodeState.UNREADY.equals(nodeStates.get(sendingNodeId))) {
                 LOG.debug("----------node {} is about to become looking! setting followerMessage executed and removed. {}",
                         sendingNodeId, messageEvent);
-                id = TestingDef.RetCode.BACK_TO_LOOKING;
+                id = MetaDef.RetCode.BACK_TO_LOOKING;
                 messageEvent.setExecuted();
                 schedulingStrategy.remove(messageEvent);
             }
@@ -3927,7 +3927,7 @@ public class ReplayService implements RemoteService {
                     sendingNodeId, receivingNodeId, receivingAddr, type, Long.toHexString(zxid));
             if (receivingNodeId == -1) {
                 LOG.debug("The receiving node has crashed / un-exist!");
-                return TestingDef.RetCode.NODE_PAIR_IN_PARTITION;
+                return MetaDef.RetCode.NODE_PAIR_IN_PARTITION;
             }
             switch (type) {
                 case MessageType.LEADERINFO:
@@ -3971,7 +3971,7 @@ public class ReplayService implements RemoteService {
                     // LearnerHandlerSender
                     followerLearnerHandlerSenderMap.set(receivingNodeId, sendingSubnodeId);
                     break;
-                case TestingDef.MessageType.learnerHandlerReadRecord:
+                case MetaDef.MessageType.learnerHandlerReadRecord:
                     LOG.debug("-------leader {}'s learner handler {} (serving follower {}) is about to read record...",
                             sendingNodeId, sendingSubnodeId, receivingNodeId);
                     break;
@@ -3981,18 +3981,18 @@ public class ReplayService implements RemoteService {
 //        // during client session establishment, do not intercept
 //        if (!clientInitializationDone) {
 //            LOG.debug("----client initialization is not done!---");
-//            return TestingDef.RetCode.CLIENT_INITIALIZATION_NOT_DONE;
+//            return MetaDef.RetCode.CLIENT_INITIALIZATION_NOT_DONE;
 //        }
 
             if (nodeStates.get(sendingNodeId).equals(NodeState.OFFLINE)
                     || nodeStates.get(sendingNodeId).equals(NodeState.STOPPING)) {
-                return TestingDef.RetCode.NODE_CRASH;
+                return MetaDef.RetCode.NODE_CRASH;
             }
 
             if ( nodeStates.get(sendingNodeId).equals(NodeState.UNREADY)){
                 LOG.debug("Will not intercept leader {} to follower {}'s type={} message as " +
                         "it is about to be looking...", sendingNodeId, receivingNodeId, type);
-                return TestingDef.RetCode.BACK_TO_LOOKING;
+                return MetaDef.RetCode.BACK_TO_LOOKING;
             }
 
             // if partition occurs, just return without sending this message
@@ -4000,7 +4000,7 @@ public class ReplayService implements RemoteService {
             if (partitionMap.get(sendingNodeId).get(receivingNodeId)){
                 LOG.debug("Leader {} is trying to send a a type={} message to follower {}: " +
                         "where they are partitioned. Just return", sendingNodeId, type, receivingNodeId);
-                return TestingDef.RetCode.NODE_PAIR_IN_PARTITION;
+                return MetaDef.RetCode.NODE_PAIR_IN_PARTITION;
             }
 
 
@@ -4029,7 +4029,7 @@ public class ReplayService implements RemoteService {
                 case MessageType.UPTODATE:
                     LOG.debug("-------leader {} is about to send UPTODATE to follower {}!", sendingNodeId, receivingNodeId);
                     break;
-                case TestingDef.MessageType.learnerHandlerReadRecord:
+                case MetaDef.MessageType.learnerHandlerReadRecord:
                     if ( nodePhases.get(receivingNodeId).equals(Phase.SYNC)
                             || nodePhases.get(receivingNodeId).equals(Phase.BROADCAST)) {
                         LOG.debug("-------leader {}'s learner handler {} is about to read record from follower {}!",
@@ -4039,12 +4039,12 @@ public class ReplayService implements RemoteService {
                         LOG.debug("update readRecordIntercepted: {}", readRecordIntercepted);
                     } else {
                         LOG.debug("-------follower {} is still in discovery, will not intercept read record!", receivingNodeId);
-                        return TestingDef.RetCode.NOT_INTERCEPTED;
+                        return MetaDef.RetCode.NOT_INTERCEPTED;
                     }
                     break;
                 default:
                     LOG.debug("-------leader is about to send a message that will not be intercepted!");
-                    return TestingDef.RetCode.NOT_INTERCEPTED;
+                    return MetaDef.RetCode.NOT_INTERCEPTED;
             }
         }
 
@@ -4067,16 +4067,16 @@ public class ReplayService implements RemoteService {
             controlMonitor.notifyAll();
             waitMessageReleased(id, sendingNodeId, sendingSubnodeId, messageEvent);
 
-            if (messageEvent.getFlag() == TestingDef.RetCode.EXIT) {
+            if (messageEvent.getFlag() == MetaDef.RetCode.EXIT) {
                 LOG.debug(" Test trace is over. Drop the event {}", messageEvent);
                 if (sendingSubnode.getState().equals(SubnodeState.PROCESSING)) {
                     sendingSubnode.setState(SubnodeState.RECEIVING);
                 }
                 controlMonitor.notifyAll();
-                return TestingDef.RetCode.EXIT;
+                return MetaDef.RetCode.EXIT;
             }
 
-            if (type == TestingDef.MessageType.learnerHandlerReadRecord) {
+            if (type == MetaDef.MessageType.learnerHandlerReadRecord) {
                 LOG.debug("readRecordIntercepted: {}", readRecordIntercepted);
                 readRecordIntercepted.put(receivingNodeId, false);
                 LOG.debug("after readRecordIntercepted: {}", readRecordIntercepted);
@@ -4087,7 +4087,7 @@ public class ReplayService implements RemoteService {
             if (NodeState.STOPPING.equals(nodeStates.get(sendingNodeId))) {
                 LOG.debug("----------node {} is crashed! setting LeaderMessage executed and removed. {}",
                         sendingNodeId, messageEvent);
-                id = TestingDef.RetCode.NODE_CRASH;
+                id = MetaDef.RetCode.NODE_CRASH;
                 messageEvent.setExecuted();
                 schedulingStrategy.remove(messageEvent);
             }
@@ -4095,24 +4095,24 @@ public class ReplayService implements RemoteService {
             else if (SubnodeState.UNREGISTERED.equals(subnodes.get(sendingSubnodeId).getState())) {
                 LOG.debug("----------subnode {} of node {} is unregistered! setting LeaderMessage executed and removed. {}",
                         sendingSubnode, sendingNodeId, messageEvent);
-                id = TestingDef.RetCode.SUBNODE_UNREGISTERED;
+                id = MetaDef.RetCode.SUBNODE_UNREGISTERED;
                 messageEvent.setExecuted();
                 schedulingStrategy.remove(messageEvent);
             }
             // case 3: this event is released when the network partition occurs
             else if (partitionMap.get(sendingNodeId).get(receivingNodeId) ||
-                    messageEvent.getFlag() == TestingDef.RetCode.NODE_PAIR_IN_PARTITION) {
+                    messageEvent.getFlag() == MetaDef.RetCode.NODE_PAIR_IN_PARTITION) {
                 LOG.debug("----------node {} and {} get partitioned! setting messageEvent executed and removed. {}",
                         sendingNodeId, receivingNodeId, messageEvent);
                 sendingSubnode.setState(SubnodeState.RECEIVING);
-                id = TestingDef.RetCode.NODE_PAIR_IN_PARTITION;
+                id = MetaDef.RetCode.NODE_PAIR_IN_PARTITION;
                 messageEvent.setExecuted();
                 schedulingStrategy.remove(messageEvent);
             }
             else if (NodeState.UNREADY.equals(nodeStates.get(sendingNodeId))) {
                 LOG.debug("----------node {} is about to become looking! setting LeaderMessage executed and removed. {}",
                         sendingNodeId, messageEvent);
-                id = TestingDef.RetCode.BACK_TO_LOOKING;
+                id = MetaDef.RetCode.BACK_TO_LOOKING;
                 messageEvent.setExecuted();
                 schedulingStrategy.remove(messageEvent);
             }
@@ -4131,7 +4131,7 @@ public class ReplayService implements RemoteService {
 //        if (!subnodeType.equals(SubnodeType.QUORUM_PEER)) {
 //            if (!clientInitializationDone) {
 //                LOG.debug("----client initialization is not done!---");
-//                return TestingDef.RetCode.CLIENT_INITIALIZATION_NOT_DONE;
+//                return MetaDef.RetCode.CLIENT_INITIALIZATION_NOT_DONE;
 //            }
 //        }
 
@@ -4140,13 +4140,13 @@ public class ReplayService implements RemoteService {
 
         if (nodeStates.get(nodeId).equals(NodeState.OFFLINE) ||
                 nodeStates.get(nodeId).equals(NodeState.STOPPING)) {
-            return TestingDef.RetCode.NODE_CRASH;
+            return MetaDef.RetCode.NODE_CRASH;
         }
 
         if ( nodeStates.get(nodeId).equals(NodeState.UNREADY)){
             LOG.debug("Will not intercept node {}'s action: subnodeType={}, type={}, as " +
                     "it is about to be looking...", nodeId, subnodeType, type);
-            return TestingDef.RetCode.BACK_TO_LOOKING;
+            return MetaDef.RetCode.BACK_TO_LOOKING;
         }
 
         int id = generateEventId();
@@ -4161,25 +4161,25 @@ public class ReplayService implements RemoteService {
                 zxidToCommitMap.put(zxidOrEpoch, zxidToCommitMap.getOrDefault(zxidOrEpoch, 0) + 1);
             }
             controlMonitor.notifyAll();
-            if (type == TestingDef.MessageType.leaderJudgingIsRunning) {
+            if (type == MetaDef.MessageType.leaderJudgingIsRunning) {
                 waitMessageReleased(id, nodeId, subnodeId, localEvent);
             } else {
                 waitMessageReleased(id, nodeId, subnodeId);
             }
 
-            if (localEvent.getFlag() == TestingDef.RetCode.EXIT) {
+            if (localEvent.getFlag() == MetaDef.RetCode.EXIT) {
                 LOG.debug(" Test trace is over. Drop the event {}", localEvent);
                 if (subnode.getState().equals(SubnodeState.PROCESSING)) {
                     subnode.setState(SubnodeState.RECEIVING);
                 }
                 controlMonitor.notifyAll();
-                return TestingDef.RetCode.EXIT;
+                return MetaDef.RetCode.EXIT;
             }
 
             // case 1: this event is released since the node is crashed
             if (NodeState.STOPPING.equals(nodeStates.get(nodeId))) {
                 LOG.debug("----------node {} is crashed! setting localEvent executed. {}", nodeId, localEvent);
-                id = TestingDef.RetCode.NODE_CRASH;
+                id = MetaDef.RetCode.NODE_CRASH;
                 localEvent.setExecuted();
                 schedulingStrategy.remove(localEvent);
             }
@@ -4187,21 +4187,21 @@ public class ReplayService implements RemoteService {
             else if (SubnodeState.UNREGISTERED.equals(subnodes.get(subnodeId).getState())) {
                 LOG.debug("----------subnode {} of node {} is unregistered! setting localEvent executed. {}",
                         subnodeId, nodeId, localEvent);
-                id = TestingDef.RetCode.SUBNODE_UNREGISTERED;
+                id = MetaDef.RetCode.SUBNODE_UNREGISTERED;
                 localEvent.setExecuted();
                 schedulingStrategy.remove(localEvent);
             }// case 3: this event is released when the network partition occurs
-            else if (localEvent.getFlag() == TestingDef.RetCode.NODE_PAIR_IN_PARTITION) {
+            else if (localEvent.getFlag() == MetaDef.RetCode.NODE_PAIR_IN_PARTITION) {
                 LOG.debug("---------get flag partitioned! setting leader-judging-isRunning event executed and removed. {}",
                         localEvent);
                 subnode.setState(SubnodeState.RECEIVING);
-                id = TestingDef.RetCode.NODE_PAIR_IN_PARTITION;
+                id = MetaDef.RetCode.NODE_PAIR_IN_PARTITION;
                 localEvent.setExecuted();
                 schedulingStrategy.remove(localEvent);
             }
             else if (NodeState.UNREADY.equals(nodeStates.get(nodeId))) {
                 LOG.debug("---------node {} is about to become looking. NOT_INTERCEPTED. setting localEvent executed. {}", nodeId, localEvent);
-                id = TestingDef.RetCode.BACK_TO_LOOKING;
+                id = MetaDef.RetCode.BACK_TO_LOOKING;
                 localEvent.setExecuted();
                 schedulingStrategy.remove(localEvent);
             }
@@ -4218,12 +4218,12 @@ public class ReplayService implements RemoteService {
             if (nodeStates.get(nodeId).equals(NodeState.OFFLINE) || nodeStates.get(nodeId).equals(NodeState.STOPPING)){
                 LOG.debug("-----------will not register type: {} of node {},  since this node is {}--------",
                         subnodeType, nodeId, nodeStates.get(nodeId));
-                return TestingDef.RetCode.NODE_CRASH;
+                return MetaDef.RetCode.NODE_CRASH;
             }
             if (nodeStates.get(nodeId).equals(NodeState.UNREADY)) {
                 LOG.debug("-----------will not register type: {} of node {},  since this node is about to become looking:" +
                                 " {}--------", subnodeType, nodeId, nodeStates.get(nodeId));
-                return TestingDef.RetCode.BACK_TO_LOOKING;
+                return MetaDef.RetCode.BACK_TO_LOOKING;
             }
             if (nodePhases.get(nodeId).equals(Phase.ELECTION)) {
                 switch (subnodeType) {
@@ -4488,7 +4488,7 @@ public class ReplayService implements RemoteService {
                     final int receivingNodeId = e1.getReceivingNodeId();
                     if ((peers.contains(sendingNodeId) || peers.contains(receivingNodeId))) {
                         LOG.debug("set flag NODE_PAIR_IN_PARTITION to event: {}", e1);
-                        e1.setFlag(TestingDef.RetCode.NODE_PAIR_IN_PARTITION);
+                        e1.setFlag(MetaDef.RetCode.NODE_PAIR_IN_PARTITION);
                         if (sendingSubnode.getState().equals(SubnodeState.SENDING)) {
                             sendingSubnode.setState(SubnodeState.PROCESSING);
                         }
@@ -4501,7 +4501,7 @@ public class ReplayService implements RemoteService {
                     final int receivingNodeId = e1.getReceivingNodeId();
                     if ((peers.contains(sendingNodeId) || peers.contains(receivingNodeId))) {
                         LOG.debug("set flag NODE_PAIR_IN_PARTITION to event: {}", e1);
-                        e1.setFlag(TestingDef.RetCode.NODE_PAIR_IN_PARTITION);
+                        e1.setFlag(MetaDef.RetCode.NODE_PAIR_IN_PARTITION);
                         if (sendingSubnode.getState().equals(SubnodeState.SENDING)) {
                             sendingSubnode.setState(SubnodeState.PROCESSING);
                         }
@@ -4514,7 +4514,7 @@ public class ReplayService implements RemoteService {
                     final int receivingNodeId = e1.getReceivingNodeId();
                     if ((peers.contains(sendingNodeId) || peers.contains(receivingNodeId))) {
                         LOG.debug("set flag NODE_PAIR_IN_PARTITION to event: {}", e1);
-                        e1.setFlag(TestingDef.RetCode.NODE_PAIR_IN_PARTITION);
+                        e1.setFlag(MetaDef.RetCode.NODE_PAIR_IN_PARTITION);
                         if (sendingSubnode.getState().equals(SubnodeState.SENDING)) {
                             sendingSubnode.setState(SubnodeState.PROCESSING);
                         }
@@ -4523,9 +4523,9 @@ public class ReplayService implements RemoteService {
                     LocalEvent e1 = (LocalEvent) event;
                     final int subnodeId = e1.getSubnodeId();
                     final Subnode sendingSubnode = subnodes.get(subnodeId);
-                    if (e1.getType() == TestingDef.MessageType.leaderJudgingIsRunning) {
+                    if (e1.getType() == MetaDef.MessageType.leaderJudgingIsRunning) {
                         LOG.debug("set flag NODE_PAIR_IN_PARTITION to event: {}", e1);
-                        e1.setFlag(TestingDef.RetCode.NODE_PAIR_IN_PARTITION);
+                        e1.setFlag(MetaDef.RetCode.NODE_PAIR_IN_PARTITION);
                         if (sendingSubnode.getState().equals(SubnodeState.SENDING)) {
                             sendingSubnode.setState(SubnodeState.PROCESSING);
                         }
@@ -4563,7 +4563,7 @@ public class ReplayService implements RemoteService {
                     final int receivingNodeId = e1.getReceivingNodeId();
                     if (peers.contains(sendingNodeId) && peers.contains(receivingNodeId) && sendingNodeId != receivingNodeId) {
                         LOG.debug("set flag NODE_PAIR_IN_PARTITION to event: {}", e1);
-                        e1.setFlag(TestingDef.RetCode.NODE_PAIR_IN_PARTITION);
+                        e1.setFlag(MetaDef.RetCode.NODE_PAIR_IN_PARTITION);
                         if (sendingSubnode.getState().equals(SubnodeState.SENDING)) {
                             sendingSubnode.setState(SubnodeState.PROCESSING);
                         }
@@ -4576,7 +4576,7 @@ public class ReplayService implements RemoteService {
                     final int receivingNodeId = e1.getReceivingNodeId();
                     if (peers.contains(sendingNodeId) && peers.contains(receivingNodeId) && sendingNodeId != receivingNodeId) {
                         LOG.debug("set flag NODE_PAIR_IN_PARTITION to event: {}", e1);
-                        e1.setFlag(TestingDef.RetCode.NODE_PAIR_IN_PARTITION);
+                        e1.setFlag(MetaDef.RetCode.NODE_PAIR_IN_PARTITION);
                         if (sendingSubnode.getState().equals(SubnodeState.SENDING)) {
                             sendingSubnode.setState(SubnodeState.PROCESSING);
                         }
@@ -4589,7 +4589,7 @@ public class ReplayService implements RemoteService {
                     final int receivingNodeId = e1.getReceivingNodeId();
                     if (peers.contains(sendingNodeId) && peers.contains(receivingNodeId) && sendingNodeId != receivingNodeId) {
                         LOG.debug("set flag NODE_PAIR_IN_PARTITION to event: {}", e1);
-                        e1.setFlag(TestingDef.RetCode.NODE_PAIR_IN_PARTITION);
+                        e1.setFlag(MetaDef.RetCode.NODE_PAIR_IN_PARTITION);
                         if (sendingSubnode.getState().equals(SubnodeState.SENDING)) {
                             sendingSubnode.setState(SubnodeState.PROCESSING);
                         }
@@ -4600,10 +4600,10 @@ public class ReplayService implements RemoteService {
                     final int subnodeId = e1.getSubnodeId();
                     final Subnode sendingSubnode = subnodes.get(subnodeId);
                     if (peers.contains(nodeId)) {
-                        if (e1.getType() == TestingDef.MessageType.leaderJudgingIsRunning) {
+                        if (e1.getType() == MetaDef.MessageType.leaderJudgingIsRunning) {
                             if (leaderShutdown) {
                                 LOG.debug("set flag NODE_PAIR_IN_PARTITION to event: {}", e1);
-                                e1.setFlag(TestingDef.RetCode.NODE_PAIR_IN_PARTITION);
+                                e1.setFlag(MetaDef.RetCode.NODE_PAIR_IN_PARTITION);
                                 if (sendingSubnode.getState().equals(SubnodeState.SENDING)) {
                                     sendingSubnode.setState(SubnodeState.PROCESSING);
                                 }
@@ -4612,11 +4612,11 @@ public class ReplayService implements RemoteService {
 //                        // TODO: set flag or not ?
 //                        else if (e1.getType() == MessageType.ACKEPOCH) {
 //                            LOG.debug("set flag EXIT to event: {}", e1);
-//                            e1.setFlag(TestingDef.RetCode.EXIT);
+//                            e1.setFlag(MetaDef.RetCode.EXIT);
 //                        }
 //                        else {
 //                            LOG.debug("set flag NODE_PAIR_IN_PARTITION to event: {}", e1);
-//                            e1.setFlag(TestingDef.RetCode.NODE_PAIR_IN_PARTITION);
+//                            e1.setFlag(MetaDef.RetCode.NODE_PAIR_IN_PARTITION);
 //                            if (sendingSubnode.getState().equals(SubnodeState.SENDING)) {
 //                                sendingSubnode.setState(SubnodeState.PROCESSING);
 //                            }
@@ -4677,11 +4677,11 @@ public class ReplayService implements RemoteService {
                     final Subnode subnode = subnodes.get(subnodeId);
                     final int nodeId = subnode.getNodeId();
                     if (peers.contains(nodeId)) {
-                        if ( e1.getType() == TestingDef.MessageType.leaderJudgingIsRunning && (!leaderShutdown)) {
+                        if ( e1.getType() == MetaDef.MessageType.leaderJudgingIsRunning && (!leaderShutdown)) {
                             LOG.debug("leader is not going to shutdown. Do not release LeaderJudgingIsRunning event: {}", event);
                             otherEvents.add(event);
                         } else {
-                            e1.setFlag(TestingDef.RetCode.NO_WAIT);
+                            e1.setFlag(MetaDef.RetCode.NO_WAIT);
                             e1.execute();
                         }
                     } else {
@@ -4855,18 +4855,18 @@ public class ReplayService implements RemoteService {
                     assert nodePhases.get(nodeId).equals(Phase.SYNC);
 //                    return offerLocalEvent(getSubnodeId(nodeId, SubnodeType.QUORUM_PEER),
 //                            SubnodeType.QUORUM_PEER,
-//                            epoch, null, TestingDef.MessageType.LEADERINFO);
+//                            epoch, null, MetaDef.MessageType.LEADERINFO);
                     break;
                 case FOLLOWING:
                     assert nodePhases.get(nodeId).equals(Phase.SYNC);
                     return offerLocalEvent(getSubnodeId(nodeId, SubnodeType.QUORUM_PEER),
                             SubnodeType.QUORUM_PEER,
-                            epoch, null, TestingDef.MessageType.NEWLEADER);
+                            epoch, null, MetaDef.MessageType.NEWLEADER);
                 default:
                     LOG.debug("Non-leader/follower updates its currentEpoch file!");
             }
         }
-        return TestingDef.RetCode.NOT_INTERCEPTED;
+        return MetaDef.RetCode.NOT_INTERCEPTED;
     }
 
     public void recordProperties(final int step, final long startTime, final Event event) throws IOException {
