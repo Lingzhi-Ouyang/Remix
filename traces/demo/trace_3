@@ -1,0 +1,2684 @@
+---------------- MODULE /home/fedora/IdeaProjects/Remix-master/output/model_model_simulation_2024-09-04_22-19-36_1/trace_145_0 -----------------
+STATE_1 == 
+/\ forwarding = (s0 :> {} @@ s1 :> {} @@ s2 :> {})
+/\ history = (s0 :> <<>> @@ s1 :> <<>> @@ s2 :> <<>>)
+/\ doInit = FALSE
+/\ electing = (s0 :> {} @@ s1 :> {} @@ s2 :> {})
+/\ zabState = (s0 :> ELECTION @@ s1 :> ELECTION @@ s2 :> ELECTION)
+/\ aaInv = [ leadership |-> TRUE,
+  prefixConsistency |-> TRUE,
+  integrity |-> TRUE,
+  agreement |-> TRUE,
+  totalOrder |-> TRUE,
+  primaryOrder |-> TRUE,
+  monotonicRead |-> TRUE,
+  processConsistency |-> TRUE,
+  leaderLogCompleteness |-> TRUE,
+  committedLogDurability |-> TRUE ]
+/\ lastProcessed = ( s0 :> [zxid |-> <<0, 0>>, index |-> 0] @@
+  s1 :> [zxid |-> <<0, 0>>, index |-> 0] @@
+  s2 :> [zxid |-> <<0, 0>>, index |-> 0] )
+/\ rcvBuffer = ( s0 :> (s0 :> <<>> @@ s1 :> <<>> @@ s2 :> <<>>) @@
+  s1 :> (s0 :> <<>> @@ s1 :> <<>> @@ s2 :> <<>>) @@
+  s2 :> (s0 :> <<>> @@ s1 :> <<>> @@ s2 :> <<>>) )
+/\ initialHistory = (s0 :> <<>> @@ s1 :> <<>> @@ s2 :> <<>>)
+/\ recorder = [ pc |-> <<"Init">>,
+  nConsequentFailure |-> 0,
+  nCrash |-> 0,
+  nPartition |-> 0,
+  maxEpoch |-> 0,
+  noExecute |-> {},
+  nTimeout |-> 0,
+  nTransaction |-> 0,
+  step |-> 0,
+  nClientRequest |-> 0 ]
+/\ acceptedEpoch = (s0 :> 0 @@ s1 :> 0 @@ s2 :> 0)
+/\ connecting = (s0 :> {} @@ s1 :> {} @@ s2 :> {})
+/\ proposalMsgsLog = {}
+/\ lastCommitted = ( s0 :> [zxid |-> <<0, 0>>, index |-> 0] @@
+  s1 :> [zxid |-> <<0, 0>>, index |-> 0] @@
+  s2 :> [zxid |-> <<0, 0>>, index |-> 0] )
+/\ daInv = [ stateConsistent |-> TRUE,
+  proposalConsistent |-> TRUE,
+  commitConsistent |-> TRUE,
+  ackConsistent |-> TRUE,
+  messageLegal |-> TRUE ]
+/\ currentEpoch = (s0 :> 0 @@ s1 :> 0 @@ s2 :> 0)
+/\ learners = (s0 :> {} @@ s1 :> {} @@ s2 :> {})
+/\ tempMaxEpoch = (s0 :> 0 @@ s1 :> 0 @@ s2 :> 0)
+/\ leaderOracle = NullPoint
+/\ status = (s0 :> ONLINE @@ s1 :> ONLINE @@ s2 :> ONLINE)
+/\ state = (s0 :> LOOKING @@ s1 :> LOOKING @@ s2 :> LOOKING)
+/\ partition = ( s0 :> (s0 :> FALSE @@ s1 :> FALSE @@ s2 :> FALSE) @@
+  s1 :> (s0 :> FALSE @@ s1 :> FALSE @@ s2 :> FALSE) @@
+  s2 :> (s0 :> FALSE @@ s1 :> FALSE @@ s2 :> FALSE) )
+/\ packetsSync = ( s0 :> [notCommitted |-> <<>>, committed |-> <<>>] @@
+  s1 :> [notCommitted |-> <<>>, committed |-> <<>>] @@
+  s2 :> [notCommitted |-> <<>>, committed |-> <<>>] )
+/\ ackldRecv = (s0 :> {} @@ s1 :> {} @@ s2 :> {})
+/\ leaderAddr = (s0 :> NullPoint @@ s1 :> NullPoint @@ s2 :> NullPoint)
+/\ servingState = (s0 :> SHUTDOWN @@ s1 :> SHUTDOWN @@ s2 :> SHUTDOWN)
+/\ committedLog = <<>>
+/\ epochLeader = <<{}, {}, {}, {}, {}, {}, {}, {}, {}, {}>>
+
+
+STATE_2 == 
+/\ forwarding = (s0 :> {} @@ s1 :> {} @@ s2 :> {s0, s1})
+/\ history = ( s0 :>
+      << [ zxid |-> <<1, 1>>,
+           value |-> 101,
+           epoch |-> 1,
+           ackSid |-> {s0, s1, s2} ] >> @@
+  s1 :>
+      << [ zxid |-> <<1, 1>>,
+           value |-> 101,
+           epoch |-> 1,
+           ackSid |-> {s0, s1, s2} ] >> @@
+  s2 :>
+      << [ zxid |-> <<1, 1>>,
+           value |-> 101,
+           epoch |-> 1,
+           ackSid |-> {s0, s1, s2} ],
+         [zxid |-> <<1, 2>>, value |-> 102, epoch |-> 1, ackSid |-> {s2}] >> )
+/\ doInit = TRUE
+/\ electing = ( s0 :> {} @@
+  s1 :> {} @@
+  s2 :>
+      { [sid |-> s0, peerLastZxid |-> <<-1, -1>>, inQuorum |-> TRUE],
+        [sid |-> s1, peerLastZxid |-> <<-1, -1>>, inQuorum |-> TRUE],
+        [sid |-> s2, peerLastZxid |-> <<-1, -1>>, inQuorum |-> TRUE] } )
+/\ zabState = (s0 :> BROADCAST @@ s1 :> BROADCAST @@ s2 :> BROADCAST)
+/\ aaInv = [ leadership |-> TRUE,
+  prefixConsistency |-> TRUE,
+  integrity |-> TRUE,
+  agreement |-> TRUE,
+  totalOrder |-> TRUE,
+  primaryOrder |-> TRUE,
+  monotonicRead |-> TRUE,
+  processConsistency |-> TRUE,
+  leaderLogCompleteness |-> TRUE,
+  committedLogDurability |-> TRUE ]
+/\ lastProcessed = ( s0 :> [zxid |-> <<1, 1>>, index |-> 1] @@
+  s1 :> [zxid |-> <<1, 1>>, index |-> 1] @@
+  s2 :> [zxid |-> <<1, 1>>, index |-> 1] )
+/\ rcvBuffer = ( s0 :> (s0 :> <<>> @@ s1 :> <<>> @@ s2 :> <<>>) @@
+  s1 :> (s0 :> <<>> @@ s1 :> <<>> @@ s2 :> <<>>) @@
+  s2 :>
+      ( s0 :> <<[mtype |-> PROPOSAL, mzxid |-> <<1, 2>>, mdata |-> 102]>> @@
+        s1 :> <<[mtype |-> PROPOSAL, mzxid |-> <<1, 2>>, mdata |-> 102]>> @@
+        s2 :> <<>> ) )
+/\ initialHistory = (s0 :> <<>> @@ s1 :> <<>> @@ s2 :> <<>>)
+/\ recorder = [ step |-> 1,
+  nPartition |-> 0,
+  nConsequentFailure |-> 0,
+  noExecute |-> {},
+  nTimeout |-> 0,
+  nCrash |-> 0,
+  nTransaction |-> 2,
+  maxEpoch |-> 1,
+  pc |-> <<"SetInitState", s2, {s0, s1}>>,
+  nClientRequest |-> 0 ]
+/\ acceptedEpoch = (s0 :> 1 @@ s1 :> 1 @@ s2 :> 1)
+/\ connecting = ( s0 :> {} @@
+  s1 :> {} @@
+  s2 :>
+      { [connected |-> TRUE, sid |-> s0],
+        [connected |-> TRUE, sid |-> s1],
+        [connected |-> TRUE, sid |-> s2] } )
+/\ proposalMsgsLog = { [zxid |-> <<1, 1>>, epoch |-> 1, data |-> 101, source |-> s2],
+  [zxid |-> <<1, 2>>, epoch |-> 1, data |-> 102, source |-> s2] }
+/\ lastCommitted = ( s0 :> [zxid |-> <<1, 1>>, index |-> 1] @@
+  s1 :> [zxid |-> <<1, 1>>, index |-> 1] @@
+  s2 :> [zxid |-> <<1, 1>>, index |-> 1] )
+/\ daInv = [ stateConsistent |-> TRUE,
+  proposalConsistent |-> TRUE,
+  commitConsistent |-> TRUE,
+  ackConsistent |-> TRUE,
+  messageLegal |-> TRUE ]
+/\ currentEpoch = (s0 :> 1 @@ s1 :> 1 @@ s2 :> 1)
+/\ learners = (s0 :> {} @@ s1 :> {} @@ s2 :> {s0, s1, s2})
+/\ tempMaxEpoch = (s0 :> 0 @@ s1 :> 0 @@ s2 :> 1)
+/\ leaderOracle = s2
+/\ status = (s0 :> ONLINE @@ s1 :> ONLINE @@ s2 :> ONLINE)
+/\ state = (s0 :> FOLLOWING @@ s1 :> FOLLOWING @@ s2 :> LEADING)
+/\ partition = ( s0 :> (s0 :> FALSE @@ s1 :> FALSE @@ s2 :> FALSE) @@
+  s1 :> (s0 :> FALSE @@ s1 :> FALSE @@ s2 :> FALSE) @@
+  s2 :> (s0 :> FALSE @@ s1 :> FALSE @@ s2 :> FALSE) )
+/\ packetsSync = ( s0 :> [notCommitted |-> <<>>, committed |-> <<>>] @@
+  s1 :> [notCommitted |-> <<>>, committed |-> <<>>] @@
+  s2 :> [notCommitted |-> <<>>, committed |-> <<>>] )
+/\ ackldRecv = ( s0 :> {} @@
+  s1 :> {} @@
+  s2 :>
+      { [connected |-> TRUE, sid |-> s0],
+        [connected |-> TRUE, sid |-> s1],
+        [connected |-> TRUE, sid |-> s2] } )
+/\ leaderAddr = (s0 :> s2 @@ s1 :> s2 @@ s2 :> NullPoint)
+/\ servingState = (s0 :> RUNNING @@ s1 :> RUNNING @@ s2 :> RUNNING)
+/\ committedLog = <<[zxid |-> <<1, 1>>, value |-> 101, epoch |-> 1, ackSid |-> {s0, s1, s2}]>>
+/\ epochLeader = <<{s2}, {}, {}, {}, {}, {}, {}, {}, {}, {}>>
+
+
+STATE_3 == 
+/\ forwarding = (s0 :> {} @@ s1 :> {} @@ s2 :> {s1})
+/\ history = ( s0 :>
+      << [ zxid |-> <<1, 1>>,
+           value |-> 101,
+           epoch |-> 1,
+           ackSid |-> {s0, s1, s2} ] >> @@
+  s1 :>
+      << [ zxid |-> <<1, 1>>,
+           value |-> 101,
+           epoch |-> 1,
+           ackSid |-> {s0, s1, s2} ] >> @@
+  s2 :>
+      << [ zxid |-> <<1, 1>>,
+           value |-> 101,
+           epoch |-> 1,
+           ackSid |-> {s0, s1, s2} ],
+         [zxid |-> <<1, 2>>, value |-> 102, epoch |-> 1, ackSid |-> {s2}] >> )
+/\ doInit = TRUE
+/\ electing = ( s0 :> {} @@
+  s1 :> {} @@
+  s2 :>
+      { [sid |-> s0, peerLastZxid |-> <<-1, -1>>, inQuorum |-> TRUE],
+        [sid |-> s1, peerLastZxid |-> <<-1, -1>>, inQuorum |-> TRUE],
+        [sid |-> s2, peerLastZxid |-> <<-1, -1>>, inQuorum |-> TRUE] } )
+/\ zabState = (s0 :> ELECTION @@ s1 :> BROADCAST @@ s2 :> BROADCAST)
+/\ aaInv = [ leadership |-> TRUE,
+  prefixConsistency |-> TRUE,
+  integrity |-> TRUE,
+  agreement |-> TRUE,
+  totalOrder |-> TRUE,
+  primaryOrder |-> TRUE,
+  monotonicRead |-> TRUE,
+  processConsistency |-> TRUE,
+  leaderLogCompleteness |-> TRUE,
+  committedLogDurability |-> TRUE ]
+/\ lastProcessed = ( s0 :> [zxid |-> <<1, 1>>, index |-> 1] @@
+  s1 :> [zxid |-> <<1, 1>>, index |-> 1] @@
+  s2 :> [zxid |-> <<1, 1>>, index |-> 1] )
+/\ rcvBuffer = ( s0 :> (s0 :> <<>> @@ s1 :> <<>> @@ s2 :> <<>>) @@
+  s1 :> (s0 :> <<>> @@ s1 :> <<>> @@ s2 :> <<>>) @@
+  s2 :>
+      ( s0 :> <<>> @@
+        s1 :> <<[mtype |-> PROPOSAL, mzxid |-> <<1, 2>>, mdata |-> 102]>> @@
+        s2 :> <<>> ) )
+/\ initialHistory = (s0 :> <<>> @@ s1 :> <<>> @@ s2 :> <<>>)
+/\ recorder = [ step |-> 2,
+  nPartition |-> 0,
+  nConsequentFailure |-> 1,
+  noExecute |-> {<<"NodeCrash", s0>>},
+  nTimeout |-> 1,
+  nCrash |-> 1,
+  nTransaction |-> 2,
+  maxEpoch |-> 1,
+  pc |-> <<"NodeCrash", s0>>,
+  nClientRequest |-> 0 ]
+/\ acceptedEpoch = (s0 :> 1 @@ s1 :> 1 @@ s2 :> 1)
+/\ connecting = ( s0 :> {} @@
+  s1 :> {} @@
+  s2 :>
+      { [connected |-> FALSE, sid |-> s0],
+        [connected |-> TRUE, sid |-> s1],
+        [connected |-> TRUE, sid |-> s2] } )
+/\ proposalMsgsLog = { [zxid |-> <<1, 1>>, epoch |-> 1, data |-> 101, source |-> s2],
+  [zxid |-> <<1, 2>>, epoch |-> 1, data |-> 102, source |-> s2] }
+/\ lastCommitted = ( s0 :> [zxid |-> <<1, 1>>, index |-> 1] @@
+  s1 :> [zxid |-> <<1, 1>>, index |-> 1] @@
+  s2 :> [zxid |-> <<1, 1>>, index |-> 1] )
+/\ daInv = [ stateConsistent |-> TRUE,
+  proposalConsistent |-> TRUE,
+  commitConsistent |-> TRUE,
+  ackConsistent |-> TRUE,
+  messageLegal |-> TRUE ]
+/\ currentEpoch = (s0 :> 1 @@ s1 :> 1 @@ s2 :> 1)
+/\ learners = (s0 :> {} @@ s1 :> {} @@ s2 :> {s1, s2})
+/\ tempMaxEpoch = (s0 :> 0 @@ s1 :> 0 @@ s2 :> 1)
+/\ leaderOracle = s2
+/\ status = (s0 :> OFFLINE @@ s1 :> ONLINE @@ s2 :> ONLINE)
+/\ state = (s0 :> LOOKING @@ s1 :> FOLLOWING @@ s2 :> LEADING)
+/\ partition = ( s0 :> (s0 :> FALSE @@ s1 :> FALSE @@ s2 :> FALSE) @@
+  s1 :> (s0 :> FALSE @@ s1 :> FALSE @@ s2 :> FALSE) @@
+  s2 :> (s0 :> FALSE @@ s1 :> FALSE @@ s2 :> FALSE) )
+/\ packetsSync = ( s0 :> [notCommitted |-> <<>>, committed |-> <<>>] @@
+  s1 :> [notCommitted |-> <<>>, committed |-> <<>>] @@
+  s2 :> [notCommitted |-> <<>>, committed |-> <<>>] )
+/\ ackldRecv = ( s0 :> {} @@
+  s1 :> {} @@
+  s2 :>
+      { [connected |-> FALSE, sid |-> s0],
+        [connected |-> TRUE, sid |-> s1],
+        [connected |-> TRUE, sid |-> s2] } )
+/\ leaderAddr = (s0 :> NullPoint @@ s1 :> s2 @@ s2 :> NullPoint)
+/\ servingState = (s0 :> SHUTDOWN @@ s1 :> RUNNING @@ s2 :> RUNNING)
+/\ committedLog = <<[zxid |-> <<1, 1>>, value |-> 101, epoch |-> 1, ackSid |-> {s0, s1, s2}]>>
+/\ epochLeader = <<{s2}, {}, {}, {}, {}, {}, {}, {}, {}, {}>>
+
+
+STATE_4 == 
+/\ forwarding = (s0 :> {} @@ s1 :> {} @@ s2 :> {})
+/\ history = ( s0 :>
+      << [ zxid |-> <<1, 1>>,
+           value |-> 101,
+           epoch |-> 1,
+           ackSid |-> {s0, s1, s2} ] >> @@
+  s1 :>
+      << [ zxid |-> <<1, 1>>,
+           value |-> 101,
+           epoch |-> 1,
+           ackSid |-> {s0, s1, s2} ] >> @@
+  s2 :>
+      << [ zxid |-> <<1, 1>>,
+           value |-> 101,
+           epoch |-> 1,
+           ackSid |-> {s0, s1, s2} ],
+         [zxid |-> <<1, 2>>, value |-> 102, epoch |-> 1, ackSid |-> {s2}] >> )
+/\ doInit = TRUE
+/\ electing = ( s0 :> {} @@
+  s1 :> {} @@
+  s2 :>
+      { [sid |-> s0, peerLastZxid |-> <<-1, -1>>, inQuorum |-> TRUE],
+        [sid |-> s1, peerLastZxid |-> <<-1, -1>>, inQuorum |-> TRUE],
+        [sid |-> s2, peerLastZxid |-> <<-1, -1>>, inQuorum |-> TRUE] } )
+/\ zabState = (s0 :> ELECTION @@ s1 :> ELECTION @@ s2 :> ELECTION)
+/\ aaInv = [ leadership |-> TRUE,
+  prefixConsistency |-> TRUE,
+  integrity |-> TRUE,
+  agreement |-> TRUE,
+  totalOrder |-> TRUE,
+  primaryOrder |-> TRUE,
+  monotonicRead |-> TRUE,
+  processConsistency |-> TRUE,
+  leaderLogCompleteness |-> TRUE,
+  committedLogDurability |-> TRUE ]
+/\ lastProcessed = ( s0 :> [zxid |-> <<1, 1>>, index |-> 1] @@
+  s1 :> [zxid |-> <<1, 1>>, index |-> 1] @@
+  s2 :> [zxid |-> <<1, 2>>, index |-> 2] )
+/\ rcvBuffer = ( s0 :> (s0 :> <<>> @@ s1 :> <<>> @@ s2 :> <<>>) @@
+  s1 :> (s0 :> <<>> @@ s1 :> <<>> @@ s2 :> <<>>) @@
+  s2 :> (s0 :> <<>> @@ s1 :> <<>> @@ s2 :> <<>>) )
+/\ initialHistory = (s0 :> <<>> @@ s1 :> <<>> @@ s2 :> <<>>)
+/\ recorder = [ step |-> 3,
+  nPartition |-> 0,
+  nConsequentFailure |-> 2,
+  noExecute |-> {<<"NodeCrash", s0>>, <<"NodeCrash", s2>>},
+  nTimeout |-> 2,
+  nCrash |-> 2,
+  nTransaction |-> 2,
+  maxEpoch |-> 1,
+  pc |-> <<"NodeCrash", s2>>,
+  nClientRequest |-> 0 ]
+/\ acceptedEpoch = (s0 :> 1 @@ s1 :> 1 @@ s2 :> 1)
+/\ connecting = ( s0 :> {} @@
+  s1 :> {} @@
+  s2 :>
+      { [connected |-> FALSE, sid |-> s0],
+        [connected |-> TRUE, sid |-> s1],
+        [connected |-> TRUE, sid |-> s2] } )
+/\ proposalMsgsLog = { [zxid |-> <<1, 1>>, epoch |-> 1, data |-> 101, source |-> s2],
+  [zxid |-> <<1, 2>>, epoch |-> 1, data |-> 102, source |-> s2] }
+/\ lastCommitted = ( s0 :> [zxid |-> <<1, 1>>, index |-> 1] @@
+  s1 :> [zxid |-> <<1, 1>>, index |-> 1] @@
+  s2 :> [zxid |-> <<1, 1>>, index |-> 1] )
+/\ daInv = [ stateConsistent |-> TRUE,
+  proposalConsistent |-> TRUE,
+  commitConsistent |-> TRUE,
+  ackConsistent |-> TRUE,
+  messageLegal |-> TRUE ]
+/\ currentEpoch = (s0 :> 1 @@ s1 :> 1 @@ s2 :> 1)
+/\ learners = (s0 :> {} @@ s1 :> {} @@ s2 :> {})
+/\ tempMaxEpoch = (s0 :> 0 @@ s1 :> 0 @@ s2 :> 1)
+/\ leaderOracle = s2
+/\ status = (s0 :> OFFLINE @@ s1 :> ONLINE @@ s2 :> OFFLINE)
+/\ state = (s0 :> LOOKING @@ s1 :> LOOKING @@ s2 :> LOOKING)
+/\ partition = ( s0 :> (s0 :> FALSE @@ s1 :> FALSE @@ s2 :> FALSE) @@
+  s1 :> (s0 :> FALSE @@ s1 :> FALSE @@ s2 :> FALSE) @@
+  s2 :> (s0 :> FALSE @@ s1 :> FALSE @@ s2 :> FALSE) )
+/\ packetsSync = ( s0 :> [notCommitted |-> <<>>, committed |-> <<>>] @@
+  s1 :> [notCommitted |-> <<>>, committed |-> <<>>] @@
+  s2 :> [notCommitted |-> <<>>, committed |-> <<>>] )
+/\ ackldRecv = ( s0 :> {} @@
+  s1 :> {} @@
+  s2 :>
+      { [connected |-> FALSE, sid |-> s0],
+        [connected |-> TRUE, sid |-> s1],
+        [connected |-> TRUE, sid |-> s2] } )
+/\ leaderAddr = (s0 :> NullPoint @@ s1 :> NullPoint @@ s2 :> NullPoint)
+/\ servingState = (s0 :> SHUTDOWN @@ s1 :> SHUTDOWN @@ s2 :> SHUTDOWN)
+/\ committedLog = <<[zxid |-> <<1, 1>>, value |-> 101, epoch |-> 1, ackSid |-> {s0, s1, s2}]>>
+/\ epochLeader = <<{s2}, {}, {}, {}, {}, {}, {}, {}, {}, {}>>
+
+
+STATE_5 == 
+/\ forwarding = (s0 :> {} @@ s1 :> {} @@ s2 :> {})
+/\ history = ( s0 :>
+      << [ zxid |-> <<1, 1>>,
+           value |-> 101,
+           epoch |-> 1,
+           ackSid |-> {s0, s1, s2} ] >> @@
+  s1 :>
+      << [ zxid |-> <<1, 1>>,
+           value |-> 101,
+           epoch |-> 1,
+           ackSid |-> {s0, s1, s2} ] >> @@
+  s2 :>
+      << [ zxid |-> <<1, 1>>,
+           value |-> 101,
+           epoch |-> 1,
+           ackSid |-> {s0, s1, s2} ],
+         [zxid |-> <<1, 2>>, value |-> 102, epoch |-> 1, ackSid |-> {s2}] >> )
+/\ doInit = TRUE
+/\ electing = ( s0 :> {} @@
+  s1 :> {} @@
+  s2 :>
+      { [sid |-> s0, peerLastZxid |-> <<-1, -1>>, inQuorum |-> TRUE],
+        [sid |-> s1, peerLastZxid |-> <<-1, -1>>, inQuorum |-> TRUE],
+        [sid |-> s2, peerLastZxid |-> <<-1, -1>>, inQuorum |-> TRUE] } )
+/\ zabState = (s0 :> ELECTION @@ s1 :> ELECTION @@ s2 :> ELECTION)
+/\ aaInv = [ leadership |-> TRUE,
+  prefixConsistency |-> TRUE,
+  integrity |-> TRUE,
+  agreement |-> TRUE,
+  totalOrder |-> TRUE,
+  primaryOrder |-> TRUE,
+  monotonicRead |-> TRUE,
+  processConsistency |-> TRUE,
+  leaderLogCompleteness |-> TRUE,
+  committedLogDurability |-> TRUE ]
+/\ lastProcessed = ( s0 :> [zxid |-> <<1, 1>>, index |-> 1] @@
+  s1 :> [zxid |-> <<1, 1>>, index |-> 1] @@
+  s2 :> [zxid |-> <<1, 2>>, index |-> 2] )
+/\ rcvBuffer = ( s0 :> (s0 :> <<>> @@ s1 :> <<>> @@ s2 :> <<>>) @@
+  s1 :> (s0 :> <<>> @@ s1 :> <<>> @@ s2 :> <<>>) @@
+  s2 :> (s0 :> <<>> @@ s1 :> <<>> @@ s2 :> <<>>) )
+/\ initialHistory = (s0 :> <<>> @@ s1 :> <<>> @@ s2 :> <<>>)
+/\ recorder = [ step |-> 4,
+  nPartition |-> 0,
+  nConsequentFailure |-> 2,
+  noExecute |-> {<<"NodeCrash", s0>>, <<"NodeCrash", s2>>},
+  nTimeout |-> 2,
+  nCrash |-> 2,
+  nTransaction |-> 2,
+  maxEpoch |-> 1,
+  pc |-> <<"NodeStart", s0>>,
+  nClientRequest |-> 0 ]
+/\ acceptedEpoch = (s0 :> 1 @@ s1 :> 1 @@ s2 :> 1)
+/\ connecting = ( s0 :> {} @@
+  s1 :> {} @@
+  s2 :>
+      { [connected |-> FALSE, sid |-> s0],
+        [connected |-> TRUE, sid |-> s1],
+        [connected |-> TRUE, sid |-> s2] } )
+/\ proposalMsgsLog = { [zxid |-> <<1, 1>>, epoch |-> 1, data |-> 101, source |-> s2],
+  [zxid |-> <<1, 2>>, epoch |-> 1, data |-> 102, source |-> s2] }
+/\ lastCommitted = ( s0 :> [zxid |-> <<0, 0>>, index |-> 0] @@
+  s1 :> [zxid |-> <<1, 1>>, index |-> 1] @@
+  s2 :> [zxid |-> <<1, 1>>, index |-> 1] )
+/\ daInv = [ stateConsistent |-> TRUE,
+  proposalConsistent |-> TRUE,
+  commitConsistent |-> TRUE,
+  ackConsistent |-> TRUE,
+  messageLegal |-> TRUE ]
+/\ currentEpoch = (s0 :> 1 @@ s1 :> 1 @@ s2 :> 1)
+/\ learners = (s0 :> {} @@ s1 :> {} @@ s2 :> {})
+/\ tempMaxEpoch = (s0 :> 0 @@ s1 :> 0 @@ s2 :> 1)
+/\ leaderOracle = s2
+/\ status = (s0 :> ONLINE @@ s1 :> ONLINE @@ s2 :> OFFLINE)
+/\ state = (s0 :> LOOKING @@ s1 :> LOOKING @@ s2 :> LOOKING)
+/\ partition = ( s0 :> (s0 :> FALSE @@ s1 :> FALSE @@ s2 :> FALSE) @@
+  s1 :> (s0 :> FALSE @@ s1 :> FALSE @@ s2 :> FALSE) @@
+  s2 :> (s0 :> FALSE @@ s1 :> FALSE @@ s2 :> FALSE) )
+/\ packetsSync = ( s0 :> [notCommitted |-> <<>>, committed |-> <<>>] @@
+  s1 :> [notCommitted |-> <<>>, committed |-> <<>>] @@
+  s2 :> [notCommitted |-> <<>>, committed |-> <<>>] )
+/\ ackldRecv = ( s0 :> {} @@
+  s1 :> {} @@
+  s2 :>
+      { [connected |-> FALSE, sid |-> s0],
+        [connected |-> TRUE, sid |-> s1],
+        [connected |-> TRUE, sid |-> s2] } )
+/\ leaderAddr = (s0 :> NullPoint @@ s1 :> NullPoint @@ s2 :> NullPoint)
+/\ servingState = (s0 :> SHUTDOWN @@ s1 :> SHUTDOWN @@ s2 :> SHUTDOWN)
+/\ committedLog = <<[zxid |-> <<1, 1>>, value |-> 101, epoch |-> 1, ackSid |-> {s0, s1, s2}]>>
+/\ epochLeader = <<{s2}, {}, {}, {}, {}, {}, {}, {}, {}, {}>>
+
+
+STATE_6 == 
+/\ forwarding = (s0 :> {} @@ s1 :> {} @@ s2 :> {})
+/\ history = ( s0 :>
+      << [ zxid |-> <<1, 1>>,
+           value |-> 101,
+           epoch |-> 1,
+           ackSid |-> {s0, s1, s2} ] >> @@
+  s1 :>
+      << [ zxid |-> <<1, 1>>,
+           value |-> 101,
+           epoch |-> 1,
+           ackSid |-> {s0, s1, s2} ] >> @@
+  s2 :>
+      << [ zxid |-> <<1, 1>>,
+           value |-> 101,
+           epoch |-> 1,
+           ackSid |-> {s0, s1, s2} ],
+         [zxid |-> <<1, 2>>, value |-> 102, epoch |-> 1, ackSid |-> {s2}] >> )
+/\ doInit = TRUE
+/\ electing = ( s0 :> {} @@
+  s1 :> {} @@
+  s2 :>
+      { [sid |-> s0, peerLastZxid |-> <<-1, -1>>, inQuorum |-> TRUE],
+        [sid |-> s1, peerLastZxid |-> <<-1, -1>>, inQuorum |-> TRUE],
+        [sid |-> s2, peerLastZxid |-> <<-1, -1>>, inQuorum |-> TRUE] } )
+/\ zabState = (s0 :> ELECTION @@ s1 :> ELECTION @@ s2 :> ELECTION)
+/\ aaInv = [ leadership |-> TRUE,
+  prefixConsistency |-> TRUE,
+  integrity |-> TRUE,
+  agreement |-> TRUE,
+  totalOrder |-> TRUE,
+  primaryOrder |-> TRUE,
+  monotonicRead |-> TRUE,
+  processConsistency |-> TRUE,
+  leaderLogCompleteness |-> TRUE,
+  committedLogDurability |-> TRUE ]
+/\ lastProcessed = ( s0 :> [zxid |-> <<1, 1>>, index |-> 1] @@
+  s1 :> [zxid |-> <<1, 1>>, index |-> 1] @@
+  s2 :> [zxid |-> <<1, 2>>, index |-> 2] )
+/\ rcvBuffer = ( s0 :> (s0 :> <<>> @@ s1 :> <<>> @@ s2 :> <<>>) @@
+  s1 :> (s0 :> <<>> @@ s1 :> <<>> @@ s2 :> <<>>) @@
+  s2 :> (s0 :> <<>> @@ s1 :> <<>> @@ s2 :> <<>>) )
+/\ initialHistory = (s0 :> <<>> @@ s1 :> <<>> @@ s2 :> <<>>)
+/\ recorder = [ step |-> 5,
+  nPartition |-> 0,
+  nConsequentFailure |-> 2,
+  noExecute |-> {<<"NodeCrash", s0>>, <<"NodeCrash", s2>>},
+  nTimeout |-> 2,
+  nCrash |-> 2,
+  nTransaction |-> 2,
+  maxEpoch |-> 1,
+  pc |-> <<"NodeStart", s2>>,
+  nClientRequest |-> 0 ]
+/\ acceptedEpoch = (s0 :> 1 @@ s1 :> 1 @@ s2 :> 1)
+/\ connecting = ( s0 :> {} @@
+  s1 :> {} @@
+  s2 :>
+      { [connected |-> FALSE, sid |-> s0],
+        [connected |-> TRUE, sid |-> s1],
+        [connected |-> TRUE, sid |-> s2] } )
+/\ proposalMsgsLog = { [zxid |-> <<1, 1>>, epoch |-> 1, data |-> 101, source |-> s2],
+  [zxid |-> <<1, 2>>, epoch |-> 1, data |-> 102, source |-> s2] }
+/\ lastCommitted = ( s0 :> [zxid |-> <<0, 0>>, index |-> 0] @@
+  s1 :> [zxid |-> <<1, 1>>, index |-> 1] @@
+  s2 :> [zxid |-> <<0, 0>>, index |-> 0] )
+/\ daInv = [ stateConsistent |-> TRUE,
+  proposalConsistent |-> TRUE,
+  commitConsistent |-> TRUE,
+  ackConsistent |-> TRUE,
+  messageLegal |-> TRUE ]
+/\ currentEpoch = (s0 :> 1 @@ s1 :> 1 @@ s2 :> 1)
+/\ learners = (s0 :> {} @@ s1 :> {} @@ s2 :> {})
+/\ tempMaxEpoch = (s0 :> 0 @@ s1 :> 0 @@ s2 :> 1)
+/\ leaderOracle = s2
+/\ status = (s0 :> ONLINE @@ s1 :> ONLINE @@ s2 :> ONLINE)
+/\ state = (s0 :> LOOKING @@ s1 :> LOOKING @@ s2 :> LOOKING)
+/\ partition = ( s0 :> (s0 :> FALSE @@ s1 :> FALSE @@ s2 :> FALSE) @@
+  s1 :> (s0 :> FALSE @@ s1 :> FALSE @@ s2 :> FALSE) @@
+  s2 :> (s0 :> FALSE @@ s1 :> FALSE @@ s2 :> FALSE) )
+/\ packetsSync = ( s0 :> [notCommitted |-> <<>>, committed |-> <<>>] @@
+  s1 :> [notCommitted |-> <<>>, committed |-> <<>>] @@
+  s2 :> [notCommitted |-> <<>>, committed |-> <<>>] )
+/\ ackldRecv = ( s0 :> {} @@
+  s1 :> {} @@
+  s2 :>
+      { [connected |-> FALSE, sid |-> s0],
+        [connected |-> TRUE, sid |-> s1],
+        [connected |-> TRUE, sid |-> s2] } )
+/\ leaderAddr = (s0 :> NullPoint @@ s1 :> NullPoint @@ s2 :> NullPoint)
+/\ servingState = (s0 :> SHUTDOWN @@ s1 :> SHUTDOWN @@ s2 :> SHUTDOWN)
+/\ committedLog = <<[zxid |-> <<1, 1>>, value |-> 101, epoch |-> 1, ackSid |-> {s0, s1, s2}]>>
+/\ epochLeader = <<{s2}, {}, {}, {}, {}, {}, {}, {}, {}, {}>>
+
+
+STATE_7 == 
+/\ forwarding = (s0 :> {} @@ s1 :> {} @@ s2 :> {})
+/\ history = ( s0 :>
+      << [ zxid |-> <<1, 1>>,
+           value |-> 101,
+           epoch |-> 1,
+           ackSid |-> {s0, s1, s2} ] >> @@
+  s1 :>
+      << [ zxid |-> <<1, 1>>,
+           value |-> 101,
+           epoch |-> 1,
+           ackSid |-> {s0, s1, s2} ] >> @@
+  s2 :>
+      << [zxid |-> <<1, 1>>, value |-> 101, epoch |-> 1, ackSid |-> {s2}],
+         [zxid |-> <<1, 2>>, value |-> 102, epoch |-> 1, ackSid |-> {s2}] >> )
+/\ doInit = TRUE
+/\ electing = ( s0 :> {} @@
+  s1 :> {} @@
+  s2 :>
+      { [sid |-> s0, peerLastZxid |-> <<1, 1>>, inQuorum |-> TRUE],
+        [sid |-> s1, peerLastZxid |-> <<1, 1>>, inQuorum |-> TRUE],
+        [sid |-> s2, peerLastZxid |-> <<-1, -1>>, inQuorum |-> TRUE] } )
+/\ zabState = (s0 :> SYNCHRONIZATION @@ s1 :> SYNCHRONIZATION @@ s2 :> SYNCHRONIZATION)
+/\ aaInv = [ leadership |-> TRUE,
+  prefixConsistency |-> TRUE,
+  integrity |-> TRUE,
+  agreement |-> TRUE,
+  totalOrder |-> TRUE,
+  primaryOrder |-> TRUE,
+  monotonicRead |-> TRUE,
+  processConsistency |-> TRUE,
+  leaderLogCompleteness |-> TRUE,
+  committedLogDurability |-> TRUE ]
+/\ lastProcessed = ( s0 :> [zxid |-> <<1, 1>>, index |-> 1] @@
+  s1 :> [zxid |-> <<1, 1>>, index |-> 1] @@
+  s2 :> [zxid |-> <<1, 2>>, index |-> 2] )
+/\ rcvBuffer = ( s0 :> (s0 :> <<>> @@ s1 :> <<>> @@ s2 :> <<>>) @@
+  s1 :> (s0 :> <<>> @@ s1 :> <<>> @@ s2 :> <<>>) @@
+  s2 :> (s0 :> <<>> @@ s1 :> <<>> @@ s2 :> <<>>) )
+/\ initialHistory = ( s0 :>
+      << [ zxid |-> <<1, 1>>,
+           value |-> 101,
+           epoch |-> 1,
+           ackSid |-> {s0, s1, s2} ] >> @@
+  s1 :>
+      << [ zxid |-> <<1, 1>>,
+           value |-> 101,
+           epoch |-> 1,
+           ackSid |-> {s0, s1, s2} ] >> @@
+  s2 :>
+      << [zxid |-> <<1, 1>>, value |-> 101, epoch |-> 1, ackSid |-> {s2}],
+         [zxid |-> <<1, 2>>, value |-> 102, epoch |-> 1, ackSid |-> {s2}] >> )
+/\ recorder = [ step |-> 6,
+  nPartition |-> 0,
+  nConsequentFailure |-> 0,
+  noExecute |-> {},
+  nTimeout |-> 2,
+  nCrash |-> 2,
+  nTransaction |-> 2,
+  maxEpoch |-> 2,
+  pc |->
+      << "ElectionAndDiscovery",
+         s2,
+         {s0, s1},
+         1,
+         [zxid |-> <<1, 2>>, index |-> 2],
+         2 >>,
+  nClientRequest |-> 0 ]
+/\ acceptedEpoch = (s0 :> 2 @@ s1 :> 2 @@ s2 :> 2)
+/\ connecting = ( s0 :> {} @@
+  s1 :> {} @@
+  s2 :>
+      { [connected |-> TRUE, sid |-> s0],
+        [connected |-> TRUE, sid |-> s1],
+        [connected |-> TRUE, sid |-> s2] } )
+/\ proposalMsgsLog = { [zxid |-> <<1, 1>>, epoch |-> 1, data |-> 101, source |-> s2],
+  [zxid |-> <<1, 2>>, epoch |-> 1, data |-> 102, source |-> s2] }
+/\ lastCommitted = ( s0 :> [zxid |-> <<0, 0>>, index |-> 0] @@
+  s1 :> [zxid |-> <<1, 1>>, index |-> 1] @@
+  s2 :> [zxid |-> <<0, 0>>, index |-> 0] )
+/\ daInv = [ stateConsistent |-> TRUE,
+  proposalConsistent |-> TRUE,
+  commitConsistent |-> TRUE,
+  ackConsistent |-> TRUE,
+  messageLegal |-> TRUE ]
+/\ currentEpoch = (s0 :> 1 @@ s1 :> 1 @@ s2 :> 2)
+/\ learners = (s0 :> {} @@ s1 :> {} @@ s2 :> {s0, s1, s2})
+/\ tempMaxEpoch = (s0 :> 0 @@ s1 :> 0 @@ s2 :> 2)
+/\ leaderOracle = s2
+/\ status = (s0 :> ONLINE @@ s1 :> ONLINE @@ s2 :> ONLINE)
+/\ state = (s0 :> FOLLOWING @@ s1 :> FOLLOWING @@ s2 :> LEADING)
+/\ partition = ( s0 :> (s0 :> FALSE @@ s1 :> FALSE @@ s2 :> FALSE) @@
+  s1 :> (s0 :> FALSE @@ s1 :> FALSE @@ s2 :> FALSE) @@
+  s2 :> (s0 :> FALSE @@ s1 :> FALSE @@ s2 :> FALSE) )
+/\ packetsSync = ( s0 :> [notCommitted |-> <<>>, committed |-> <<>>] @@
+  s1 :> [notCommitted |-> <<>>, committed |-> <<>>] @@
+  s2 :> [notCommitted |-> <<>>, committed |-> <<>>] )
+/\ ackldRecv = (s0 :> {} @@ s1 :> {} @@ s2 :> {[connected |-> TRUE, sid |-> s2]})
+/\ leaderAddr = (s0 :> s2 @@ s1 :> s2 @@ s2 :> NullPoint)
+/\ servingState = (s0 :> SHUTDOWN @@ s1 :> SHUTDOWN @@ s2 :> SHUTDOWN)
+/\ committedLog = <<[zxid |-> <<1, 1>>, value |-> 101, epoch |-> 1, ackSid |-> {s0, s1, s2}]>>
+/\ epochLeader = <<{s2}, {s2}, {}, {}, {}, {}, {}, {}, {}, {}>>
+
+
+STATE_8 == 
+/\ forwarding = (s0 :> {} @@ s1 :> {} @@ s2 :> {s0})
+/\ history = ( s0 :>
+      << [ zxid |-> <<1, 1>>,
+           value |-> 101,
+           epoch |-> 1,
+           ackSid |-> {s0, s1, s2} ] >> @@
+  s1 :>
+      << [ zxid |-> <<1, 1>>,
+           value |-> 101,
+           epoch |-> 1,
+           ackSid |-> {s0, s1, s2} ] >> @@
+  s2 :>
+      << [zxid |-> <<1, 1>>, value |-> 101, epoch |-> 1, ackSid |-> {s0, s2}],
+         [zxid |-> <<1, 2>>, value |-> 102, epoch |-> 1, ackSid |-> {s2}] >> )
+/\ doInit = TRUE
+/\ electing = ( s0 :> {} @@
+  s1 :> {} @@
+  s2 :>
+      { [sid |-> s0, peerLastZxid |-> <<-1, -1>>, inQuorum |-> TRUE],
+        [sid |-> s1, peerLastZxid |-> <<1, 1>>, inQuorum |-> TRUE],
+        [sid |-> s2, peerLastZxid |-> <<-1, -1>>, inQuorum |-> TRUE] } )
+/\ zabState = (s0 :> SYNCHRONIZATION @@ s1 :> SYNCHRONIZATION @@ s2 :> SYNCHRONIZATION)
+/\ aaInv = [ leadership |-> TRUE,
+  prefixConsistency |-> TRUE,
+  integrity |-> TRUE,
+  agreement |-> TRUE,
+  totalOrder |-> TRUE,
+  primaryOrder |-> TRUE,
+  monotonicRead |-> TRUE,
+  processConsistency |-> TRUE,
+  leaderLogCompleteness |-> TRUE,
+  committedLogDurability |-> TRUE ]
+/\ lastProcessed = ( s0 :> [zxid |-> <<1, 1>>, index |-> 1] @@
+  s1 :> [zxid |-> <<1, 1>>, index |-> 1] @@
+  s2 :> [zxid |-> <<1, 2>>, index |-> 2] )
+/\ rcvBuffer = ( s0 :> (s0 :> <<>> @@ s1 :> <<>> @@ s2 :> <<>>) @@
+  s1 :> (s0 :> <<>> @@ s1 :> <<>> @@ s2 :> <<>>) @@
+  s2 :>
+      ( s0 :>
+            << [mtype |-> DIFF, mzxid |-> <<1, 1>>],
+               [mtype |-> PROPOSAL, mzxid |-> <<1, 2>>, mdata |-> 102],
+               [mtype |-> COMMIT, mzxid |-> <<1, 2>>],
+               [mtype |-> NEWLEADER, mzxid |-> <<2, 0>>] >> @@
+        s1 :> <<>> @@
+        s2 :> <<>> ) )
+/\ initialHistory = ( s0 :>
+      << [ zxid |-> <<1, 1>>,
+           value |-> 101,
+           epoch |-> 1,
+           ackSid |-> {s0, s1, s2} ] >> @@
+  s1 :>
+      << [ zxid |-> <<1, 1>>,
+           value |-> 101,
+           epoch |-> 1,
+           ackSid |-> {s0, s1, s2} ] >> @@
+  s2 :>
+      << [zxid |-> <<1, 1>>, value |-> 101, epoch |-> 1, ackSid |-> {s2}],
+         [zxid |-> <<1, 2>>, value |-> 102, epoch |-> 1, ackSid |-> {s2}] >> )
+/\ recorder = [ step |-> 7,
+  nPartition |-> 0,
+  nConsequentFailure |-> 0,
+  noExecute |-> {},
+  nTimeout |-> 2,
+  nCrash |-> 2,
+  nTransaction |-> 2,
+  maxEpoch |-> 2,
+  pc |-> <<"LeaderSyncFollower", s2, s0>>,
+  nClientRequest |-> 0 ]
+/\ acceptedEpoch = (s0 :> 2 @@ s1 :> 2 @@ s2 :> 2)
+/\ connecting = ( s0 :> {} @@
+  s1 :> {} @@
+  s2 :>
+      { [connected |-> TRUE, sid |-> s0],
+        [connected |-> TRUE, sid |-> s1],
+        [connected |-> TRUE, sid |-> s2] } )
+/\ proposalMsgsLog = { [zxid |-> <<1, 1>>, epoch |-> 1, data |-> 101, source |-> s2],
+  [zxid |-> <<1, 2>>, epoch |-> 1, data |-> 102, source |-> s2],
+  [zxid |-> <<1, 2>>, epoch |-> 2, data |-> 102, source |-> s2] }
+/\ lastCommitted = ( s0 :> [zxid |-> <<0, 0>>, index |-> 0] @@
+  s1 :> [zxid |-> <<1, 1>>, index |-> 1] @@
+  s2 :> [zxid |-> <<0, 0>>, index |-> 0] )
+/\ daInv = [ stateConsistent |-> TRUE,
+  proposalConsistent |-> TRUE,
+  commitConsistent |-> TRUE,
+  ackConsistent |-> TRUE,
+  messageLegal |-> TRUE ]
+/\ currentEpoch = (s0 :> 1 @@ s1 :> 1 @@ s2 :> 2)
+/\ learners = (s0 :> {} @@ s1 :> {} @@ s2 :> {s0, s1, s2})
+/\ tempMaxEpoch = (s0 :> 0 @@ s1 :> 0 @@ s2 :> 2)
+/\ leaderOracle = s2
+/\ status = (s0 :> ONLINE @@ s1 :> ONLINE @@ s2 :> ONLINE)
+/\ state = (s0 :> FOLLOWING @@ s1 :> FOLLOWING @@ s2 :> LEADING)
+/\ partition = ( s0 :> (s0 :> FALSE @@ s1 :> FALSE @@ s2 :> FALSE) @@
+  s1 :> (s0 :> FALSE @@ s1 :> FALSE @@ s2 :> FALSE) @@
+  s2 :> (s0 :> FALSE @@ s1 :> FALSE @@ s2 :> FALSE) )
+/\ packetsSync = ( s0 :> [notCommitted |-> <<>>, committed |-> <<>>] @@
+  s1 :> [notCommitted |-> <<>>, committed |-> <<>>] @@
+  s2 :> [notCommitted |-> <<>>, committed |-> <<>>] )
+/\ ackldRecv = (s0 :> {} @@ s1 :> {} @@ s2 :> {[connected |-> TRUE, sid |-> s2]})
+/\ leaderAddr = (s0 :> s2 @@ s1 :> s2 @@ s2 :> NullPoint)
+/\ servingState = (s0 :> SHUTDOWN @@ s1 :> SHUTDOWN @@ s2 :> SHUTDOWN)
+/\ committedLog = <<[zxid |-> <<1, 1>>, value |-> 101, epoch |-> 1, ackSid |-> {s0, s1, s2}]>>
+/\ epochLeader = <<{s2}, {s2}, {}, {}, {}, {}, {}, {}, {}, {}>>
+
+
+STATE_9 == 
+/\ forwarding = (s0 :> {} @@ s1 :> {} @@ s2 :> {s0, s1})
+/\ history = ( s0 :>
+      << [ zxid |-> <<1, 1>>,
+           value |-> 101,
+           epoch |-> 1,
+           ackSid |-> {s0, s1, s2} ] >> @@
+  s1 :>
+      << [ zxid |-> <<1, 1>>,
+           value |-> 101,
+           epoch |-> 1,
+           ackSid |-> {s0, s1, s2} ] >> @@
+  s2 :>
+      << [ zxid |-> <<1, 1>>,
+           value |-> 101,
+           epoch |-> 1,
+           ackSid |-> {s0, s1, s2} ],
+         [zxid |-> <<1, 2>>, value |-> 102, epoch |-> 1, ackSid |-> {s2}] >> )
+/\ doInit = TRUE
+/\ electing = ( s0 :> {} @@
+  s1 :> {} @@
+  s2 :>
+      { [sid |-> s0, peerLastZxid |-> <<-1, -1>>, inQuorum |-> TRUE],
+        [sid |-> s1, peerLastZxid |-> <<-1, -1>>, inQuorum |-> TRUE],
+        [sid |-> s2, peerLastZxid |-> <<-1, -1>>, inQuorum |-> TRUE] } )
+/\ zabState = (s0 :> SYNCHRONIZATION @@ s1 :> SYNCHRONIZATION @@ s2 :> SYNCHRONIZATION)
+/\ aaInv = [ leadership |-> TRUE,
+  prefixConsistency |-> TRUE,
+  integrity |-> TRUE,
+  agreement |-> TRUE,
+  totalOrder |-> TRUE,
+  primaryOrder |-> TRUE,
+  monotonicRead |-> TRUE,
+  processConsistency |-> TRUE,
+  leaderLogCompleteness |-> TRUE,
+  committedLogDurability |-> TRUE ]
+/\ lastProcessed = ( s0 :> [zxid |-> <<1, 1>>, index |-> 1] @@
+  s1 :> [zxid |-> <<1, 1>>, index |-> 1] @@
+  s2 :> [zxid |-> <<1, 2>>, index |-> 2] )
+/\ rcvBuffer = ( s0 :> (s0 :> <<>> @@ s1 :> <<>> @@ s2 :> <<>>) @@
+  s1 :> (s0 :> <<>> @@ s1 :> <<>> @@ s2 :> <<>>) @@
+  s2 :>
+      ( s0 :>
+            << [mtype |-> DIFF, mzxid |-> <<1, 1>>],
+               [mtype |-> PROPOSAL, mzxid |-> <<1, 2>>, mdata |-> 102],
+               [mtype |-> COMMIT, mzxid |-> <<1, 2>>],
+               [mtype |-> NEWLEADER, mzxid |-> <<2, 0>>] >> @@
+        s1 :>
+            << [mtype |-> DIFF, mzxid |-> <<1, 1>>],
+               [mtype |-> PROPOSAL, mzxid |-> <<1, 2>>, mdata |-> 102],
+               [mtype |-> COMMIT, mzxid |-> <<1, 2>>],
+               [mtype |-> NEWLEADER, mzxid |-> <<2, 0>>] >> @@
+        s2 :> <<>> ) )
+/\ initialHistory = ( s0 :>
+      << [ zxid |-> <<1, 1>>,
+           value |-> 101,
+           epoch |-> 1,
+           ackSid |-> {s0, s1, s2} ] >> @@
+  s1 :>
+      << [ zxid |-> <<1, 1>>,
+           value |-> 101,
+           epoch |-> 1,
+           ackSid |-> {s0, s1, s2} ] >> @@
+  s2 :>
+      << [zxid |-> <<1, 1>>, value |-> 101, epoch |-> 1, ackSid |-> {s2}],
+         [zxid |-> <<1, 2>>, value |-> 102, epoch |-> 1, ackSid |-> {s2}] >> )
+/\ recorder = [ step |-> 8,
+  nPartition |-> 0,
+  nConsequentFailure |-> 0,
+  noExecute |-> {},
+  nTimeout |-> 2,
+  nCrash |-> 2,
+  nTransaction |-> 2,
+  maxEpoch |-> 2,
+  pc |-> <<"LeaderSyncFollower", s2, s1>>,
+  nClientRequest |-> 0 ]
+/\ acceptedEpoch = (s0 :> 2 @@ s1 :> 2 @@ s2 :> 2)
+/\ connecting = ( s0 :> {} @@
+  s1 :> {} @@
+  s2 :>
+      { [connected |-> TRUE, sid |-> s0],
+        [connected |-> TRUE, sid |-> s1],
+        [connected |-> TRUE, sid |-> s2] } )
+/\ proposalMsgsLog = { [zxid |-> <<1, 1>>, epoch |-> 1, data |-> 101, source |-> s2],
+  [zxid |-> <<1, 2>>, epoch |-> 1, data |-> 102, source |-> s2],
+  [zxid |-> <<1, 2>>, epoch |-> 2, data |-> 102, source |-> s2] }
+/\ lastCommitted = ( s0 :> [zxid |-> <<0, 0>>, index |-> 0] @@
+  s1 :> [zxid |-> <<1, 1>>, index |-> 1] @@
+  s2 :> [zxid |-> <<0, 0>>, index |-> 0] )
+/\ daInv = [ stateConsistent |-> TRUE,
+  proposalConsistent |-> TRUE,
+  commitConsistent |-> TRUE,
+  ackConsistent |-> TRUE,
+  messageLegal |-> TRUE ]
+/\ currentEpoch = (s0 :> 1 @@ s1 :> 1 @@ s2 :> 2)
+/\ learners = (s0 :> {} @@ s1 :> {} @@ s2 :> {s0, s1, s2})
+/\ tempMaxEpoch = (s0 :> 0 @@ s1 :> 0 @@ s2 :> 2)
+/\ leaderOracle = s2
+/\ status = (s0 :> ONLINE @@ s1 :> ONLINE @@ s2 :> ONLINE)
+/\ state = (s0 :> FOLLOWING @@ s1 :> FOLLOWING @@ s2 :> LEADING)
+/\ partition = ( s0 :> (s0 :> FALSE @@ s1 :> FALSE @@ s2 :> FALSE) @@
+  s1 :> (s0 :> FALSE @@ s1 :> FALSE @@ s2 :> FALSE) @@
+  s2 :> (s0 :> FALSE @@ s1 :> FALSE @@ s2 :> FALSE) )
+/\ packetsSync = ( s0 :> [notCommitted |-> <<>>, committed |-> <<>>] @@
+  s1 :> [notCommitted |-> <<>>, committed |-> <<>>] @@
+  s2 :> [notCommitted |-> <<>>, committed |-> <<>>] )
+/\ ackldRecv = (s0 :> {} @@ s1 :> {} @@ s2 :> {[connected |-> TRUE, sid |-> s2]})
+/\ leaderAddr = (s0 :> s2 @@ s1 :> s2 @@ s2 :> NullPoint)
+/\ servingState = (s0 :> SHUTDOWN @@ s1 :> SHUTDOWN @@ s2 :> SHUTDOWN)
+/\ committedLog = <<[zxid |-> <<1, 1>>, value |-> 101, epoch |-> 1, ackSid |-> {s0, s1, s2}]>>
+/\ epochLeader = <<{s2}, {s2}, {}, {}, {}, {}, {}, {}, {}, {}>>
+
+
+STATE_10 == 
+/\ forwarding = (s0 :> {} @@ s1 :> {} @@ s2 :> {s0, s1})
+/\ history = ( s0 :>
+      << [ zxid |-> <<1, 1>>,
+           value |-> 101,
+           epoch |-> 1,
+           ackSid |-> {s0, s1, s2} ] >> @@
+  s1 :>
+      << [ zxid |-> <<1, 1>>,
+           value |-> 101,
+           epoch |-> 1,
+           ackSid |-> {s0, s1, s2} ] >> @@
+  s2 :>
+      << [ zxid |-> <<1, 1>>,
+           value |-> 101,
+           epoch |-> 1,
+           ackSid |-> {s0, s1, s2} ],
+         [zxid |-> <<1, 2>>, value |-> 102, epoch |-> 1, ackSid |-> {s2}] >> )
+/\ doInit = TRUE
+/\ electing = ( s0 :> {} @@
+  s1 :> {} @@
+  s2 :>
+      { [sid |-> s0, peerLastZxid |-> <<-1, -1>>, inQuorum |-> TRUE],
+        [sid |-> s1, peerLastZxid |-> <<-1, -1>>, inQuorum |-> TRUE],
+        [sid |-> s2, peerLastZxid |-> <<-1, -1>>, inQuorum |-> TRUE] } )
+/\ zabState = (s0 :> SYNCHRONIZATION @@ s1 :> SYNCHRONIZATION @@ s2 :> SYNCHRONIZATION)
+/\ aaInv = [ leadership |-> TRUE,
+  prefixConsistency |-> TRUE,
+  integrity |-> TRUE,
+  agreement |-> TRUE,
+  totalOrder |-> TRUE,
+  primaryOrder |-> TRUE,
+  monotonicRead |-> TRUE,
+  processConsistency |-> TRUE,
+  leaderLogCompleteness |-> TRUE,
+  committedLogDurability |-> TRUE ]
+/\ lastProcessed = ( s0 :> [zxid |-> <<1, 1>>, index |-> 1] @@
+  s1 :> [zxid |-> <<1, 1>>, index |-> 1] @@
+  s2 :> [zxid |-> <<1, 2>>, index |-> 2] )
+/\ rcvBuffer = ( s0 :> (s0 :> <<>> @@ s1 :> <<>> @@ s2 :> <<>>) @@
+  s1 :> (s0 :> <<>> @@ s1 :> <<>> @@ s2 :> <<>>) @@
+  s2 :>
+      ( s0 :>
+            << [mtype |-> DIFF, mzxid |-> <<1, 1>>],
+               [mtype |-> PROPOSAL, mzxid |-> <<1, 2>>, mdata |-> 102],
+               [mtype |-> COMMIT, mzxid |-> <<1, 2>>],
+               [mtype |-> NEWLEADER, mzxid |-> <<2, 0>>] >> @@
+        s1 :>
+            << [mtype |-> PROPOSAL, mzxid |-> <<1, 2>>, mdata |-> 102],
+               [mtype |-> COMMIT, mzxid |-> <<1, 2>>],
+               [mtype |-> NEWLEADER, mzxid |-> <<2, 0>>] >> @@
+        s2 :> <<>> ) )
+/\ initialHistory = ( s0 :>
+      << [ zxid |-> <<1, 1>>,
+           value |-> 101,
+           epoch |-> 1,
+           ackSid |-> {s0, s1, s2} ] >> @@
+  s1 :>
+      << [ zxid |-> <<1, 1>>,
+           value |-> 101,
+           epoch |-> 1,
+           ackSid |-> {s0, s1, s2} ] >> @@
+  s2 :>
+      << [zxid |-> <<1, 1>>, value |-> 101, epoch |-> 1, ackSid |-> {s2}],
+         [zxid |-> <<1, 2>>, value |-> 102, epoch |-> 1, ackSid |-> {s2}] >> )
+/\ recorder = [ step |-> 9,
+  nPartition |-> 0,
+  nConsequentFailure |-> 0,
+  noExecute |-> {},
+  nTimeout |-> 2,
+  nCrash |-> 2,
+  nTransaction |-> 2,
+  maxEpoch |-> 2,
+  pc |-> <<"FollowerProcessSyncMessage", s1, s2, DIFF, <<1, 1>>>>,
+  nClientRequest |-> 0 ]
+/\ acceptedEpoch = (s0 :> 2 @@ s1 :> 2 @@ s2 :> 2)
+/\ connecting = ( s0 :> {} @@
+  s1 :> {} @@
+  s2 :>
+      { [connected |-> TRUE, sid |-> s0],
+        [connected |-> TRUE, sid |-> s1],
+        [connected |-> TRUE, sid |-> s2] } )
+/\ proposalMsgsLog = { [zxid |-> <<1, 1>>, epoch |-> 1, data |-> 101, source |-> s2],
+  [zxid |-> <<1, 2>>, epoch |-> 1, data |-> 102, source |-> s2],
+  [zxid |-> <<1, 2>>, epoch |-> 2, data |-> 102, source |-> s2] }
+/\ lastCommitted = ( s0 :> [zxid |-> <<0, 0>>, index |-> 0] @@
+  s1 :> [zxid |-> <<1, 1>>, index |-> 1] @@
+  s2 :> [zxid |-> <<0, 0>>, index |-> 0] )
+/\ daInv = [ stateConsistent |-> TRUE,
+  proposalConsistent |-> TRUE,
+  commitConsistent |-> TRUE,
+  ackConsistent |-> TRUE,
+  messageLegal |-> TRUE ]
+/\ currentEpoch = (s0 :> 1 @@ s1 :> 1 @@ s2 :> 2)
+/\ learners = (s0 :> {} @@ s1 :> {} @@ s2 :> {s0, s1, s2})
+/\ tempMaxEpoch = (s0 :> 0 @@ s1 :> 0 @@ s2 :> 2)
+/\ leaderOracle = s2
+/\ status = (s0 :> ONLINE @@ s1 :> ONLINE @@ s2 :> ONLINE)
+/\ state = (s0 :> FOLLOWING @@ s1 :> FOLLOWING @@ s2 :> LEADING)
+/\ partition = ( s0 :> (s0 :> FALSE @@ s1 :> FALSE @@ s2 :> FALSE) @@
+  s1 :> (s0 :> FALSE @@ s1 :> FALSE @@ s2 :> FALSE) @@
+  s2 :> (s0 :> FALSE @@ s1 :> FALSE @@ s2 :> FALSE) )
+/\ packetsSync = ( s0 :> [notCommitted |-> <<>>, committed |-> <<>>] @@
+  s1 :> [notCommitted |-> <<>>, committed |-> <<>>] @@
+  s2 :> [notCommitted |-> <<>>, committed |-> <<>>] )
+/\ ackldRecv = (s0 :> {} @@ s1 :> {} @@ s2 :> {[connected |-> TRUE, sid |-> s2]})
+/\ leaderAddr = (s0 :> s2 @@ s1 :> s2 @@ s2 :> NullPoint)
+/\ servingState = (s0 :> SHUTDOWN @@ s1 :> SHUTDOWN @@ s2 :> SHUTDOWN)
+/\ committedLog = <<[zxid |-> <<1, 1>>, value |-> 101, epoch |-> 1, ackSid |-> {s0, s1, s2}]>>
+/\ epochLeader = <<{s2}, {s2}, {}, {}, {}, {}, {}, {}, {}, {}>>
+
+
+STATE_11 == 
+/\ forwarding = (s0 :> {} @@ s1 :> {} @@ s2 :> {s0, s1})
+/\ history = ( s0 :>
+      << [ zxid |-> <<1, 1>>,
+           value |-> 101,
+           epoch |-> 1,
+           ackSid |-> {s0, s1, s2} ] >> @@
+  s1 :>
+      << [ zxid |-> <<1, 1>>,
+           value |-> 101,
+           epoch |-> 1,
+           ackSid |-> {s0, s1, s2} ] >> @@
+  s2 :>
+      << [ zxid |-> <<1, 1>>,
+           value |-> 101,
+           epoch |-> 1,
+           ackSid |-> {s0, s1, s2} ],
+         [zxid |-> <<1, 2>>, value |-> 102, epoch |-> 1, ackSid |-> {s2}] >> )
+/\ doInit = TRUE
+/\ electing = ( s0 :> {} @@
+  s1 :> {} @@
+  s2 :>
+      { [sid |-> s0, peerLastZxid |-> <<-1, -1>>, inQuorum |-> TRUE],
+        [sid |-> s1, peerLastZxid |-> <<-1, -1>>, inQuorum |-> TRUE],
+        [sid |-> s2, peerLastZxid |-> <<-1, -1>>, inQuorum |-> TRUE] } )
+/\ zabState = (s0 :> SYNCHRONIZATION @@ s1 :> SYNCHRONIZATION @@ s2 :> SYNCHRONIZATION)
+/\ aaInv = [ leadership |-> TRUE,
+  prefixConsistency |-> TRUE,
+  integrity |-> TRUE,
+  agreement |-> TRUE,
+  totalOrder |-> TRUE,
+  primaryOrder |-> TRUE,
+  monotonicRead |-> TRUE,
+  processConsistency |-> TRUE,
+  leaderLogCompleteness |-> TRUE,
+  committedLogDurability |-> TRUE ]
+/\ lastProcessed = ( s0 :> [zxid |-> <<1, 1>>, index |-> 1] @@
+  s1 :> [zxid |-> <<1, 1>>, index |-> 1] @@
+  s2 :> [zxid |-> <<1, 2>>, index |-> 2] )
+/\ rcvBuffer = ( s0 :> (s0 :> <<>> @@ s1 :> <<>> @@ s2 :> <<>>) @@
+  s1 :> (s0 :> <<>> @@ s1 :> <<>> @@ s2 :> <<>>) @@
+  s2 :>
+      ( s0 :>
+            << [mtype |-> DIFF, mzxid |-> <<1, 1>>],
+               [mtype |-> PROPOSAL, mzxid |-> <<1, 2>>, mdata |-> 102],
+               [mtype |-> COMMIT, mzxid |-> <<1, 2>>],
+               [mtype |-> NEWLEADER, mzxid |-> <<2, 0>>] >> @@
+        s1 :>
+            << [mtype |-> COMMIT, mzxid |-> <<1, 2>>],
+               [mtype |-> NEWLEADER, mzxid |-> <<2, 0>>] >> @@
+        s2 :> <<>> ) )
+/\ initialHistory = ( s0 :>
+      << [ zxid |-> <<1, 1>>,
+           value |-> 101,
+           epoch |-> 1,
+           ackSid |-> {s0, s1, s2} ] >> @@
+  s1 :>
+      << [ zxid |-> <<1, 1>>,
+           value |-> 101,
+           epoch |-> 1,
+           ackSid |-> {s0, s1, s2} ] >> @@
+  s2 :>
+      << [zxid |-> <<1, 1>>, value |-> 101, epoch |-> 1, ackSid |-> {s2}],
+         [zxid |-> <<1, 2>>, value |-> 102, epoch |-> 1, ackSid |-> {s2}] >> )
+/\ recorder = [ step |-> 10,
+  nPartition |-> 0,
+  nConsequentFailure |-> 0,
+  noExecute |-> {},
+  nTimeout |-> 2,
+  nCrash |-> 2,
+  nTransaction |-> 2,
+  maxEpoch |-> 2,
+  pc |-> <<"FollowerProcessPROPOSALInSync", s1, s2, <<1, 2>>>>,
+  nClientRequest |-> 0 ]
+/\ acceptedEpoch = (s0 :> 2 @@ s1 :> 2 @@ s2 :> 2)
+/\ connecting = ( s0 :> {} @@
+  s1 :> {} @@
+  s2 :>
+      { [connected |-> TRUE, sid |-> s0],
+        [connected |-> TRUE, sid |-> s1],
+        [connected |-> TRUE, sid |-> s2] } )
+/\ proposalMsgsLog = { [zxid |-> <<1, 1>>, epoch |-> 1, data |-> 101, source |-> s2],
+  [zxid |-> <<1, 2>>, epoch |-> 1, data |-> 102, source |-> s2],
+  [zxid |-> <<1, 2>>, epoch |-> 2, data |-> 102, source |-> s2] }
+/\ lastCommitted = ( s0 :> [zxid |-> <<0, 0>>, index |-> 0] @@
+  s1 :> [zxid |-> <<1, 1>>, index |-> 1] @@
+  s2 :> [zxid |-> <<0, 0>>, index |-> 0] )
+/\ daInv = [ stateConsistent |-> TRUE,
+  proposalConsistent |-> TRUE,
+  commitConsistent |-> TRUE,
+  ackConsistent |-> TRUE,
+  messageLegal |-> TRUE ]
+/\ currentEpoch = (s0 :> 1 @@ s1 :> 1 @@ s2 :> 2)
+/\ learners = (s0 :> {} @@ s1 :> {} @@ s2 :> {s0, s1, s2})
+/\ tempMaxEpoch = (s0 :> 0 @@ s1 :> 0 @@ s2 :> 2)
+/\ leaderOracle = s2
+/\ status = (s0 :> ONLINE @@ s1 :> ONLINE @@ s2 :> ONLINE)
+/\ state = (s0 :> FOLLOWING @@ s1 :> FOLLOWING @@ s2 :> LEADING)
+/\ partition = ( s0 :> (s0 :> FALSE @@ s1 :> FALSE @@ s2 :> FALSE) @@
+  s1 :> (s0 :> FALSE @@ s1 :> FALSE @@ s2 :> FALSE) @@
+  s2 :> (s0 :> FALSE @@ s1 :> FALSE @@ s2 :> FALSE) )
+/\ packetsSync = ( s0 :> [notCommitted |-> <<>>, committed |-> <<>>] @@
+  s1 :>
+      [ notCommitted |->
+            <<[zxid |-> <<1, 2>>, value |-> 102, epoch |-> 2, ackSid |-> {}]>>,
+        committed |-> <<>> ] @@
+  s2 :> [notCommitted |-> <<>>, committed |-> <<>>] )
+/\ ackldRecv = (s0 :> {} @@ s1 :> {} @@ s2 :> {[connected |-> TRUE, sid |-> s2]})
+/\ leaderAddr = (s0 :> s2 @@ s1 :> s2 @@ s2 :> NullPoint)
+/\ servingState = (s0 :> SHUTDOWN @@ s1 :> SHUTDOWN @@ s2 :> SHUTDOWN)
+/\ committedLog = <<[zxid |-> <<1, 1>>, value |-> 101, epoch |-> 1, ackSid |-> {s0, s1, s2}]>>
+/\ epochLeader = <<{s2}, {s2}, {}, {}, {}, {}, {}, {}, {}, {}>>
+
+
+STATE_12 == 
+/\ forwarding = (s0 :> {} @@ s1 :> {} @@ s2 :> {s0, s1})
+/\ history = ( s0 :>
+      << [ zxid |-> <<1, 1>>,
+           value |-> 101,
+           epoch |-> 1,
+           ackSid |-> {s0, s1, s2} ] >> @@
+  s1 :>
+      << [ zxid |-> <<1, 1>>,
+           value |-> 101,
+           epoch |-> 1,
+           ackSid |-> {s0, s1, s2} ] >> @@
+  s2 :>
+      << [ zxid |-> <<1, 1>>,
+           value |-> 101,
+           epoch |-> 1,
+           ackSid |-> {s0, s1, s2} ],
+         [zxid |-> <<1, 2>>, value |-> 102, epoch |-> 1, ackSid |-> {s2}] >> )
+/\ doInit = TRUE
+/\ electing = ( s0 :> {} @@
+  s1 :> {} @@
+  s2 :>
+      { [sid |-> s0, peerLastZxid |-> <<-1, -1>>, inQuorum |-> TRUE],
+        [sid |-> s1, peerLastZxid |-> <<-1, -1>>, inQuorum |-> TRUE],
+        [sid |-> s2, peerLastZxid |-> <<-1, -1>>, inQuorum |-> TRUE] } )
+/\ zabState = (s0 :> SYNCHRONIZATION @@ s1 :> SYNCHRONIZATION @@ s2 :> SYNCHRONIZATION)
+/\ aaInv = [ leadership |-> TRUE,
+  prefixConsistency |-> TRUE,
+  integrity |-> TRUE,
+  agreement |-> TRUE,
+  totalOrder |-> TRUE,
+  primaryOrder |-> TRUE,
+  monotonicRead |-> TRUE,
+  processConsistency |-> TRUE,
+  leaderLogCompleteness |-> TRUE,
+  committedLogDurability |-> TRUE ]
+/\ lastProcessed = ( s0 :> [zxid |-> <<1, 1>>, index |-> 1] @@
+  s1 :> [zxid |-> <<1, 1>>, index |-> 1] @@
+  s2 :> [zxid |-> <<1, 2>>, index |-> 2] )
+/\ rcvBuffer = ( s0 :> (s0 :> <<>> @@ s1 :> <<>> @@ s2 :> <<>>) @@
+  s1 :> (s0 :> <<>> @@ s1 :> <<>> @@ s2 :> <<>>) @@
+  s2 :>
+      ( s0 :>
+            << [mtype |-> PROPOSAL, mzxid |-> <<1, 2>>, mdata |-> 102],
+               [mtype |-> COMMIT, mzxid |-> <<1, 2>>],
+               [mtype |-> NEWLEADER, mzxid |-> <<2, 0>>] >> @@
+        s1 :>
+            << [mtype |-> COMMIT, mzxid |-> <<1, 2>>],
+               [mtype |-> NEWLEADER, mzxid |-> <<2, 0>>] >> @@
+        s2 :> <<>> ) )
+/\ initialHistory = ( s0 :>
+      << [ zxid |-> <<1, 1>>,
+           value |-> 101,
+           epoch |-> 1,
+           ackSid |-> {s0, s1, s2} ] >> @@
+  s1 :>
+      << [ zxid |-> <<1, 1>>,
+           value |-> 101,
+           epoch |-> 1,
+           ackSid |-> {s0, s1, s2} ] >> @@
+  s2 :>
+      << [zxid |-> <<1, 1>>, value |-> 101, epoch |-> 1, ackSid |-> {s2}],
+         [zxid |-> <<1, 2>>, value |-> 102, epoch |-> 1, ackSid |-> {s2}] >> )
+/\ recorder = [ step |-> 11,
+  nPartition |-> 0,
+  nConsequentFailure |-> 0,
+  noExecute |-> {},
+  nTimeout |-> 2,
+  nCrash |-> 2,
+  nTransaction |-> 2,
+  maxEpoch |-> 2,
+  pc |-> <<"FollowerProcessSyncMessage", s0, s2, DIFF, <<1, 1>>>>,
+  nClientRequest |-> 0 ]
+/\ acceptedEpoch = (s0 :> 2 @@ s1 :> 2 @@ s2 :> 2)
+/\ connecting = ( s0 :> {} @@
+  s1 :> {} @@
+  s2 :>
+      { [connected |-> TRUE, sid |-> s0],
+        [connected |-> TRUE, sid |-> s1],
+        [connected |-> TRUE, sid |-> s2] } )
+/\ proposalMsgsLog = { [zxid |-> <<1, 1>>, epoch |-> 1, data |-> 101, source |-> s2],
+  [zxid |-> <<1, 2>>, epoch |-> 1, data |-> 102, source |-> s2],
+  [zxid |-> <<1, 2>>, epoch |-> 2, data |-> 102, source |-> s2] }
+/\ lastCommitted = ( s0 :> [zxid |-> <<0, 0>>, index |-> 0] @@
+  s1 :> [zxid |-> <<1, 1>>, index |-> 1] @@
+  s2 :> [zxid |-> <<0, 0>>, index |-> 0] )
+/\ daInv = [ stateConsistent |-> TRUE,
+  proposalConsistent |-> TRUE,
+  commitConsistent |-> TRUE,
+  ackConsistent |-> TRUE,
+  messageLegal |-> TRUE ]
+/\ currentEpoch = (s0 :> 1 @@ s1 :> 1 @@ s2 :> 2)
+/\ learners = (s0 :> {} @@ s1 :> {} @@ s2 :> {s0, s1, s2})
+/\ tempMaxEpoch = (s0 :> 0 @@ s1 :> 0 @@ s2 :> 2)
+/\ leaderOracle = s2
+/\ status = (s0 :> ONLINE @@ s1 :> ONLINE @@ s2 :> ONLINE)
+/\ state = (s0 :> FOLLOWING @@ s1 :> FOLLOWING @@ s2 :> LEADING)
+/\ partition = ( s0 :> (s0 :> FALSE @@ s1 :> FALSE @@ s2 :> FALSE) @@
+  s1 :> (s0 :> FALSE @@ s1 :> FALSE @@ s2 :> FALSE) @@
+  s2 :> (s0 :> FALSE @@ s1 :> FALSE @@ s2 :> FALSE) )
+/\ packetsSync = ( s0 :> [notCommitted |-> <<>>, committed |-> <<>>] @@
+  s1 :>
+      [ notCommitted |->
+            <<[zxid |-> <<1, 2>>, value |-> 102, epoch |-> 2, ackSid |-> {}]>>,
+        committed |-> <<>> ] @@
+  s2 :> [notCommitted |-> <<>>, committed |-> <<>>] )
+/\ ackldRecv = (s0 :> {} @@ s1 :> {} @@ s2 :> {[connected |-> TRUE, sid |-> s2]})
+/\ leaderAddr = (s0 :> s2 @@ s1 :> s2 @@ s2 :> NullPoint)
+/\ servingState = (s0 :> SHUTDOWN @@ s1 :> SHUTDOWN @@ s2 :> SHUTDOWN)
+/\ committedLog = <<[zxid |-> <<1, 1>>, value |-> 101, epoch |-> 1, ackSid |-> {s0, s1, s2}]>>
+/\ epochLeader = <<{s2}, {s2}, {}, {}, {}, {}, {}, {}, {}, {}>>
+
+
+STATE_13 == 
+/\ forwarding = (s0 :> {} @@ s1 :> {} @@ s2 :> {s0, s1})
+/\ history = ( s0 :>
+      << [ zxid |-> <<1, 1>>,
+           value |-> 101,
+           epoch |-> 1,
+           ackSid |-> {s0, s1, s2} ] >> @@
+  s1 :>
+      << [ zxid |-> <<1, 1>>,
+           value |-> 101,
+           epoch |-> 1,
+           ackSid |-> {s0, s1, s2} ] >> @@
+  s2 :>
+      << [ zxid |-> <<1, 1>>,
+           value |-> 101,
+           epoch |-> 1,
+           ackSid |-> {s0, s1, s2} ],
+         [zxid |-> <<1, 2>>, value |-> 102, epoch |-> 1, ackSid |-> {s2}] >> )
+/\ doInit = TRUE
+/\ electing = ( s0 :> {} @@
+  s1 :> {} @@
+  s2 :>
+      { [sid |-> s0, peerLastZxid |-> <<-1, -1>>, inQuorum |-> TRUE],
+        [sid |-> s1, peerLastZxid |-> <<-1, -1>>, inQuorum |-> TRUE],
+        [sid |-> s2, peerLastZxid |-> <<-1, -1>>, inQuorum |-> TRUE] } )
+/\ zabState = (s0 :> SYNCHRONIZATION @@ s1 :> SYNCHRONIZATION @@ s2 :> SYNCHRONIZATION)
+/\ aaInv = [ leadership |-> TRUE,
+  prefixConsistency |-> TRUE,
+  integrity |-> TRUE,
+  agreement |-> TRUE,
+  totalOrder |-> TRUE,
+  primaryOrder |-> TRUE,
+  monotonicRead |-> TRUE,
+  processConsistency |-> TRUE,
+  leaderLogCompleteness |-> TRUE,
+  committedLogDurability |-> TRUE ]
+/\ lastProcessed = ( s0 :> [zxid |-> <<1, 1>>, index |-> 1] @@
+  s1 :> [zxid |-> <<1, 1>>, index |-> 1] @@
+  s2 :> [zxid |-> <<1, 2>>, index |-> 2] )
+/\ rcvBuffer = ( s0 :> (s0 :> <<>> @@ s1 :> <<>> @@ s2 :> <<>>) @@
+  s1 :> (s0 :> <<>> @@ s1 :> <<>> @@ s2 :> <<>>) @@
+  s2 :>
+      ( s0 :>
+            << [mtype |-> COMMIT, mzxid |-> <<1, 2>>],
+               [mtype |-> NEWLEADER, mzxid |-> <<2, 0>>] >> @@
+        s1 :>
+            << [mtype |-> COMMIT, mzxid |-> <<1, 2>>],
+               [mtype |-> NEWLEADER, mzxid |-> <<2, 0>>] >> @@
+        s2 :> <<>> ) )
+/\ initialHistory = ( s0 :>
+      << [ zxid |-> <<1, 1>>,
+           value |-> 101,
+           epoch |-> 1,
+           ackSid |-> {s0, s1, s2} ] >> @@
+  s1 :>
+      << [ zxid |-> <<1, 1>>,
+           value |-> 101,
+           epoch |-> 1,
+           ackSid |-> {s0, s1, s2} ] >> @@
+  s2 :>
+      << [zxid |-> <<1, 1>>, value |-> 101, epoch |-> 1, ackSid |-> {s2}],
+         [zxid |-> <<1, 2>>, value |-> 102, epoch |-> 1, ackSid |-> {s2}] >> )
+/\ recorder = [ step |-> 12,
+  nPartition |-> 0,
+  nConsequentFailure |-> 0,
+  noExecute |-> {},
+  nTimeout |-> 2,
+  nCrash |-> 2,
+  nTransaction |-> 2,
+  maxEpoch |-> 2,
+  pc |-> <<"FollowerProcessPROPOSALInSync", s0, s2, <<1, 2>>>>,
+  nClientRequest |-> 0 ]
+/\ acceptedEpoch = (s0 :> 2 @@ s1 :> 2 @@ s2 :> 2)
+/\ connecting = ( s0 :> {} @@
+  s1 :> {} @@
+  s2 :>
+      { [connected |-> TRUE, sid |-> s0],
+        [connected |-> TRUE, sid |-> s1],
+        [connected |-> TRUE, sid |-> s2] } )
+/\ proposalMsgsLog = { [zxid |-> <<1, 1>>, epoch |-> 1, data |-> 101, source |-> s2],
+  [zxid |-> <<1, 2>>, epoch |-> 1, data |-> 102, source |-> s2],
+  [zxid |-> <<1, 2>>, epoch |-> 2, data |-> 102, source |-> s2] }
+/\ lastCommitted = ( s0 :> [zxid |-> <<0, 0>>, index |-> 0] @@
+  s1 :> [zxid |-> <<1, 1>>, index |-> 1] @@
+  s2 :> [zxid |-> <<0, 0>>, index |-> 0] )
+/\ daInv = [ stateConsistent |-> TRUE,
+  proposalConsistent |-> TRUE,
+  commitConsistent |-> TRUE,
+  ackConsistent |-> TRUE,
+  messageLegal |-> TRUE ]
+/\ currentEpoch = (s0 :> 1 @@ s1 :> 1 @@ s2 :> 2)
+/\ learners = (s0 :> {} @@ s1 :> {} @@ s2 :> {s0, s1, s2})
+/\ tempMaxEpoch = (s0 :> 0 @@ s1 :> 0 @@ s2 :> 2)
+/\ leaderOracle = s2
+/\ status = (s0 :> ONLINE @@ s1 :> ONLINE @@ s2 :> ONLINE)
+/\ state = (s0 :> FOLLOWING @@ s1 :> FOLLOWING @@ s2 :> LEADING)
+/\ partition = ( s0 :> (s0 :> FALSE @@ s1 :> FALSE @@ s2 :> FALSE) @@
+  s1 :> (s0 :> FALSE @@ s1 :> FALSE @@ s2 :> FALSE) @@
+  s2 :> (s0 :> FALSE @@ s1 :> FALSE @@ s2 :> FALSE) )
+/\ packetsSync = ( s0 :>
+      [ notCommitted |->
+            <<[zxid |-> <<1, 2>>, value |-> 102, epoch |-> 2, ackSid |-> {}]>>,
+        committed |-> <<>> ] @@
+  s1 :>
+      [ notCommitted |->
+            <<[zxid |-> <<1, 2>>, value |-> 102, epoch |-> 2, ackSid |-> {}]>>,
+        committed |-> <<>> ] @@
+  s2 :> [notCommitted |-> <<>>, committed |-> <<>>] )
+/\ ackldRecv = (s0 :> {} @@ s1 :> {} @@ s2 :> {[connected |-> TRUE, sid |-> s2]})
+/\ leaderAddr = (s0 :> s2 @@ s1 :> s2 @@ s2 :> NullPoint)
+/\ servingState = (s0 :> SHUTDOWN @@ s1 :> SHUTDOWN @@ s2 :> SHUTDOWN)
+/\ committedLog = <<[zxid |-> <<1, 1>>, value |-> 101, epoch |-> 1, ackSid |-> {s0, s1, s2}]>>
+/\ epochLeader = <<{s2}, {s2}, {}, {}, {}, {}, {}, {}, {}, {}>>
+
+
+STATE_14 == 
+/\ forwarding = (s0 :> {} @@ s1 :> {} @@ s2 :> {s0, s1})
+/\ history = ( s0 :>
+      << [ zxid |-> <<1, 1>>,
+           value |-> 101,
+           epoch |-> 1,
+           ackSid |-> {s0, s1, s2} ] >> @@
+  s1 :>
+      << [ zxid |-> <<1, 1>>,
+           value |-> 101,
+           epoch |-> 1,
+           ackSid |-> {s0, s1, s2} ] >> @@
+  s2 :>
+      << [ zxid |-> <<1, 1>>,
+           value |-> 101,
+           epoch |-> 1,
+           ackSid |-> {s0, s1, s2} ],
+         [zxid |-> <<1, 2>>, value |-> 102, epoch |-> 1, ackSid |-> {s2}] >> )
+/\ doInit = TRUE
+/\ electing = ( s0 :> {} @@
+  s1 :> {} @@
+  s2 :>
+      { [sid |-> s0, peerLastZxid |-> <<-1, -1>>, inQuorum |-> TRUE],
+        [sid |-> s1, peerLastZxid |-> <<-1, -1>>, inQuorum |-> TRUE],
+        [sid |-> s2, peerLastZxid |-> <<-1, -1>>, inQuorum |-> TRUE] } )
+/\ zabState = (s0 :> SYNCHRONIZATION @@ s1 :> SYNCHRONIZATION @@ s2 :> SYNCHRONIZATION)
+/\ aaInv = [ leadership |-> TRUE,
+  prefixConsistency |-> TRUE,
+  integrity |-> TRUE,
+  agreement |-> TRUE,
+  totalOrder |-> TRUE,
+  primaryOrder |-> TRUE,
+  monotonicRead |-> TRUE,
+  processConsistency |-> TRUE,
+  leaderLogCompleteness |-> TRUE,
+  committedLogDurability |-> TRUE ]
+/\ lastProcessed = ( s0 :> [zxid |-> <<1, 1>>, index |-> 1] @@
+  s1 :> [zxid |-> <<1, 1>>, index |-> 1] @@
+  s2 :> [zxid |-> <<1, 2>>, index |-> 2] )
+/\ rcvBuffer = ( s0 :> (s0 :> <<>> @@ s1 :> <<>> @@ s2 :> <<>>) @@
+  s1 :> (s0 :> <<>> @@ s1 :> <<>> @@ s2 :> <<>>) @@
+  s2 :>
+      ( s0 :> <<[mtype |-> NEWLEADER, mzxid |-> <<2, 0>>]>> @@
+        s1 :>
+            << [mtype |-> COMMIT, mzxid |-> <<1, 2>>],
+               [mtype |-> NEWLEADER, mzxid |-> <<2, 0>>] >> @@
+        s2 :> <<>> ) )
+/\ initialHistory = ( s0 :>
+      << [ zxid |-> <<1, 1>>,
+           value |-> 101,
+           epoch |-> 1,
+           ackSid |-> {s0, s1, s2} ] >> @@
+  s1 :>
+      << [ zxid |-> <<1, 1>>,
+           value |-> 101,
+           epoch |-> 1,
+           ackSid |-> {s0, s1, s2} ] >> @@
+  s2 :>
+      << [zxid |-> <<1, 1>>, value |-> 101, epoch |-> 1, ackSid |-> {s2}],
+         [zxid |-> <<1, 2>>, value |-> 102, epoch |-> 1, ackSid |-> {s2}] >> )
+/\ recorder = [ step |-> 13,
+  nPartition |-> 0,
+  nConsequentFailure |-> 0,
+  noExecute |-> {},
+  nTimeout |-> 2,
+  nCrash |-> 2,
+  nTransaction |-> 2,
+  maxEpoch |-> 2,
+  pc |-> <<"FollowerProcessCOMMITInSync", s0, s2, <<1, 2>>>>,
+  nClientRequest |-> 0 ]
+/\ acceptedEpoch = (s0 :> 2 @@ s1 :> 2 @@ s2 :> 2)
+/\ connecting = ( s0 :> {} @@
+  s1 :> {} @@
+  s2 :>
+      { [connected |-> TRUE, sid |-> s0],
+        [connected |-> TRUE, sid |-> s1],
+        [connected |-> TRUE, sid |-> s2] } )
+/\ proposalMsgsLog = { [zxid |-> <<1, 1>>, epoch |-> 1, data |-> 101, source |-> s2],
+  [zxid |-> <<1, 2>>, epoch |-> 1, data |-> 102, source |-> s2],
+  [zxid |-> <<1, 2>>, epoch |-> 2, data |-> 102, source |-> s2] }
+/\ lastCommitted = ( s0 :> [zxid |-> <<0, 0>>, index |-> 0] @@
+  s1 :> [zxid |-> <<1, 1>>, index |-> 1] @@
+  s2 :> [zxid |-> <<0, 0>>, index |-> 0] )
+/\ daInv = [ stateConsistent |-> TRUE,
+  proposalConsistent |-> TRUE,
+  commitConsistent |-> TRUE,
+  ackConsistent |-> TRUE,
+  messageLegal |-> TRUE ]
+/\ currentEpoch = (s0 :> 1 @@ s1 :> 1 @@ s2 :> 2)
+/\ learners = (s0 :> {} @@ s1 :> {} @@ s2 :> {s0, s1, s2})
+/\ tempMaxEpoch = (s0 :> 0 @@ s1 :> 0 @@ s2 :> 2)
+/\ leaderOracle = s2
+/\ status = (s0 :> ONLINE @@ s1 :> ONLINE @@ s2 :> ONLINE)
+/\ state = (s0 :> FOLLOWING @@ s1 :> FOLLOWING @@ s2 :> LEADING)
+/\ partition = ( s0 :> (s0 :> FALSE @@ s1 :> FALSE @@ s2 :> FALSE) @@
+  s1 :> (s0 :> FALSE @@ s1 :> FALSE @@ s2 :> FALSE) @@
+  s2 :> (s0 :> FALSE @@ s1 :> FALSE @@ s2 :> FALSE) )
+/\ packetsSync = ( s0 :>
+      [ notCommitted |->
+            <<[zxid |-> <<1, 2>>, value |-> 102, epoch |-> 2, ackSid |-> {}]>>,
+        committed |-> <<<<1, 2>>>> ] @@
+  s1 :>
+      [ notCommitted |->
+            <<[zxid |-> <<1, 2>>, value |-> 102, epoch |-> 2, ackSid |-> {}]>>,
+        committed |-> <<>> ] @@
+  s2 :> [notCommitted |-> <<>>, committed |-> <<>>] )
+/\ ackldRecv = (s0 :> {} @@ s1 :> {} @@ s2 :> {[connected |-> TRUE, sid |-> s2]})
+/\ leaderAddr = (s0 :> s2 @@ s1 :> s2 @@ s2 :> NullPoint)
+/\ servingState = (s0 :> SHUTDOWN @@ s1 :> SHUTDOWN @@ s2 :> SHUTDOWN)
+/\ committedLog = <<[zxid |-> <<1, 1>>, value |-> 101, epoch |-> 1, ackSid |-> {s0, s1, s2}]>>
+/\ epochLeader = <<{s2}, {s2}, {}, {}, {}, {}, {}, {}, {}, {}>>
+
+
+STATE_15 == 
+/\ forwarding = (s0 :> {} @@ s1 :> {} @@ s2 :> {s0, s1})
+/\ history = ( s0 :>
+      << [ zxid |-> <<1, 1>>,
+           value |-> 101,
+           epoch |-> 1,
+           ackSid |-> {s0, s1, s2} ] >> @@
+  s1 :>
+      << [ zxid |-> <<1, 1>>,
+           value |-> 101,
+           epoch |-> 1,
+           ackSid |-> {s0, s1, s2} ] >> @@
+  s2 :>
+      << [ zxid |-> <<1, 1>>,
+           value |-> 101,
+           epoch |-> 1,
+           ackSid |-> {s0, s1, s2} ],
+         [zxid |-> <<1, 2>>, value |-> 102, epoch |-> 1, ackSid |-> {s2}] >> )
+/\ doInit = TRUE
+/\ electing = ( s0 :> {} @@
+  s1 :> {} @@
+  s2 :>
+      { [sid |-> s0, peerLastZxid |-> <<-1, -1>>, inQuorum |-> TRUE],
+        [sid |-> s1, peerLastZxid |-> <<-1, -1>>, inQuorum |-> TRUE],
+        [sid |-> s2, peerLastZxid |-> <<-1, -1>>, inQuorum |-> TRUE] } )
+/\ zabState = (s0 :> SYNCHRONIZATION @@ s1 :> SYNCHRONIZATION @@ s2 :> SYNCHRONIZATION)
+/\ aaInv = [ leadership |-> TRUE,
+  prefixConsistency |-> TRUE,
+  integrity |-> TRUE,
+  agreement |-> TRUE,
+  totalOrder |-> TRUE,
+  primaryOrder |-> TRUE,
+  monotonicRead |-> TRUE,
+  processConsistency |-> TRUE,
+  leaderLogCompleteness |-> TRUE,
+  committedLogDurability |-> TRUE ]
+/\ lastProcessed = ( s0 :> [zxid |-> <<1, 1>>, index |-> 1] @@
+  s1 :> [zxid |-> <<1, 1>>, index |-> 1] @@
+  s2 :> [zxid |-> <<1, 2>>, index |-> 2] )
+/\ rcvBuffer = ( s0 :> (s0 :> <<>> @@ s1 :> <<>> @@ s2 :> <<>>) @@
+  s1 :> (s0 :> <<>> @@ s1 :> <<>> @@ s2 :> <<>>) @@
+  s2 :>
+      ( s0 :> <<[mtype |-> NEWLEADER, mzxid |-> <<2, 0>>]>> @@
+        s1 :> <<[mtype |-> NEWLEADER, mzxid |-> <<2, 0>>]>> @@
+        s2 :> <<>> ) )
+/\ initialHistory = ( s0 :>
+      << [ zxid |-> <<1, 1>>,
+           value |-> 101,
+           epoch |-> 1,
+           ackSid |-> {s0, s1, s2} ] >> @@
+  s1 :>
+      << [ zxid |-> <<1, 1>>,
+           value |-> 101,
+           epoch |-> 1,
+           ackSid |-> {s0, s1, s2} ] >> @@
+  s2 :>
+      << [zxid |-> <<1, 1>>, value |-> 101, epoch |-> 1, ackSid |-> {s2}],
+         [zxid |-> <<1, 2>>, value |-> 102, epoch |-> 1, ackSid |-> {s2}] >> )
+/\ recorder = [ step |-> 14,
+  nPartition |-> 0,
+  nConsequentFailure |-> 0,
+  noExecute |-> {},
+  nTimeout |-> 2,
+  nCrash |-> 2,
+  nTransaction |-> 2,
+  maxEpoch |-> 2,
+  pc |-> <<"FollowerProcessCOMMITInSync", s1, s2, <<1, 2>>>>,
+  nClientRequest |-> 0 ]
+/\ acceptedEpoch = (s0 :> 2 @@ s1 :> 2 @@ s2 :> 2)
+/\ connecting = ( s0 :> {} @@
+  s1 :> {} @@
+  s2 :>
+      { [connected |-> TRUE, sid |-> s0],
+        [connected |-> TRUE, sid |-> s1],
+        [connected |-> TRUE, sid |-> s2] } )
+/\ proposalMsgsLog = { [zxid |-> <<1, 1>>, epoch |-> 1, data |-> 101, source |-> s2],
+  [zxid |-> <<1, 2>>, epoch |-> 1, data |-> 102, source |-> s2],
+  [zxid |-> <<1, 2>>, epoch |-> 2, data |-> 102, source |-> s2] }
+/\ lastCommitted = ( s0 :> [zxid |-> <<0, 0>>, index |-> 0] @@
+  s1 :> [zxid |-> <<1, 1>>, index |-> 1] @@
+  s2 :> [zxid |-> <<0, 0>>, index |-> 0] )
+/\ daInv = [ stateConsistent |-> TRUE,
+  proposalConsistent |-> TRUE,
+  commitConsistent |-> TRUE,
+  ackConsistent |-> TRUE,
+  messageLegal |-> TRUE ]
+/\ currentEpoch = (s0 :> 1 @@ s1 :> 1 @@ s2 :> 2)
+/\ learners = (s0 :> {} @@ s1 :> {} @@ s2 :> {s0, s1, s2})
+/\ tempMaxEpoch = (s0 :> 0 @@ s1 :> 0 @@ s2 :> 2)
+/\ leaderOracle = s2
+/\ status = (s0 :> ONLINE @@ s1 :> ONLINE @@ s2 :> ONLINE)
+/\ state = (s0 :> FOLLOWING @@ s1 :> FOLLOWING @@ s2 :> LEADING)
+/\ partition = ( s0 :> (s0 :> FALSE @@ s1 :> FALSE @@ s2 :> FALSE) @@
+  s1 :> (s0 :> FALSE @@ s1 :> FALSE @@ s2 :> FALSE) @@
+  s2 :> (s0 :> FALSE @@ s1 :> FALSE @@ s2 :> FALSE) )
+/\ packetsSync = ( s0 :>
+      [ notCommitted |->
+            <<[zxid |-> <<1, 2>>, value |-> 102, epoch |-> 2, ackSid |-> {}]>>,
+        committed |-> <<<<1, 2>>>> ] @@
+  s1 :>
+      [ notCommitted |->
+            <<[zxid |-> <<1, 2>>, value |-> 102, epoch |-> 2, ackSid |-> {}]>>,
+        committed |-> <<<<1, 2>>>> ] @@
+  s2 :> [notCommitted |-> <<>>, committed |-> <<>>] )
+/\ ackldRecv = (s0 :> {} @@ s1 :> {} @@ s2 :> {[connected |-> TRUE, sid |-> s2]})
+/\ leaderAddr = (s0 :> s2 @@ s1 :> s2 @@ s2 :> NullPoint)
+/\ servingState = (s0 :> SHUTDOWN @@ s1 :> SHUTDOWN @@ s2 :> SHUTDOWN)
+/\ committedLog = <<[zxid |-> <<1, 1>>, value |-> 101, epoch |-> 1, ackSid |-> {s0, s1, s2}]>>
+/\ epochLeader = <<{s2}, {s2}, {}, {}, {}, {}, {}, {}, {}, {}>>
+
+
+STATE_16 == 
+/\ forwarding = (s0 :> {} @@ s1 :> {} @@ s2 :> {s0, s1})
+/\ history = ( s0 :>
+      << [ zxid |-> <<1, 1>>,
+           value |-> 101,
+           epoch |-> 1,
+           ackSid |-> {s0, s1, s2} ] >> @@
+  s1 :>
+      << [ zxid |-> <<1, 1>>,
+           value |-> 101,
+           epoch |-> 1,
+           ackSid |-> {s0, s1, s2} ] >> @@
+  s2 :>
+      << [ zxid |-> <<1, 1>>,
+           value |-> 101,
+           epoch |-> 1,
+           ackSid |-> {s0, s1, s2} ],
+         [zxid |-> <<1, 2>>, value |-> 102, epoch |-> 1, ackSid |-> {s2}] >> )
+/\ doInit = TRUE
+/\ electing = ( s0 :> {} @@
+  s1 :> {} @@
+  s2 :>
+      { [sid |-> s0, peerLastZxid |-> <<-1, -1>>, inQuorum |-> TRUE],
+        [sid |-> s1, peerLastZxid |-> <<-1, -1>>, inQuorum |-> TRUE],
+        [sid |-> s2, peerLastZxid |-> <<-1, -1>>, inQuorum |-> TRUE] } )
+/\ zabState = (s0 :> SYNCHRONIZATION @@ s1 :> SYNCHRONIZATION @@ s2 :> SYNCHRONIZATION)
+/\ aaInv = [ leadership |-> TRUE,
+  prefixConsistency |-> TRUE,
+  integrity |-> TRUE,
+  agreement |-> TRUE,
+  totalOrder |-> TRUE,
+  primaryOrder |-> TRUE,
+  monotonicRead |-> TRUE,
+  processConsistency |-> TRUE,
+  leaderLogCompleteness |-> TRUE,
+  committedLogDurability |-> TRUE ]
+/\ lastProcessed = ( s0 :> [zxid |-> <<1, 1>>, index |-> 1] @@
+  s1 :> [zxid |-> <<1, 1>>, index |-> 1] @@
+  s2 :> [zxid |-> <<1, 2>>, index |-> 2] )
+/\ rcvBuffer = ( s0 :> (s0 :> <<>> @@ s1 :> <<>> @@ s2 :> <<>>) @@
+  s1 :> (s0 :> <<>> @@ s1 :> <<>> @@ s2 :> <<>>) @@
+  s2 :>
+      ( s0 :> <<[mtype |-> NEWLEADER, mzxid |-> <<2, 0>>]>> @@
+        s1 :> <<[mtype |-> NEWLEADER, mzxid |-> <<2, 0>>]>> @@
+        s2 :> <<>> ) )
+/\ initialHistory = ( s0 :>
+      << [ zxid |-> <<1, 1>>,
+           value |-> 101,
+           epoch |-> 1,
+           ackSid |-> {s0, s1, s2} ] >> @@
+  s1 :>
+      << [ zxid |-> <<1, 1>>,
+           value |-> 101,
+           epoch |-> 1,
+           ackSid |-> {s0, s1, s2} ] >> @@
+  s2 :>
+      << [zxid |-> <<1, 1>>, value |-> 101, epoch |-> 1, ackSid |-> {s2}],
+         [zxid |-> <<1, 2>>, value |-> 102, epoch |-> 1, ackSid |-> {s2}] >> )
+/\ recorder = [ step |-> 15,
+  nPartition |-> 0,
+  nConsequentFailure |-> 0,
+  noExecute |-> {},
+  nTimeout |-> 2,
+  nCrash |-> 2,
+  nTransaction |-> 2,
+  maxEpoch |-> 2,
+  pc |-> <<"FollowerProcessNEWLEADER", s1, s2>>,
+  nClientRequest |-> 0 ]
+/\ acceptedEpoch = (s0 :> 2 @@ s1 :> 2 @@ s2 :> 2)
+/\ connecting = ( s0 :> {} @@
+  s1 :> {} @@
+  s2 :>
+      { [connected |-> TRUE, sid |-> s0],
+        [connected |-> TRUE, sid |-> s1],
+        [connected |-> TRUE, sid |-> s2] } )
+/\ proposalMsgsLog = { [zxid |-> <<1, 1>>, epoch |-> 1, data |-> 101, source |-> s2],
+  [zxid |-> <<1, 2>>, epoch |-> 1, data |-> 102, source |-> s2],
+  [zxid |-> <<1, 2>>, epoch |-> 2, data |-> 102, source |-> s2] }
+/\ lastCommitted = ( s0 :> [zxid |-> <<0, 0>>, index |-> 0] @@
+  s1 :> [zxid |-> <<1, 1>>, index |-> 1] @@
+  s2 :> [zxid |-> <<0, 0>>, index |-> 0] )
+/\ daInv = [ stateConsistent |-> TRUE,
+  proposalConsistent |-> TRUE,
+  commitConsistent |-> TRUE,
+  ackConsistent |-> TRUE,
+  messageLegal |-> TRUE ]
+/\ currentEpoch = (s0 :> 1 @@ s1 :> 2 @@ s2 :> 2)
+/\ learners = (s0 :> {} @@ s1 :> {} @@ s2 :> {s0, s1, s2})
+/\ tempMaxEpoch = (s0 :> 0 @@ s1 :> 0 @@ s2 :> 2)
+/\ leaderOracle = s2
+/\ status = (s0 :> ONLINE @@ s1 :> ONLINE @@ s2 :> ONLINE)
+/\ state = (s0 :> FOLLOWING @@ s1 :> FOLLOWING @@ s2 :> LEADING)
+/\ partition = ( s0 :> (s0 :> FALSE @@ s1 :> FALSE @@ s2 :> FALSE) @@
+  s1 :> (s0 :> FALSE @@ s1 :> FALSE @@ s2 :> FALSE) @@
+  s2 :> (s0 :> FALSE @@ s1 :> FALSE @@ s2 :> FALSE) )
+/\ packetsSync = ( s0 :>
+      [ notCommitted |->
+            <<[zxid |-> <<1, 2>>, value |-> 102, epoch |-> 2, ackSid |-> {}]>>,
+        committed |-> <<<<1, 2>>>> ] @@
+  s1 :>
+      [ notCommitted |->
+            <<[zxid |-> <<1, 2>>, value |-> 102, epoch |-> 2, ackSid |-> {}]>>,
+        committed |-> <<<<1, 2>>>> ] @@
+  s2 :> [notCommitted |-> <<>>, committed |-> <<>>] )
+/\ ackldRecv = (s0 :> {} @@ s1 :> {} @@ s2 :> {[connected |-> TRUE, sid |-> s2]})
+/\ leaderAddr = (s0 :> s2 @@ s1 :> s2 @@ s2 :> NullPoint)
+/\ servingState = (s0 :> SHUTDOWN @@ s1 :> INITIAL @@ s2 :> SHUTDOWN)
+/\ committedLog = <<[zxid |-> <<1, 1>>, value |-> 101, epoch |-> 1, ackSid |-> {s0, s1, s2}]>>
+/\ epochLeader = <<{s2}, {s2}, {}, {}, {}, {}, {}, {}, {}, {}>>
+
+
+STATE_17 == 
+/\ forwarding = (s0 :> {} @@ s1 :> {} @@ s2 :> {s0, s1})
+/\ history = ( s0 :>
+      << [ zxid |-> <<1, 1>>,
+           value |-> 101,
+           epoch |-> 1,
+           ackSid |-> {s0, s1, s2} ] >> @@
+  s1 :>
+      << [ zxid |-> <<1, 1>>,
+           value |-> 101,
+           epoch |-> 1,
+           ackSid |-> {s0, s1, s2} ],
+         [zxid |-> <<1, 2>>, value |-> 102, epoch |-> 2, ackSid |-> {}] >> @@
+  s2 :>
+      << [ zxid |-> <<1, 1>>,
+           value |-> 101,
+           epoch |-> 1,
+           ackSid |-> {s0, s1, s2} ],
+         [zxid |-> <<1, 2>>, value |-> 102, epoch |-> 1, ackSid |-> {s2}] >> )
+/\ doInit = TRUE
+/\ electing = ( s0 :> {} @@
+  s1 :> {} @@
+  s2 :>
+      { [sid |-> s0, peerLastZxid |-> <<-1, -1>>, inQuorum |-> TRUE],
+        [sid |-> s1, peerLastZxid |-> <<-1, -1>>, inQuorum |-> TRUE],
+        [sid |-> s2, peerLastZxid |-> <<-1, -1>>, inQuorum |-> TRUE] } )
+/\ zabState = (s0 :> SYNCHRONIZATION @@ s1 :> SYNCHRONIZATION @@ s2 :> SYNCHRONIZATION)
+/\ aaInv = [ leadership |-> TRUE,
+  prefixConsistency |-> TRUE,
+  integrity |-> TRUE,
+  agreement |-> TRUE,
+  totalOrder |-> TRUE,
+  primaryOrder |-> TRUE,
+  monotonicRead |-> TRUE,
+  processConsistency |-> TRUE,
+  leaderLogCompleteness |-> TRUE,
+  committedLogDurability |-> TRUE ]
+/\ lastProcessed = ( s0 :> [zxid |-> <<1, 1>>, index |-> 1] @@
+  s1 :> [zxid |-> <<1, 1>>, index |-> 1] @@
+  s2 :> [zxid |-> <<1, 2>>, index |-> 2] )
+/\ rcvBuffer = ( s0 :> (s0 :> <<>> @@ s1 :> <<>> @@ s2 :> <<>>) @@
+  s1 :>
+      ( s0 :> <<>> @@
+        s1 :> <<>> @@
+        s2 :>
+            << [mtype |-> ACKLD, mzxid |-> <<2, 0>>],
+               [mtype |-> ACK, mzxid |-> <<1, 2>>] >> ) @@
+  s2 :>
+      ( s0 :> <<[mtype |-> NEWLEADER, mzxid |-> <<2, 0>>]>> @@
+        s1 :> <<>> @@
+        s2 :> <<>> ) )
+/\ initialHistory = ( s0 :>
+      << [ zxid |-> <<1, 1>>,
+           value |-> 101,
+           epoch |-> 1,
+           ackSid |-> {s0, s1, s2} ] >> @@
+  s1 :>
+      << [ zxid |-> <<1, 1>>,
+           value |-> 101,
+           epoch |-> 1,
+           ackSid |-> {s0, s1, s2} ] >> @@
+  s2 :>
+      << [zxid |-> <<1, 1>>, value |-> 101, epoch |-> 1, ackSid |-> {s2}],
+         [zxid |-> <<1, 2>>, value |-> 102, epoch |-> 1, ackSid |-> {s2}] >> )
+/\ recorder = [ step |-> 16,
+  nPartition |-> 0,
+  nConsequentFailure |-> 0,
+  noExecute |-> {},
+  nTimeout |-> 2,
+  nCrash |-> 2,
+  nTransaction |-> 2,
+  maxEpoch |-> 2,
+  pc |-> <<"FollowerProcessNEWLEADERAfterCurrentEpochUpdated", s1, s2>>,
+  nClientRequest |-> 0 ]
+/\ acceptedEpoch = (s0 :> 2 @@ s1 :> 2 @@ s2 :> 2)
+/\ connecting = ( s0 :> {} @@
+  s1 :> {} @@
+  s2 :>
+      { [connected |-> TRUE, sid |-> s0],
+        [connected |-> TRUE, sid |-> s1],
+        [connected |-> TRUE, sid |-> s2] } )
+/\ proposalMsgsLog = { [zxid |-> <<1, 1>>, epoch |-> 1, data |-> 101, source |-> s2],
+  [zxid |-> <<1, 2>>, epoch |-> 1, data |-> 102, source |-> s2],
+  [zxid |-> <<1, 2>>, epoch |-> 2, data |-> 102, source |-> s2] }
+/\ lastCommitted = ( s0 :> [zxid |-> <<0, 0>>, index |-> 0] @@
+  s1 :> [zxid |-> <<1, 1>>, index |-> 1] @@
+  s2 :> [zxid |-> <<0, 0>>, index |-> 0] )
+/\ daInv = [ stateConsistent |-> TRUE,
+  proposalConsistent |-> TRUE,
+  commitConsistent |-> TRUE,
+  ackConsistent |-> TRUE,
+  messageLegal |-> TRUE ]
+/\ currentEpoch = (s0 :> 1 @@ s1 :> 2 @@ s2 :> 2)
+/\ learners = (s0 :> {} @@ s1 :> {} @@ s2 :> {s0, s1, s2})
+/\ tempMaxEpoch = (s0 :> 0 @@ s1 :> 0 @@ s2 :> 2)
+/\ leaderOracle = s2
+/\ status = (s0 :> ONLINE @@ s1 :> ONLINE @@ s2 :> ONLINE)
+/\ state = (s0 :> FOLLOWING @@ s1 :> FOLLOWING @@ s2 :> LEADING)
+/\ partition = ( s0 :> (s0 :> FALSE @@ s1 :> FALSE @@ s2 :> FALSE) @@
+  s1 :> (s0 :> FALSE @@ s1 :> FALSE @@ s2 :> FALSE) @@
+  s2 :> (s0 :> FALSE @@ s1 :> FALSE @@ s2 :> FALSE) )
+/\ packetsSync = ( s0 :>
+      [ notCommitted |->
+            <<[zxid |-> <<1, 2>>, value |-> 102, epoch |-> 2, ackSid |-> {}]>>,
+        committed |-> <<<<1, 2>>>> ] @@
+  s1 :> [notCommitted |-> <<>>, committed |-> <<<<1, 2>>>>] @@
+  s2 :> [notCommitted |-> <<>>, committed |-> <<>>] )
+/\ ackldRecv = (s0 :> {} @@ s1 :> {} @@ s2 :> {[connected |-> TRUE, sid |-> s2]})
+/\ leaderAddr = (s0 :> s2 @@ s1 :> s2 @@ s2 :> NullPoint)
+/\ servingState = (s0 :> SHUTDOWN @@ s1 :> INITIAL @@ s2 :> SHUTDOWN)
+/\ committedLog = <<[zxid |-> <<1, 1>>, value |-> 101, epoch |-> 1, ackSid |-> {s0, s1, s2}]>>
+/\ epochLeader = <<{s2}, {s2}, {}, {}, {}, {}, {}, {}, {}, {}>>
+
+
+STATE_18 == 
+/\ forwarding = (s0 :> {} @@ s1 :> {} @@ s2 :> {s0, s1})
+/\ history = ( s0 :>
+      << [ zxid |-> <<1, 1>>,
+           value |-> 101,
+           epoch |-> 1,
+           ackSid |-> {s0, s1, s2} ] >> @@
+  s1 :>
+      << [ zxid |-> <<1, 1>>,
+           value |-> 101,
+           epoch |-> 1,
+           ackSid |-> {s0, s1, s2} ],
+         [zxid |-> <<1, 2>>, value |-> 102, epoch |-> 2, ackSid |-> {}] >> @@
+  s2 :>
+      << [ zxid |-> <<1, 1>>,
+           value |-> 101,
+           epoch |-> 1,
+           ackSid |-> {s0, s1, s2} ],
+         [zxid |-> <<1, 2>>, value |-> 102, epoch |-> 1, ackSid |-> {s2}] >> )
+/\ doInit = TRUE
+/\ electing = ( s0 :> {} @@
+  s1 :> {} @@
+  s2 :>
+      { [sid |-> s0, peerLastZxid |-> <<-1, -1>>, inQuorum |-> TRUE],
+        [sid |-> s1, peerLastZxid |-> <<-1, -1>>, inQuorum |-> TRUE],
+        [sid |-> s2, peerLastZxid |-> <<-1, -1>>, inQuorum |-> TRUE] } )
+/\ zabState = (s0 :> SYNCHRONIZATION @@ s1 :> SYNCHRONIZATION @@ s2 :> SYNCHRONIZATION)
+/\ aaInv = [ leadership |-> TRUE,
+  prefixConsistency |-> TRUE,
+  integrity |-> TRUE,
+  agreement |-> TRUE,
+  totalOrder |-> TRUE,
+  primaryOrder |-> TRUE,
+  monotonicRead |-> TRUE,
+  processConsistency |-> TRUE,
+  leaderLogCompleteness |-> TRUE,
+  committedLogDurability |-> TRUE ]
+/\ lastProcessed = ( s0 :> [zxid |-> <<1, 1>>, index |-> 1] @@
+  s1 :> [zxid |-> <<1, 1>>, index |-> 1] @@
+  s2 :> [zxid |-> <<1, 2>>, index |-> 2] )
+/\ rcvBuffer = ( s0 :> (s0 :> <<>> @@ s1 :> <<>> @@ s2 :> <<>>) @@
+  s1 :>
+      ( s0 :> <<>> @@
+        s1 :> <<>> @@
+        s2 :>
+            << [mtype |-> ACKLD, mzxid |-> <<2, 0>>],
+               [mtype |-> ACK, mzxid |-> <<1, 2>>] >> ) @@
+  s2 :>
+      ( s0 :> <<[mtype |-> NEWLEADER, mzxid |-> <<2, 0>>]>> @@
+        s1 :> <<>> @@
+        s2 :> <<>> ) )
+/\ initialHistory = ( s0 :>
+      << [ zxid |-> <<1, 1>>,
+           value |-> 101,
+           epoch |-> 1,
+           ackSid |-> {s0, s1, s2} ] >> @@
+  s1 :>
+      << [ zxid |-> <<1, 1>>,
+           value |-> 101,
+           epoch |-> 1,
+           ackSid |-> {s0, s1, s2} ] >> @@
+  s2 :>
+      << [zxid |-> <<1, 1>>, value |-> 101, epoch |-> 1, ackSid |-> {s2}],
+         [zxid |-> <<1, 2>>, value |-> 102, epoch |-> 1, ackSid |-> {s2}] >> )
+/\ recorder = [ step |-> 17,
+  nPartition |-> 0,
+  nConsequentFailure |-> 0,
+  noExecute |-> {},
+  nTimeout |-> 2,
+  nCrash |-> 2,
+  nTransaction |-> 2,
+  maxEpoch |-> 2,
+  pc |-> <<"FollowerProcessNEWLEADER", s0, s2>>,
+  nClientRequest |-> 0 ]
+/\ acceptedEpoch = (s0 :> 2 @@ s1 :> 2 @@ s2 :> 2)
+/\ connecting = ( s0 :> {} @@
+  s1 :> {} @@
+  s2 :>
+      { [connected |-> TRUE, sid |-> s0],
+        [connected |-> TRUE, sid |-> s1],
+        [connected |-> TRUE, sid |-> s2] } )
+/\ proposalMsgsLog = { [zxid |-> <<1, 1>>, epoch |-> 1, data |-> 101, source |-> s2],
+  [zxid |-> <<1, 2>>, epoch |-> 1, data |-> 102, source |-> s2],
+  [zxid |-> <<1, 2>>, epoch |-> 2, data |-> 102, source |-> s2] }
+/\ lastCommitted = ( s0 :> [zxid |-> <<0, 0>>, index |-> 0] @@
+  s1 :> [zxid |-> <<1, 1>>, index |-> 1] @@
+  s2 :> [zxid |-> <<0, 0>>, index |-> 0] )
+/\ daInv = [ stateConsistent |-> TRUE,
+  proposalConsistent |-> TRUE,
+  commitConsistent |-> TRUE,
+  ackConsistent |-> TRUE,
+  messageLegal |-> TRUE ]
+/\ currentEpoch = (s0 :> 2 @@ s1 :> 2 @@ s2 :> 2)
+/\ learners = (s0 :> {} @@ s1 :> {} @@ s2 :> {s0, s1, s2})
+/\ tempMaxEpoch = (s0 :> 0 @@ s1 :> 0 @@ s2 :> 2)
+/\ leaderOracle = s2
+/\ status = (s0 :> ONLINE @@ s1 :> ONLINE @@ s2 :> ONLINE)
+/\ state = (s0 :> FOLLOWING @@ s1 :> FOLLOWING @@ s2 :> LEADING)
+/\ partition = ( s0 :> (s0 :> FALSE @@ s1 :> FALSE @@ s2 :> FALSE) @@
+  s1 :> (s0 :> FALSE @@ s1 :> FALSE @@ s2 :> FALSE) @@
+  s2 :> (s0 :> FALSE @@ s1 :> FALSE @@ s2 :> FALSE) )
+/\ packetsSync = ( s0 :>
+      [ notCommitted |->
+            <<[zxid |-> <<1, 2>>, value |-> 102, epoch |-> 2, ackSid |-> {}]>>,
+        committed |-> <<<<1, 2>>>> ] @@
+  s1 :> [notCommitted |-> <<>>, committed |-> <<<<1, 2>>>>] @@
+  s2 :> [notCommitted |-> <<>>, committed |-> <<>>] )
+/\ ackldRecv = (s0 :> {} @@ s1 :> {} @@ s2 :> {[connected |-> TRUE, sid |-> s2]})
+/\ leaderAddr = (s0 :> s2 @@ s1 :> s2 @@ s2 :> NullPoint)
+/\ servingState = (s0 :> INITIAL @@ s1 :> INITIAL @@ s2 :> SHUTDOWN)
+/\ committedLog = <<[zxid |-> <<1, 1>>, value |-> 101, epoch |-> 1, ackSid |-> {s0, s1, s2}]>>
+/\ epochLeader = <<{s2}, {s2}, {}, {}, {}, {}, {}, {}, {}, {}>>
+
+
+STATE_19 == 
+/\ forwarding = (s0 :> {} @@ s1 :> {} @@ s2 :> {s0, s1})
+/\ history = ( s0 :>
+      << [ zxid |-> <<1, 1>>,
+           value |-> 101,
+           epoch |-> 1,
+           ackSid |-> {s0, s1, s2} ],
+         [zxid |-> <<1, 2>>, value |-> 102, epoch |-> 2, ackSid |-> {}] >> @@
+  s1 :>
+      << [ zxid |-> <<1, 1>>,
+           value |-> 101,
+           epoch |-> 1,
+           ackSid |-> {s0, s1, s2} ],
+         [zxid |-> <<1, 2>>, value |-> 102, epoch |-> 2, ackSid |-> {}] >> @@
+  s2 :>
+      << [ zxid |-> <<1, 1>>,
+           value |-> 101,
+           epoch |-> 1,
+           ackSid |-> {s0, s1, s2} ],
+         [zxid |-> <<1, 2>>, value |-> 102, epoch |-> 1, ackSid |-> {s2}] >> )
+/\ doInit = TRUE
+/\ electing = ( s0 :> {} @@
+  s1 :> {} @@
+  s2 :>
+      { [sid |-> s0, peerLastZxid |-> <<-1, -1>>, inQuorum |-> TRUE],
+        [sid |-> s1, peerLastZxid |-> <<-1, -1>>, inQuorum |-> TRUE],
+        [sid |-> s2, peerLastZxid |-> <<-1, -1>>, inQuorum |-> TRUE] } )
+/\ zabState = (s0 :> SYNCHRONIZATION @@ s1 :> SYNCHRONIZATION @@ s2 :> SYNCHRONIZATION)
+/\ aaInv = [ leadership |-> TRUE,
+  prefixConsistency |-> TRUE,
+  integrity |-> TRUE,
+  agreement |-> TRUE,
+  totalOrder |-> TRUE,
+  primaryOrder |-> TRUE,
+  monotonicRead |-> TRUE,
+  processConsistency |-> TRUE,
+  leaderLogCompleteness |-> TRUE,
+  committedLogDurability |-> TRUE ]
+/\ lastProcessed = ( s0 :> [zxid |-> <<1, 1>>, index |-> 1] @@
+  s1 :> [zxid |-> <<1, 1>>, index |-> 1] @@
+  s2 :> [zxid |-> <<1, 2>>, index |-> 2] )
+/\ rcvBuffer = ( s0 :>
+      ( s0 :> <<>> @@
+        s1 :> <<>> @@
+        s2 :>
+            << [mtype |-> ACKLD, mzxid |-> <<2, 0>>],
+               [mtype |-> ACK, mzxid |-> <<1, 2>>] >> ) @@
+  s1 :>
+      ( s0 :> <<>> @@
+        s1 :> <<>> @@
+        s2 :>
+            << [mtype |-> ACKLD, mzxid |-> <<2, 0>>],
+               [mtype |-> ACK, mzxid |-> <<1, 2>>] >> ) @@
+  s2 :> (s0 :> <<>> @@ s1 :> <<>> @@ s2 :> <<>>) )
+/\ initialHistory = ( s0 :>
+      << [ zxid |-> <<1, 1>>,
+           value |-> 101,
+           epoch |-> 1,
+           ackSid |-> {s0, s1, s2} ] >> @@
+  s1 :>
+      << [ zxid |-> <<1, 1>>,
+           value |-> 101,
+           epoch |-> 1,
+           ackSid |-> {s0, s1, s2} ] >> @@
+  s2 :>
+      << [zxid |-> <<1, 1>>, value |-> 101, epoch |-> 1, ackSid |-> {s2}],
+         [zxid |-> <<1, 2>>, value |-> 102, epoch |-> 1, ackSid |-> {s2}] >> )
+/\ recorder = [ step |-> 18,
+  nPartition |-> 0,
+  nConsequentFailure |-> 0,
+  noExecute |-> {},
+  nTimeout |-> 2,
+  nCrash |-> 2,
+  nTransaction |-> 2,
+  maxEpoch |-> 2,
+  pc |-> <<"FollowerProcessNEWLEADERAfterCurrentEpochUpdated", s0, s2>>,
+  nClientRequest |-> 0 ]
+/\ acceptedEpoch = (s0 :> 2 @@ s1 :> 2 @@ s2 :> 2)
+/\ connecting = ( s0 :> {} @@
+  s1 :> {} @@
+  s2 :>
+      { [connected |-> TRUE, sid |-> s0],
+        [connected |-> TRUE, sid |-> s1],
+        [connected |-> TRUE, sid |-> s2] } )
+/\ proposalMsgsLog = { [zxid |-> <<1, 1>>, epoch |-> 1, data |-> 101, source |-> s2],
+  [zxid |-> <<1, 2>>, epoch |-> 1, data |-> 102, source |-> s2],
+  [zxid |-> <<1, 2>>, epoch |-> 2, data |-> 102, source |-> s2] }
+/\ lastCommitted = ( s0 :> [zxid |-> <<0, 0>>, index |-> 0] @@
+  s1 :> [zxid |-> <<1, 1>>, index |-> 1] @@
+  s2 :> [zxid |-> <<0, 0>>, index |-> 0] )
+/\ daInv = [ stateConsistent |-> TRUE,
+  proposalConsistent |-> TRUE,
+  commitConsistent |-> TRUE,
+  ackConsistent |-> TRUE,
+  messageLegal |-> TRUE ]
+/\ currentEpoch = (s0 :> 2 @@ s1 :> 2 @@ s2 :> 2)
+/\ learners = (s0 :> {} @@ s1 :> {} @@ s2 :> {s0, s1, s2})
+/\ tempMaxEpoch = (s0 :> 0 @@ s1 :> 0 @@ s2 :> 2)
+/\ leaderOracle = s2
+/\ status = (s0 :> ONLINE @@ s1 :> ONLINE @@ s2 :> ONLINE)
+/\ state = (s0 :> FOLLOWING @@ s1 :> FOLLOWING @@ s2 :> LEADING)
+/\ partition = ( s0 :> (s0 :> FALSE @@ s1 :> FALSE @@ s2 :> FALSE) @@
+  s1 :> (s0 :> FALSE @@ s1 :> FALSE @@ s2 :> FALSE) @@
+  s2 :> (s0 :> FALSE @@ s1 :> FALSE @@ s2 :> FALSE) )
+/\ packetsSync = ( s0 :> [notCommitted |-> <<>>, committed |-> <<<<1, 2>>>>] @@
+  s1 :> [notCommitted |-> <<>>, committed |-> <<<<1, 2>>>>] @@
+  s2 :> [notCommitted |-> <<>>, committed |-> <<>>] )
+/\ ackldRecv = (s0 :> {} @@ s1 :> {} @@ s2 :> {[connected |-> TRUE, sid |-> s2]})
+/\ leaderAddr = (s0 :> s2 @@ s1 :> s2 @@ s2 :> NullPoint)
+/\ servingState = (s0 :> INITIAL @@ s1 :> INITIAL @@ s2 :> SHUTDOWN)
+/\ committedLog = <<[zxid |-> <<1, 1>>, value |-> 101, epoch |-> 1, ackSid |-> {s0, s1, s2}]>>
+/\ epochLeader = <<{s2}, {s2}, {}, {}, {}, {}, {}, {}, {}, {}>>
+
+
+STATE_20 == 
+/\ forwarding = (s0 :> {} @@ s1 :> {} @@ s2 :> {s0, s1})
+/\ history = ( s0 :>
+      << [ zxid |-> <<1, 1>>,
+           value |-> 101,
+           epoch |-> 1,
+           ackSid |-> {s0, s1, s2} ],
+         [zxid |-> <<1, 2>>, value |-> 102, epoch |-> 2, ackSid |-> {}] >> @@
+  s1 :>
+      << [ zxid |-> <<1, 1>>,
+           value |-> 101,
+           epoch |-> 1,
+           ackSid |-> {s0, s1, s2} ],
+         [zxid |-> <<1, 2>>, value |-> 102, epoch |-> 2, ackSid |-> {}] >> @@
+  s2 :>
+      << [ zxid |-> <<1, 1>>,
+           value |-> 101,
+           epoch |-> 1,
+           ackSid |-> {s0, s1, s2} ],
+         [zxid |-> <<1, 2>>, value |-> 102, epoch |-> 1, ackSid |-> {s2}] >> )
+/\ doInit = TRUE
+/\ electing = ( s0 :> {} @@
+  s1 :> {} @@
+  s2 :>
+      { [sid |-> s0, peerLastZxid |-> <<-1, -1>>, inQuorum |-> TRUE],
+        [sid |-> s1, peerLastZxid |-> <<-1, -1>>, inQuorum |-> TRUE],
+        [sid |-> s2, peerLastZxid |-> <<-1, -1>>, inQuorum |-> TRUE] } )
+/\ zabState = (s0 :> SYNCHRONIZATION @@ s1 :> SYNCHRONIZATION @@ s2 :> BROADCAST)
+/\ aaInv = [ leadership |-> TRUE,
+  prefixConsistency |-> TRUE,
+  integrity |-> TRUE,
+  agreement |-> TRUE,
+  totalOrder |-> TRUE,
+  primaryOrder |-> TRUE,
+  monotonicRead |-> TRUE,
+  processConsistency |-> TRUE,
+  leaderLogCompleteness |-> TRUE,
+  committedLogDurability |-> TRUE ]
+/\ lastProcessed = ( s0 :> [zxid |-> <<1, 1>>, index |-> 1] @@
+  s1 :> [zxid |-> <<1, 1>>, index |-> 1] @@
+  s2 :> [zxid |-> <<1, 2>>, index |-> 2] )
+/\ rcvBuffer = ( s0 :>
+      ( s0 :> <<>> @@
+        s1 :> <<>> @@
+        s2 :>
+            << [mtype |-> ACKLD, mzxid |-> <<2, 0>>],
+               [mtype |-> ACK, mzxid |-> <<1, 2>>] >> ) @@
+  s1 :>
+      ( s0 :> <<>> @@
+        s1 :> <<>> @@
+        s2 :> <<[mtype |-> ACK, mzxid |-> <<1, 2>>]>> ) @@
+  s2 :>
+      ( s0 :> <<>> @@
+        s1 :> <<[mtype |-> UPTODATE, mzxid |-> <<2, 0>>]>> @@
+        s2 :> <<>> ) )
+/\ initialHistory = ( s0 :>
+      << [ zxid |-> <<1, 1>>,
+           value |-> 101,
+           epoch |-> 1,
+           ackSid |-> {s0, s1, s2} ] >> @@
+  s1 :>
+      << [ zxid |-> <<1, 1>>,
+           value |-> 101,
+           epoch |-> 1,
+           ackSid |-> {s0, s1, s2} ] >> @@
+  s2 :>
+      << [zxid |-> <<1, 1>>, value |-> 101, epoch |-> 1, ackSid |-> {s2}],
+         [zxid |-> <<1, 2>>, value |-> 102, epoch |-> 1, ackSid |-> {s2}] >> )
+/\ recorder = [ step |-> 19,
+  nPartition |-> 0,
+  nConsequentFailure |-> 0,
+  noExecute |-> {},
+  nTimeout |-> 2,
+  nCrash |-> 2,
+  nTransaction |-> 2,
+  maxEpoch |-> 2,
+  pc |-> <<"LeaderProcessACKLD", s2, s1>>,
+  nClientRequest |-> 0 ]
+/\ acceptedEpoch = (s0 :> 2 @@ s1 :> 2 @@ s2 :> 2)
+/\ connecting = ( s0 :> {} @@
+  s1 :> {} @@
+  s2 :>
+      { [connected |-> TRUE, sid |-> s0],
+        [connected |-> TRUE, sid |-> s1],
+        [connected |-> TRUE, sid |-> s2] } )
+/\ proposalMsgsLog = { [zxid |-> <<1, 1>>, epoch |-> 1, data |-> 101, source |-> s2],
+  [zxid |-> <<1, 2>>, epoch |-> 1, data |-> 102, source |-> s2],
+  [zxid |-> <<1, 2>>, epoch |-> 2, data |-> 102, source |-> s2] }
+/\ lastCommitted = ( s0 :> [zxid |-> <<0, 0>>, index |-> 0] @@
+  s1 :> [zxid |-> <<1, 1>>, index |-> 1] @@
+  s2 :> [zxid |-> <<1, 2>>, index |-> 2] )
+/\ daInv = [ stateConsistent |-> TRUE,
+  proposalConsistent |-> TRUE,
+  commitConsistent |-> TRUE,
+  ackConsistent |-> TRUE,
+  messageLegal |-> TRUE ]
+/\ currentEpoch = (s0 :> 2 @@ s1 :> 2 @@ s2 :> 2)
+/\ learners = (s0 :> {} @@ s1 :> {} @@ s2 :> {s0, s1, s2})
+/\ tempMaxEpoch = (s0 :> 0 @@ s1 :> 0 @@ s2 :> 2)
+/\ leaderOracle = s2
+/\ status = (s0 :> ONLINE @@ s1 :> ONLINE @@ s2 :> ONLINE)
+/\ state = (s0 :> FOLLOWING @@ s1 :> FOLLOWING @@ s2 :> LEADING)
+/\ partition = ( s0 :> (s0 :> FALSE @@ s1 :> FALSE @@ s2 :> FALSE) @@
+  s1 :> (s0 :> FALSE @@ s1 :> FALSE @@ s2 :> FALSE) @@
+  s2 :> (s0 :> FALSE @@ s1 :> FALSE @@ s2 :> FALSE) )
+/\ packetsSync = ( s0 :> [notCommitted |-> <<>>, committed |-> <<<<1, 2>>>>] @@
+  s1 :> [notCommitted |-> <<>>, committed |-> <<<<1, 2>>>>] @@
+  s2 :> [notCommitted |-> <<>>, committed |-> <<>>] )
+/\ ackldRecv = ( s0 :> {} @@
+  s1 :> {} @@
+  s2 :> {[connected |-> TRUE, sid |-> s1], [connected |-> TRUE, sid |-> s2]} )
+/\ leaderAddr = (s0 :> s2 @@ s1 :> s2 @@ s2 :> NullPoint)
+/\ servingState = (s0 :> INITIAL @@ s1 :> INITIAL @@ s2 :> RUNNING)
+/\ committedLog = << [zxid |-> <<1, 1>>, value |-> 101, epoch |-> 1, ackSid |-> {s0, s1, s2}],
+   [zxid |-> <<1, 2>>, value |-> 102, epoch |-> 1, ackSid |-> {s2}] >>
+/\ epochLeader = <<{s2}, {s2}, {}, {}, {}, {}, {}, {}, {}, {}>>
+
+
+STATE_21 == 
+/\ forwarding = (s0 :> {} @@ s1 :> {} @@ s2 :> {s0, s1})
+/\ history = ( s0 :>
+      << [ zxid |-> <<1, 1>>,
+           value |-> 101,
+           epoch |-> 1,
+           ackSid |-> {s0, s1, s2} ],
+         [zxid |-> <<1, 2>>, value |-> 102, epoch |-> 2, ackSid |-> {}] >> @@
+  s1 :>
+      << [ zxid |-> <<1, 1>>,
+           value |-> 101,
+           epoch |-> 1,
+           ackSid |-> {s0, s1, s2} ],
+         [zxid |-> <<1, 2>>, value |-> 102, epoch |-> 2, ackSid |-> {}] >> @@
+  s2 :>
+      << [ zxid |-> <<1, 1>>,
+           value |-> 101,
+           epoch |-> 1,
+           ackSid |-> {s0, s1, s2} ],
+         [zxid |-> <<1, 2>>, value |-> 102, epoch |-> 1, ackSid |-> {s2}] >> )
+/\ doInit = TRUE
+/\ electing = ( s0 :> {} @@
+  s1 :> {} @@
+  s2 :>
+      { [sid |-> s0, peerLastZxid |-> <<-1, -1>>, inQuorum |-> TRUE],
+        [sid |-> s1, peerLastZxid |-> <<-1, -1>>, inQuorum |-> TRUE],
+        [sid |-> s2, peerLastZxid |-> <<-1, -1>>, inQuorum |-> TRUE] } )
+/\ zabState = (s0 :> SYNCHRONIZATION @@ s1 :> SYNCHRONIZATION @@ s2 :> BROADCAST)
+/\ aaInv = [ leadership |-> TRUE,
+  prefixConsistency |-> TRUE,
+  integrity |-> TRUE,
+  agreement |-> TRUE,
+  totalOrder |-> TRUE,
+  primaryOrder |-> TRUE,
+  monotonicRead |-> TRUE,
+  processConsistency |-> TRUE,
+  leaderLogCompleteness |-> TRUE,
+  committedLogDurability |-> TRUE ]
+/\ lastProcessed = ( s0 :> [zxid |-> <<1, 1>>, index |-> 1] @@
+  s1 :> [zxid |-> <<1, 1>>, index |-> 1] @@
+  s2 :> [zxid |-> <<1, 2>>, index |-> 2] )
+/\ rcvBuffer = ( s0 :>
+      ( s0 :> <<>> @@
+        s1 :> <<>> @@
+        s2 :> <<[mtype |-> ACK, mzxid |-> <<1, 2>>]>> ) @@
+  s1 :>
+      ( s0 :> <<>> @@
+        s1 :> <<>> @@
+        s2 :> <<[mtype |-> ACK, mzxid |-> <<1, 2>>]>> ) @@
+  s2 :>
+      ( s0 :> <<[mtype |-> UPTODATE, mzxid |-> <<2, 0>>]>> @@
+        s1 :> <<[mtype |-> UPTODATE, mzxid |-> <<2, 0>>]>> @@
+        s2 :> <<>> ) )
+/\ initialHistory = ( s0 :>
+      << [ zxid |-> <<1, 1>>,
+           value |-> 101,
+           epoch |-> 1,
+           ackSid |-> {s0, s1, s2} ] >> @@
+  s1 :>
+      << [ zxid |-> <<1, 1>>,
+           value |-> 101,
+           epoch |-> 1,
+           ackSid |-> {s0, s1, s2} ] >> @@
+  s2 :>
+      << [zxid |-> <<1, 1>>, value |-> 101, epoch |-> 1, ackSid |-> {s2}],
+         [zxid |-> <<1, 2>>, value |-> 102, epoch |-> 1, ackSid |-> {s2}] >> )
+/\ recorder = [ step |-> 20,
+  nPartition |-> 0,
+  nConsequentFailure |-> 0,
+  noExecute |-> {},
+  nTimeout |-> 2,
+  nCrash |-> 2,
+  nTransaction |-> 2,
+  maxEpoch |-> 2,
+  pc |-> <<"LeaderProcessACKLD", s2, s0>>,
+  nClientRequest |-> 0 ]
+/\ acceptedEpoch = (s0 :> 2 @@ s1 :> 2 @@ s2 :> 2)
+/\ connecting = ( s0 :> {} @@
+  s1 :> {} @@
+  s2 :>
+      { [connected |-> TRUE, sid |-> s0],
+        [connected |-> TRUE, sid |-> s1],
+        [connected |-> TRUE, sid |-> s2] } )
+/\ proposalMsgsLog = { [zxid |-> <<1, 1>>, epoch |-> 1, data |-> 101, source |-> s2],
+  [zxid |-> <<1, 2>>, epoch |-> 1, data |-> 102, source |-> s2],
+  [zxid |-> <<1, 2>>, epoch |-> 2, data |-> 102, source |-> s2] }
+/\ lastCommitted = ( s0 :> [zxid |-> <<0, 0>>, index |-> 0] @@
+  s1 :> [zxid |-> <<1, 1>>, index |-> 1] @@
+  s2 :> [zxid |-> <<1, 2>>, index |-> 2] )
+/\ daInv = [ stateConsistent |-> TRUE,
+  proposalConsistent |-> TRUE,
+  commitConsistent |-> TRUE,
+  ackConsistent |-> TRUE,
+  messageLegal |-> TRUE ]
+/\ currentEpoch = (s0 :> 2 @@ s1 :> 2 @@ s2 :> 2)
+/\ learners = (s0 :> {} @@ s1 :> {} @@ s2 :> {s0, s1, s2})
+/\ tempMaxEpoch = (s0 :> 0 @@ s1 :> 0 @@ s2 :> 2)
+/\ leaderOracle = s2
+/\ status = (s0 :> ONLINE @@ s1 :> ONLINE @@ s2 :> ONLINE)
+/\ state = (s0 :> FOLLOWING @@ s1 :> FOLLOWING @@ s2 :> LEADING)
+/\ partition = ( s0 :> (s0 :> FALSE @@ s1 :> FALSE @@ s2 :> FALSE) @@
+  s1 :> (s0 :> FALSE @@ s1 :> FALSE @@ s2 :> FALSE) @@
+  s2 :> (s0 :> FALSE @@ s1 :> FALSE @@ s2 :> FALSE) )
+/\ packetsSync = ( s0 :> [notCommitted |-> <<>>, committed |-> <<<<1, 2>>>>] @@
+  s1 :> [notCommitted |-> <<>>, committed |-> <<<<1, 2>>>>] @@
+  s2 :> [notCommitted |-> <<>>, committed |-> <<>>] )
+/\ ackldRecv = ( s0 :> {} @@
+  s1 :> {} @@
+  s2 :> {[connected |-> TRUE, sid |-> s1], [connected |-> TRUE, sid |-> s2]} )
+/\ leaderAddr = (s0 :> s2 @@ s1 :> s2 @@ s2 :> NullPoint)
+/\ servingState = (s0 :> INITIAL @@ s1 :> INITIAL @@ s2 :> RUNNING)
+/\ committedLog = << [zxid |-> <<1, 1>>, value |-> 101, epoch |-> 1, ackSid |-> {s0, s1, s2}],
+   [zxid |-> <<1, 2>>, value |-> 102, epoch |-> 1, ackSid |-> {s2}] >>
+/\ epochLeader = <<{s2}, {s2}, {}, {}, {}, {}, {}, {}, {}, {}>>
+
+
+STATE_22 == 
+/\ forwarding = (s0 :> {} @@ s1 :> {} @@ s2 :> {s0, s1})
+/\ history = ( s0 :>
+      << [ zxid |-> <<1, 1>>,
+           value |-> 101,
+           epoch |-> 1,
+           ackSid |-> {s0, s1, s2} ],
+         [zxid |-> <<1, 2>>, value |-> 102, epoch |-> 2, ackSid |-> {}] >> @@
+  s1 :>
+      << [ zxid |-> <<1, 1>>,
+           value |-> 101,
+           epoch |-> 1,
+           ackSid |-> {s0, s1, s2} ],
+         [zxid |-> <<1, 2>>, value |-> 102, epoch |-> 2, ackSid |-> {}] >> @@
+  s2 :>
+      << [ zxid |-> <<1, 1>>,
+           value |-> 101,
+           epoch |-> 1,
+           ackSid |-> {s0, s1, s2} ],
+         [ zxid |-> <<1, 2>>,
+           value |-> 102,
+           epoch |-> 1,
+           ackSid |-> {s1, s2} ] >> )
+/\ doInit = TRUE
+/\ electing = ( s0 :> {} @@
+  s1 :> {} @@
+  s2 :>
+      { [sid |-> s0, peerLastZxid |-> <<-1, -1>>, inQuorum |-> TRUE],
+        [sid |-> s1, peerLastZxid |-> <<-1, -1>>, inQuorum |-> TRUE],
+        [sid |-> s2, peerLastZxid |-> <<-1, -1>>, inQuorum |-> TRUE] } )
+/\ zabState = (s0 :> SYNCHRONIZATION @@ s1 :> SYNCHRONIZATION @@ s2 :> BROADCAST)
+/\ aaInv = [ leadership |-> TRUE,
+  prefixConsistency |-> TRUE,
+  integrity |-> TRUE,
+  agreement |-> TRUE,
+  totalOrder |-> TRUE,
+  primaryOrder |-> TRUE,
+  monotonicRead |-> TRUE,
+  processConsistency |-> TRUE,
+  leaderLogCompleteness |-> TRUE,
+  committedLogDurability |-> TRUE ]
+/\ lastProcessed = ( s0 :> [zxid |-> <<1, 1>>, index |-> 1] @@
+  s1 :> [zxid |-> <<1, 1>>, index |-> 1] @@
+  s2 :> [zxid |-> <<1, 2>>, index |-> 2] )
+/\ rcvBuffer = ( s0 :>
+      ( s0 :> <<>> @@
+        s1 :> <<>> @@
+        s2 :> <<[mtype |-> ACK, mzxid |-> <<1, 2>>]>> ) @@
+  s1 :> (s0 :> <<>> @@ s1 :> <<>> @@ s2 :> <<>>) @@
+  s2 :>
+      ( s0 :> <<[mtype |-> UPTODATE, mzxid |-> <<2, 0>>]>> @@
+        s1 :> <<[mtype |-> UPTODATE, mzxid |-> <<2, 0>>]>> @@
+        s2 :> <<>> ) )
+/\ initialHistory = ( s0 :>
+      << [ zxid |-> <<1, 1>>,
+           value |-> 101,
+           epoch |-> 1,
+           ackSid |-> {s0, s1, s2} ] >> @@
+  s1 :>
+      << [ zxid |-> <<1, 1>>,
+           value |-> 101,
+           epoch |-> 1,
+           ackSid |-> {s0, s1, s2} ] >> @@
+  s2 :>
+      << [zxid |-> <<1, 1>>, value |-> 101, epoch |-> 1, ackSid |-> {s2}],
+         [zxid |-> <<1, 2>>, value |-> 102, epoch |-> 1, ackSid |-> {s2}] >> )
+/\ recorder = [ step |-> 21,
+  nPartition |-> 0,
+  nConsequentFailure |-> 0,
+  noExecute |-> {},
+  nTimeout |-> 2,
+  nCrash |-> 2,
+  nTransaction |-> 2,
+  maxEpoch |-> 2,
+  pc |-> <<"LeaderProcessACK", s2, s1, <<1, 2>>>>,
+  nClientRequest |-> 0 ]
+/\ acceptedEpoch = (s0 :> 2 @@ s1 :> 2 @@ s2 :> 2)
+/\ connecting = ( s0 :> {} @@
+  s1 :> {} @@
+  s2 :>
+      { [connected |-> TRUE, sid |-> s0],
+        [connected |-> TRUE, sid |-> s1],
+        [connected |-> TRUE, sid |-> s2] } )
+/\ proposalMsgsLog = { [zxid |-> <<1, 1>>, epoch |-> 1, data |-> 101, source |-> s2],
+  [zxid |-> <<1, 2>>, epoch |-> 1, data |-> 102, source |-> s2],
+  [zxid |-> <<1, 2>>, epoch |-> 2, data |-> 102, source |-> s2] }
+/\ lastCommitted = ( s0 :> [zxid |-> <<0, 0>>, index |-> 0] @@
+  s1 :> [zxid |-> <<1, 1>>, index |-> 1] @@
+  s2 :> [zxid |-> <<1, 2>>, index |-> 2] )
+/\ daInv = [ stateConsistent |-> TRUE,
+  proposalConsistent |-> TRUE,
+  commitConsistent |-> TRUE,
+  ackConsistent |-> TRUE,
+  messageLegal |-> TRUE ]
+/\ currentEpoch = (s0 :> 2 @@ s1 :> 2 @@ s2 :> 2)
+/\ learners = (s0 :> {} @@ s1 :> {} @@ s2 :> {s0, s1, s2})
+/\ tempMaxEpoch = (s0 :> 0 @@ s1 :> 0 @@ s2 :> 2)
+/\ leaderOracle = s2
+/\ status = (s0 :> ONLINE @@ s1 :> ONLINE @@ s2 :> ONLINE)
+/\ state = (s0 :> FOLLOWING @@ s1 :> FOLLOWING @@ s2 :> LEADING)
+/\ partition = ( s0 :> (s0 :> FALSE @@ s1 :> FALSE @@ s2 :> FALSE) @@
+  s1 :> (s0 :> FALSE @@ s1 :> FALSE @@ s2 :> FALSE) @@
+  s2 :> (s0 :> FALSE @@ s1 :> FALSE @@ s2 :> FALSE) )
+/\ packetsSync = ( s0 :> [notCommitted |-> <<>>, committed |-> <<<<1, 2>>>>] @@
+  s1 :> [notCommitted |-> <<>>, committed |-> <<<<1, 2>>>>] @@
+  s2 :> [notCommitted |-> <<>>, committed |-> <<>>] )
+/\ ackldRecv = ( s0 :> {} @@
+  s1 :> {} @@
+  s2 :> {[connected |-> TRUE, sid |-> s1], [connected |-> TRUE, sid |-> s2]} )
+/\ leaderAddr = (s0 :> s2 @@ s1 :> s2 @@ s2 :> NullPoint)
+/\ servingState = (s0 :> INITIAL @@ s1 :> INITIAL @@ s2 :> RUNNING)
+/\ committedLog = << [zxid |-> <<1, 1>>, value |-> 101, epoch |-> 1, ackSid |-> {s0, s1, s2}],
+   [zxid |-> <<1, 2>>, value |-> 102, epoch |-> 1, ackSid |-> {s1, s2}] >>
+/\ epochLeader = <<{s2}, {s2}, {}, {}, {}, {}, {}, {}, {}, {}>>
+
+
+STATE_23 == 
+/\ forwarding = (s0 :> {} @@ s1 :> {} @@ s2 :> {s0, s1})
+/\ history = ( s0 :>
+      << [ zxid |-> <<1, 1>>,
+           value |-> 101,
+           epoch |-> 1,
+           ackSid |-> {s0, s1, s2} ],
+         [zxid |-> <<1, 2>>, value |-> 102, epoch |-> 2, ackSid |-> {}] >> @@
+  s1 :>
+      << [ zxid |-> <<1, 1>>,
+           value |-> 101,
+           epoch |-> 1,
+           ackSid |-> {s0, s1, s2} ],
+         [zxid |-> <<1, 2>>, value |-> 102, epoch |-> 2, ackSid |-> {}] >> @@
+  s2 :>
+      << [ zxid |-> <<1, 1>>,
+           value |-> 101,
+           epoch |-> 1,
+           ackSid |-> {s0, s1, s2} ],
+         [ zxid |-> <<1, 2>>,
+           value |-> 102,
+           epoch |-> 1,
+           ackSid |-> {s1, s2} ] >> )
+/\ doInit = TRUE
+/\ electing = ( s0 :> {} @@
+  s1 :> {} @@
+  s2 :>
+      { [sid |-> s0, peerLastZxid |-> <<-1, -1>>, inQuorum |-> TRUE],
+        [sid |-> s1, peerLastZxid |-> <<-1, -1>>, inQuorum |-> TRUE],
+        [sid |-> s2, peerLastZxid |-> <<-1, -1>>, inQuorum |-> TRUE] } )
+/\ zabState = (s0 :> SYNCHRONIZATION @@ s1 :> BROADCAST @@ s2 :> BROADCAST)
+/\ aaInv = [ leadership |-> TRUE,
+  prefixConsistency |-> TRUE,
+  integrity |-> TRUE,
+  agreement |-> TRUE,
+  totalOrder |-> TRUE,
+  primaryOrder |-> TRUE,
+  monotonicRead |-> TRUE,
+  processConsistency |-> TRUE,
+  leaderLogCompleteness |-> TRUE,
+  committedLogDurability |-> TRUE ]
+/\ lastProcessed = ( s0 :> [zxid |-> <<1, 1>>, index |-> 1] @@
+  s1 :> [zxid |-> <<1, 2>>, index |-> 2] @@
+  s2 :> [zxid |-> <<1, 2>>, index |-> 2] )
+/\ rcvBuffer = ( s0 :>
+      ( s0 :> <<>> @@
+        s1 :> <<>> @@
+        s2 :> <<[mtype |-> ACK, mzxid |-> <<1, 2>>]>> ) @@
+  s1 :> (s0 :> <<>> @@ s1 :> <<>> @@ s2 :> <<>>) @@
+  s2 :>
+      ( s0 :> <<[mtype |-> UPTODATE, mzxid |-> <<2, 0>>]>> @@
+        s1 :> <<>> @@
+        s2 :> <<>> ) )
+/\ initialHistory = ( s0 :>
+      << [ zxid |-> <<1, 1>>,
+           value |-> 101,
+           epoch |-> 1,
+           ackSid |-> {s0, s1, s2} ] >> @@
+  s1 :>
+      << [ zxid |-> <<1, 1>>,
+           value |-> 101,
+           epoch |-> 1,
+           ackSid |-> {s0, s1, s2} ] >> @@
+  s2 :>
+      << [zxid |-> <<1, 1>>, value |-> 101, epoch |-> 1, ackSid |-> {s2}],
+         [zxid |-> <<1, 2>>, value |-> 102, epoch |-> 1, ackSid |-> {s2}] >> )
+/\ recorder = [ step |-> 22,
+  nPartition |-> 0,
+  nConsequentFailure |-> 0,
+  noExecute |-> {},
+  nTimeout |-> 2,
+  nCrash |-> 2,
+  nTransaction |-> 2,
+  maxEpoch |-> 2,
+  pc |-> <<"FollowerProcessUPTODATE", s1, s2, <<2, 0>>>>,
+  nClientRequest |-> 0 ]
+/\ acceptedEpoch = (s0 :> 2 @@ s1 :> 2 @@ s2 :> 2)
+/\ connecting = ( s0 :> {} @@
+  s1 :> {} @@
+  s2 :>
+      { [connected |-> TRUE, sid |-> s0],
+        [connected |-> TRUE, sid |-> s1],
+        [connected |-> TRUE, sid |-> s2] } )
+/\ proposalMsgsLog = { [zxid |-> <<1, 1>>, epoch |-> 1, data |-> 101, source |-> s2],
+  [zxid |-> <<1, 2>>, epoch |-> 1, data |-> 102, source |-> s2],
+  [zxid |-> <<1, 2>>, epoch |-> 2, data |-> 102, source |-> s2] }
+/\ lastCommitted = ( s0 :> [zxid |-> <<0, 0>>, index |-> 0] @@
+  s1 :> [zxid |-> <<1, 2>>, index |-> 2] @@
+  s2 :> [zxid |-> <<1, 2>>, index |-> 2] )
+/\ daInv = [ stateConsistent |-> TRUE,
+  proposalConsistent |-> TRUE,
+  commitConsistent |-> TRUE,
+  ackConsistent |-> TRUE,
+  messageLegal |-> TRUE ]
+/\ currentEpoch = (s0 :> 2 @@ s1 :> 2 @@ s2 :> 2)
+/\ learners = (s0 :> {} @@ s1 :> {} @@ s2 :> {s0, s1, s2})
+/\ tempMaxEpoch = (s0 :> 0 @@ s1 :> 0 @@ s2 :> 2)
+/\ leaderOracle = s2
+/\ status = (s0 :> ONLINE @@ s1 :> ONLINE @@ s2 :> ONLINE)
+/\ state = (s0 :> FOLLOWING @@ s1 :> FOLLOWING @@ s2 :> LEADING)
+/\ partition = ( s0 :> (s0 :> FALSE @@ s1 :> FALSE @@ s2 :> FALSE) @@
+  s1 :> (s0 :> FALSE @@ s1 :> FALSE @@ s2 :> FALSE) @@
+  s2 :> (s0 :> FALSE @@ s1 :> FALSE @@ s2 :> FALSE) )
+/\ packetsSync = ( s0 :> [notCommitted |-> <<>>, committed |-> <<<<1, 2>>>>] @@
+  s1 :> [notCommitted |-> <<>>, committed |-> <<>>] @@
+  s2 :> [notCommitted |-> <<>>, committed |-> <<>>] )
+/\ ackldRecv = ( s0 :> {} @@
+  s1 :> {} @@
+  s2 :> {[connected |-> TRUE, sid |-> s1], [connected |-> TRUE, sid |-> s2]} )
+/\ leaderAddr = (s0 :> s2 @@ s1 :> s2 @@ s2 :> NullPoint)
+/\ servingState = (s0 :> INITIAL @@ s1 :> RUNNING @@ s2 :> RUNNING)
+/\ committedLog = << [zxid |-> <<1, 1>>, value |-> 101, epoch |-> 1, ackSid |-> {s0, s1, s2}],
+   [zxid |-> <<1, 2>>, value |-> 102, epoch |-> 1, ackSid |-> {s1, s2}] >>
+/\ epochLeader = <<{s2}, {s2}, {}, {}, {}, {}, {}, {}, {}, {}>>
+
+
+STATE_24 == 
+/\ forwarding = (s0 :> {} @@ s1 :> {} @@ s2 :> {s0, s1})
+/\ history = ( s0 :>
+      << [ zxid |-> <<1, 1>>,
+           value |-> 101,
+           epoch |-> 1,
+           ackSid |-> {s0, s1, s2} ],
+         [zxid |-> <<1, 2>>, value |-> 102, epoch |-> 2, ackSid |-> {}] >> @@
+  s1 :>
+      << [ zxid |-> <<1, 1>>,
+           value |-> 101,
+           epoch |-> 1,
+           ackSid |-> {s0, s1, s2} ],
+         [zxid |-> <<1, 2>>, value |-> 102, epoch |-> 2, ackSid |-> {}] >> @@
+  s2 :>
+      << [ zxid |-> <<1, 1>>,
+           value |-> 101,
+           epoch |-> 1,
+           ackSid |-> {s0, s1, s2} ],
+         [ zxid |-> <<1, 2>>,
+           value |-> 102,
+           epoch |-> 1,
+           ackSid |-> {s0, s1, s2} ] >> )
+/\ doInit = TRUE
+/\ electing = ( s0 :> {} @@
+  s1 :> {} @@
+  s2 :>
+      { [sid |-> s0, peerLastZxid |-> <<-1, -1>>, inQuorum |-> TRUE],
+        [sid |-> s1, peerLastZxid |-> <<-1, -1>>, inQuorum |-> TRUE],
+        [sid |-> s2, peerLastZxid |-> <<-1, -1>>, inQuorum |-> TRUE] } )
+/\ zabState = (s0 :> SYNCHRONIZATION @@ s1 :> BROADCAST @@ s2 :> BROADCAST)
+/\ aaInv = [ leadership |-> TRUE,
+  prefixConsistency |-> TRUE,
+  integrity |-> TRUE,
+  agreement |-> TRUE,
+  totalOrder |-> TRUE,
+  primaryOrder |-> TRUE,
+  monotonicRead |-> TRUE,
+  processConsistency |-> TRUE,
+  leaderLogCompleteness |-> TRUE,
+  committedLogDurability |-> TRUE ]
+/\ lastProcessed = ( s0 :> [zxid |-> <<1, 1>>, index |-> 1] @@
+  s1 :> [zxid |-> <<1, 2>>, index |-> 2] @@
+  s2 :> [zxid |-> <<1, 2>>, index |-> 2] )
+/\ rcvBuffer = ( s0 :> (s0 :> <<>> @@ s1 :> <<>> @@ s2 :> <<>>) @@
+  s1 :> (s0 :> <<>> @@ s1 :> <<>> @@ s2 :> <<>>) @@
+  s2 :>
+      ( s0 :> <<[mtype |-> UPTODATE, mzxid |-> <<2, 0>>]>> @@
+        s1 :> <<>> @@
+        s2 :> <<>> ) )
+/\ initialHistory = ( s0 :>
+      << [ zxid |-> <<1, 1>>,
+           value |-> 101,
+           epoch |-> 1,
+           ackSid |-> {s0, s1, s2} ] >> @@
+  s1 :>
+      << [ zxid |-> <<1, 1>>,
+           value |-> 101,
+           epoch |-> 1,
+           ackSid |-> {s0, s1, s2} ] >> @@
+  s2 :>
+      << [zxid |-> <<1, 1>>, value |-> 101, epoch |-> 1, ackSid |-> {s2}],
+         [zxid |-> <<1, 2>>, value |-> 102, epoch |-> 1, ackSid |-> {s2}] >> )
+/\ recorder = [ step |-> 23,
+  nPartition |-> 0,
+  nConsequentFailure |-> 0,
+  noExecute |-> {},
+  nTimeout |-> 2,
+  nCrash |-> 2,
+  nTransaction |-> 2,
+  maxEpoch |-> 2,
+  pc |-> <<"LeaderProcessACK", s2, s0, <<1, 2>>>>,
+  nClientRequest |-> 0 ]
+/\ acceptedEpoch = (s0 :> 2 @@ s1 :> 2 @@ s2 :> 2)
+/\ connecting = ( s0 :> {} @@
+  s1 :> {} @@
+  s2 :>
+      { [connected |-> TRUE, sid |-> s0],
+        [connected |-> TRUE, sid |-> s1],
+        [connected |-> TRUE, sid |-> s2] } )
+/\ proposalMsgsLog = { [zxid |-> <<1, 1>>, epoch |-> 1, data |-> 101, source |-> s2],
+  [zxid |-> <<1, 2>>, epoch |-> 1, data |-> 102, source |-> s2],
+  [zxid |-> <<1, 2>>, epoch |-> 2, data |-> 102, source |-> s2] }
+/\ lastCommitted = ( s0 :> [zxid |-> <<0, 0>>, index |-> 0] @@
+  s1 :> [zxid |-> <<1, 2>>, index |-> 2] @@
+  s2 :> [zxid |-> <<1, 2>>, index |-> 2] )
+/\ daInv = [ stateConsistent |-> TRUE,
+  proposalConsistent |-> TRUE,
+  commitConsistent |-> TRUE,
+  ackConsistent |-> TRUE,
+  messageLegal |-> TRUE ]
+/\ currentEpoch = (s0 :> 2 @@ s1 :> 2 @@ s2 :> 2)
+/\ learners = (s0 :> {} @@ s1 :> {} @@ s2 :> {s0, s1, s2})
+/\ tempMaxEpoch = (s0 :> 0 @@ s1 :> 0 @@ s2 :> 2)
+/\ leaderOracle = s2
+/\ status = (s0 :> ONLINE @@ s1 :> ONLINE @@ s2 :> ONLINE)
+/\ state = (s0 :> FOLLOWING @@ s1 :> FOLLOWING @@ s2 :> LEADING)
+/\ partition = ( s0 :> (s0 :> FALSE @@ s1 :> FALSE @@ s2 :> FALSE) @@
+  s1 :> (s0 :> FALSE @@ s1 :> FALSE @@ s2 :> FALSE) @@
+  s2 :> (s0 :> FALSE @@ s1 :> FALSE @@ s2 :> FALSE) )
+/\ packetsSync = ( s0 :> [notCommitted |-> <<>>, committed |-> <<<<1, 2>>>>] @@
+  s1 :> [notCommitted |-> <<>>, committed |-> <<>>] @@
+  s2 :> [notCommitted |-> <<>>, committed |-> <<>>] )
+/\ ackldRecv = ( s0 :> {} @@
+  s1 :> {} @@
+  s2 :> {[connected |-> TRUE, sid |-> s1], [connected |-> TRUE, sid |-> s2]} )
+/\ leaderAddr = (s0 :> s2 @@ s1 :> s2 @@ s2 :> NullPoint)
+/\ servingState = (s0 :> INITIAL @@ s1 :> RUNNING @@ s2 :> RUNNING)
+/\ committedLog = << [zxid |-> <<1, 1>>, value |-> 101, epoch |-> 1, ackSid |-> {s0, s1, s2}],
+   [zxid |-> <<1, 2>>, value |-> 102, epoch |-> 1, ackSid |-> {s0, s1, s2}] >>
+/\ epochLeader = <<{s2}, {s2}, {}, {}, {}, {}, {}, {}, {}, {}>>
+
+
+STATE_25 == 
+/\ forwarding = (s0 :> {} @@ s1 :> {} @@ s2 :> {s0, s1})
+/\ history = ( s0 :>
+      << [ zxid |-> <<1, 1>>,
+           value |-> 101,
+           epoch |-> 1,
+           ackSid |-> {s0, s1, s2} ],
+         [zxid |-> <<1, 2>>, value |-> 102, epoch |-> 2, ackSid |-> {}] >> @@
+  s1 :>
+      << [ zxid |-> <<1, 1>>,
+           value |-> 101,
+           epoch |-> 1,
+           ackSid |-> {s0, s1, s2} ],
+         [zxid |-> <<1, 2>>, value |-> 102, epoch |-> 2, ackSid |-> {}] >> @@
+  s2 :>
+      << [ zxid |-> <<1, 1>>,
+           value |-> 101,
+           epoch |-> 1,
+           ackSid |-> {s0, s1, s2} ],
+         [ zxid |-> <<1, 2>>,
+           value |-> 102,
+           epoch |-> 1,
+           ackSid |-> {s0, s1, s2} ] >> )
+/\ doInit = TRUE
+/\ electing = ( s0 :> {} @@
+  s1 :> {} @@
+  s2 :>
+      { [sid |-> s0, peerLastZxid |-> <<-1, -1>>, inQuorum |-> TRUE],
+        [sid |-> s1, peerLastZxid |-> <<-1, -1>>, inQuorum |-> TRUE],
+        [sid |-> s2, peerLastZxid |-> <<-1, -1>>, inQuorum |-> TRUE] } )
+/\ zabState = (s0 :> BROADCAST @@ s1 :> BROADCAST @@ s2 :> BROADCAST)
+/\ aaInv = [ leadership |-> TRUE,
+  prefixConsistency |-> TRUE,
+  integrity |-> TRUE,
+  agreement |-> TRUE,
+  totalOrder |-> TRUE,
+  primaryOrder |-> TRUE,
+  monotonicRead |-> TRUE,
+  processConsistency |-> TRUE,
+  leaderLogCompleteness |-> TRUE,
+  committedLogDurability |-> TRUE ]
+/\ lastProcessed = ( s0 :> [zxid |-> <<1, 2>>, index |-> 2] @@
+  s1 :> [zxid |-> <<1, 2>>, index |-> 2] @@
+  s2 :> [zxid |-> <<1, 2>>, index |-> 2] )
+/\ rcvBuffer = ( s0 :> (s0 :> <<>> @@ s1 :> <<>> @@ s2 :> <<>>) @@
+  s1 :> (s0 :> <<>> @@ s1 :> <<>> @@ s2 :> <<>>) @@
+  s2 :> (s0 :> <<>> @@ s1 :> <<>> @@ s2 :> <<>>) )
+/\ initialHistory = ( s0 :>
+      << [ zxid |-> <<1, 1>>,
+           value |-> 101,
+           epoch |-> 1,
+           ackSid |-> {s0, s1, s2} ] >> @@
+  s1 :>
+      << [ zxid |-> <<1, 1>>,
+           value |-> 101,
+           epoch |-> 1,
+           ackSid |-> {s0, s1, s2} ] >> @@
+  s2 :>
+      << [zxid |-> <<1, 1>>, value |-> 101, epoch |-> 1, ackSid |-> {s2}],
+         [zxid |-> <<1, 2>>, value |-> 102, epoch |-> 1, ackSid |-> {s2}] >> )
+/\ recorder = [ step |-> 24,
+  nPartition |-> 0,
+  nConsequentFailure |-> 0,
+  noExecute |-> {},
+  nTimeout |-> 2,
+  nCrash |-> 2,
+  nTransaction |-> 2,
+  maxEpoch |-> 2,
+  pc |-> <<"FollowerProcessUPTODATE", s0, s2, <<2, 0>>>>,
+  nClientRequest |-> 0 ]
+/\ acceptedEpoch = (s0 :> 2 @@ s1 :> 2 @@ s2 :> 2)
+/\ connecting = ( s0 :> {} @@
+  s1 :> {} @@
+  s2 :>
+      { [connected |-> TRUE, sid |-> s0],
+        [connected |-> TRUE, sid |-> s1],
+        [connected |-> TRUE, sid |-> s2] } )
+/\ proposalMsgsLog = { [zxid |-> <<1, 1>>, epoch |-> 1, data |-> 101, source |-> s2],
+  [zxid |-> <<1, 2>>, epoch |-> 1, data |-> 102, source |-> s2],
+  [zxid |-> <<1, 2>>, epoch |-> 2, data |-> 102, source |-> s2] }
+/\ lastCommitted = ( s0 :> [zxid |-> <<1, 2>>, index |-> 2] @@
+  s1 :> [zxid |-> <<1, 2>>, index |-> 2] @@
+  s2 :> [zxid |-> <<1, 2>>, index |-> 2] )
+/\ daInv = [ stateConsistent |-> TRUE,
+  proposalConsistent |-> TRUE,
+  commitConsistent |-> TRUE,
+  ackConsistent |-> TRUE,
+  messageLegal |-> TRUE ]
+/\ currentEpoch = (s0 :> 2 @@ s1 :> 2 @@ s2 :> 2)
+/\ learners = (s0 :> {} @@ s1 :> {} @@ s2 :> {s0, s1, s2})
+/\ tempMaxEpoch = (s0 :> 0 @@ s1 :> 0 @@ s2 :> 2)
+/\ leaderOracle = s2
+/\ status = (s0 :> ONLINE @@ s1 :> ONLINE @@ s2 :> ONLINE)
+/\ state = (s0 :> FOLLOWING @@ s1 :> FOLLOWING @@ s2 :> LEADING)
+/\ partition = ( s0 :> (s0 :> FALSE @@ s1 :> FALSE @@ s2 :> FALSE) @@
+  s1 :> (s0 :> FALSE @@ s1 :> FALSE @@ s2 :> FALSE) @@
+  s2 :> (s0 :> FALSE @@ s1 :> FALSE @@ s2 :> FALSE) )
+/\ packetsSync = ( s0 :> [notCommitted |-> <<>>, committed |-> <<>>] @@
+  s1 :> [notCommitted |-> <<>>, committed |-> <<>>] @@
+  s2 :> [notCommitted |-> <<>>, committed |-> <<>>] )
+/\ ackldRecv = ( s0 :> {} @@
+  s1 :> {} @@
+  s2 :> {[connected |-> TRUE, sid |-> s1], [connected |-> TRUE, sid |-> s2]} )
+/\ leaderAddr = (s0 :> s2 @@ s1 :> s2 @@ s2 :> NullPoint)
+/\ servingState = (s0 :> RUNNING @@ s1 :> RUNNING @@ s2 :> RUNNING)
+/\ committedLog = << [zxid |-> <<1, 1>>, value |-> 101, epoch |-> 1, ackSid |-> {s0, s1, s2}],
+   [zxid |-> <<1, 2>>, value |-> 102, epoch |-> 1, ackSid |-> {s0, s1, s2}] >>
+/\ epochLeader = <<{s2}, {s2}, {}, {}, {}, {}, {}, {}, {}, {}>>
+
+
+=================================================
