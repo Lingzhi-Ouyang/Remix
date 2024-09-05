@@ -84,13 +84,13 @@ Or directly use the following script:
 Generate model-level traces and replay them:
 ```bash
 cd scripts
-./checkAndReplay.sh    # Pre-requisites: run ./build.sh first
+./checkAndReplay.sh    # Pre-requisites: run ./build.sh first if not built before
 ```
 
 Or do it step by step:
 ```bash
-./generator/run.sh      # Find the output_traces in the "traces" directory
-./scripts/replay.sh <output_traces>  # Pre-requisites: run ./build.sh first
+./generator/run.sh      # Find the <output_traces> in the "traces" directory
+./scripts/replay.sh <output_traces>  # Pre-requisites: run ./scripts/build.sh first if not built before
 ```
 
 ## Contributing
