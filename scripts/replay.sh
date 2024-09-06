@@ -3,8 +3,12 @@
 # replay given traces in the implementation.
 # Usage: ./replay.sh <trace_dir>  # trace_dir is under the directory _traces_
 
-## kill current running zookeeper processes
-ps -ef | grep zookeeper | grep -v grep | awk '{print $2}' | xargs kill -9
+## kill currently running zookeeper processes
+PROC=$(ps -ef | grep zookeeper | grep -v grep | awk '{print $2}')
+if [ -n "$PROC" ]; then
+  echo "Killing stale ZooKeeper process(es) (ID):" $PROC
+  kill $PROC
+fi
 
 SCRIPT_DIR=$(cd $(dirname "$0") || exit;pwd)
 WORKING_DIR=$(cd "$SCRIPT_DIR"/.. || exit;pwd)
@@ -28,7 +32,7 @@ mkdir -p "${REPLAY_DIR}"
 cp zk_log.properties "${REPLAY_DIR}"
 echo "## Result directory: ${REPLAY_DIR}"
 
-echo -e "\n>> Running test...\n"
+echo -e "\n>> Replaying...\n"
 JAVA_VERSION=$(java -version 2>&1 |awk -F '[".]+' 'NR==1{ print $2 }')
 if [[ $JAVA_VERSION -le 8 ]]; then
   nohup java -ea -jar ../checker/zookeeper-ensemble/target/zookeeper-ensemble-jar-with-dependencies.jar zookeeper.properties ${REPLAY_DIR} > ${REPLAY_DIR}/${tag}.out 2>&1 &
