@@ -80,6 +80,8 @@ Or directly use the following script:
 ./buildAndReplay.sh demo 		
 ```
 
+It is expected to obtain the results of `MATCH: 3` for all the 3 traces.
+
 ### Generate traces and replay
 Generate model-level traces and replay them:
 ```bash
