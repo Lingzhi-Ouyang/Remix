@@ -80,7 +80,13 @@ Or directly use the following script:
 ./buildAndReplay.sh demo 		
 ```
 
-It is expected to obtain the result of `UNMATCH: 0    MATCH: 3` for the demo traces.
+It is expected to output a corresponding result directory `results/demo_replay_<time>`. 
+An expected `matchReport` would be like:
+
+```
+TOTAL: 3
+UNMATCH:	0	MATCH:	3	UNMATCHED RATE:	0.0
+```
 
 ### Generate traces and replay
 Generate model-level traces and replay them:
@@ -93,6 +99,21 @@ Or do it step by step:
 ```bash
 ./generator/run.sh      # Find the <output_traces> in the "traces" directory
 ./scripts/replay.sh <output_traces>  # Pre-requisites: run ./scripts/build.sh first if not built before
+```
+
+It is expected to randomly generate three new traces (in the `traces/model_random_<gen_time>_output` directory) and output a corresponding result directory `results/model_random_<gen_time>_output_replay_<replay_time>`.
+Normally, all the three traces are successfully replayed (for most of the time), and the `matchReport` would be like:
+
+```
+TOTAL: 3
+UNMATCH:	0	MATCH:	3	UNMATCHED RATE:	0.0
+```
+
+In certain rare cases, some discrepancies might be detected, and the `matchReport` would be like:
+
+```
+TOTAL: 3
+UNMATCH:	1	MATCH:	3	UNMATCHED RATE:	0.33
 ```
 
 ## Contributing
