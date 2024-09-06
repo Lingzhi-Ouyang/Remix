@@ -80,7 +80,7 @@ Or directly use the following script:
 ./buildAndReplay.sh demo 		
 ```
 
-It is expected to obtain the results of `MATCH: 3` for all the 3 traces.
+It is expected to obtain the result of `UNMATCH: 0    MATCH: 3` for the demo traces.
 
 ### Generate traces and replay
 Generate model-level traces and replay them:
