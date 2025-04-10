@@ -4,6 +4,8 @@ This is the artifact (demo) of "Multi-Grained Specifications for Distributed Sys
 
 **Remix** is a tooling support for the verification using multi-grained specifications. It interfaces the TLC model checker, and provides conformance checking and deterministic execution of model-level traces.
 
+More ZooKeeper specifications can be found at: https://github.com/Disalg-ICS-NJU/zookeeper-tla-spec
+
 
 
 ## Overview
